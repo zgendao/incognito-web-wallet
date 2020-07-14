@@ -1,0 +1,12 @@
+:root {
+
+}
+
+body {
+  margin: 0;
+  cursor: default;
+}
+
+* {
+  box-sizing: border-box;
+}

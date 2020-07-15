@@ -3,7 +3,11 @@
  :dependencies [[binaryage/devtools "0.9.10"]
                 [proto-repl "0.3.1"]
                 [reagent "0.8.1"]
-                [cljs-http "0.1.46"]] :nrepl        {:port 3333}
+                [cljs-http "0.1.46"]
+                [alandipert/storage-atom "2.0.1"]]
+
+ :nrepl
+ {:port 3333}
 
  :builds
  {:app {:target :browser

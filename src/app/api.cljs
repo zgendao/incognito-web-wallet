@@ -8,9 +8,6 @@
             [async-await.core :refer [async await]]
             [app.state :refer [state]]))
 
-(def prv-price (atom 0))
-(def wasm-loaded (atom false))
-
 (defn price-request []
   (go (let [response (<! (http/get "https://api.incognito.org/ptoken/list" {:with-credentials? false :headers {"Content-Type" "application/json"}}))
             last-trade (first (:Result (:body response)))

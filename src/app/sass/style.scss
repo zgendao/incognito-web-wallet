@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap');
+
 :root {
   --color-background: white;
   --color-background-secondary: #ECECEC;
@@ -17,7 +18,7 @@
 
 body {
   margin: 0;
-  font-family: "Red Hat Display", sans-serif;
+  font-family: 'Red Hat Display', sans-serif;
   font-size: 20px;
   background-color: var(--color-background);
 }
@@ -35,30 +36,33 @@ h6 {
 nav div {
   display: flex;
   justify-content: space-between;
-}
-nav div p {
-  margin: 0 10px;
-  line-height: 30px;
-  font-weight: 500;
+
+  p {
+    margin: 0 10px;
+    line-height: 30px;
+    font-weight: 500;
+  }
 }
 
 #accounts {
   height: calc(100vh - 110px);
   display: flex;
   align-items: center;
-  transition: height 0.2s;
-}
-#accounts.collapsed {
-  height: 200px;
-}
-#accounts.collapsed .accounts-wrapper {
-  grid-template-columns: repeat(100, 200px);
-}
-#accounts.collapsed .account-selector {
-  padding: 15px;
-}
-#accounts.collapsed .account-selector__balance {
-  height: 0;
+  transition: height .2s;
+
+  &.collapsed {
+    height: 200px;
+
+    .accounts-wrapper {
+      grid-template-columns: repeat(100, 200px);
+    }
+    .account-selector {
+      padding: 15px;
+    }
+    .account-selector__balance {
+      height: 0;
+    }
+  }
 }
 
 .accounts-wrapper {
@@ -67,30 +71,27 @@ nav div p {
   gap: 50px;
   width: 100%;
 }
-
 .account-selector {
   background: var(--color-background-secondary);
   padding: 20px;
   border-radius: var(--border-radius);
   border: 5px solid transparent;
   cursor: pointer;
-  transition: padding 0.2s;
-}
-.account-selector.active {
-  border: 5px solid var(--color-primary);
-}
+  transition: padding .2s;
 
+  &.active {
+    border: 5px solid var(--color-primary);
+  }
+}
 .account-selector__name {
   margin: 0;
 }
-
 .account-selector__balance {
   overflow: hidden;
-  transition: height 0.2s;
+  transition: height .2s;
   height: 30px;
-}
-.account-selector__balance p {
-  margin: 10px 0 0 0;
-}
 
-/*# sourceMappingURL=style.css.map */
+  p {
+    margin: 10px 0 0 0;
+  }
+}

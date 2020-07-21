@@ -6,7 +6,7 @@
             [cljs-http.client :as http]
             ["incognito-js" :as incognito-js]
             [async-await.core :refer [async await]]
-            [app.state :refer [state]]))
+            [app.state :refer [state local]]))
 
 (defn price-request []
   (go (let [response (<! (http/get "https://api.incognito.org/ptoken/list" {:with-credentials? false :headers {"Content-Type" "application/json"}}))
@@ -21,3 +21,5 @@
      (swap! state assoc :wasm-loaded true))))
 
 (def ^:export wallet (incognito-js/WalletInstance.))
+(def ^:export wallett (incognito-js/WalletInstance.))
+(def ^:export MasterAccount (incognito-js/MasterAccount.))

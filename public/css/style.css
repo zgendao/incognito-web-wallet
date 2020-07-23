@@ -42,17 +42,67 @@ nav div p {
   font-weight: 500;
 }
 
+::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  display: none;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 15px;
+  background: var(--color-background-secondary);
+}
+
+button {
+  cursor: pointer;
+}
+
+.circle-button {
+  height: 35px;
+  width: 35px;
+  background-color: var(--color-background-secondary);
+  border: 0;
+  border-radius: 30px;
+}
+
 #accounts {
-  height: calc(100vh - 110px);
-  display: flex;
-  align-items: center;
-  transition: height 0.2s;
+  position: relative;
+  padding: 0;
+  transition: 0.5s padding;
+}
+#accounts .circle-button {
+  position: absolute;
+  right: 0;
+  top: 35px;
+  z-index: 1;
+  display: none;
 }
 #accounts.collapsed {
-  height: 200px;
+  padding: 20px 0;
 }
 #accounts.collapsed .accounts-wrapper {
+  height: 100px;
+  margin-top: 0;
+}
+#accounts.collapsed .circle-button {
+  display: block;
+}
+#accounts.collapsed::after {
+  content: "";
+  position: absolute;
+  box-shadow: inset -80px 0 30px -20px rgba(255, 255, 255, 0.8);
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  pointer-events: none;
+}
+#accounts.collapsed .accounts-grid {
   grid-template-columns: repeat(100, 200px);
+  margin-top: 0;
 }
 #accounts.collapsed .account-selector {
   padding: 15px;
@@ -62,10 +112,21 @@ nav div p {
 }
 
 .accounts-wrapper {
+  overflow-x: auto;
+  height: calc(100vh - 70px);
+  transition: height 0.5s, margin 0.5s;
+}
+.accounts-wrapper::-webkit-scrollbar:vertical {
+  display: none;
+}
+
+.accounts-grid {
   display: grid;
   grid-template-columns: repeat(5, 200px);
+  margin: 10% 0;
   gap: 50px;
   width: 100%;
+  transition: transform 0.5s, margin 0.5s;
 }
 
 .account-selector {
@@ -74,9 +135,13 @@ nav div p {
   border-radius: var(--border-radius);
   border: 5px solid transparent;
   cursor: pointer;
-  transition: padding 0.2s;
+  overflow: hidden;
+  transition: padding 0.5s, height 0.5s;
 }
-.account-selector.active {
+.account-selector:hover {
+  opacity: 0.8;
+}
+.account-selector.account-selector--active {
   border: 5px solid var(--color-primary);
 }
 
@@ -85,9 +150,9 @@ nav div p {
 }
 
 .account-selector__balance {
+  height: 36px;
+  transition: all 0.5s;
   overflow: hidden;
-  transition: height 0.2s;
-  height: 30px;
 }
 .account-selector__balance p {
   margin: 10px 0 0 0;

@@ -25,28 +25,32 @@
       [:p (:prv-price @state) " USD"]]]])
 
 (defn account-selector [name balance]
-  [:div.account-selector
-    [:h6.account-selector__name name]
-    [:div.account-selector__balance
-      [:p balance]]])
+  [:div
+    [:div.account-selector {:on-click #(swap! state assoc :selected-account name)
+                            :class [(when (= (@state :selected-account) name) "account-selector--active")]}
+      [:div
+        [:h6.account-selector__name name]
+        [:div.account-selector__balance
+          [:p balance]]]]])
 
 (defn accounts-grid []
   (create-class
     {:component-did-mount
       (fn []
         (do
-          (def grid (.querySelector js/document ".js-grid"))
-          (wrapGrid grid #js {:duration 600})))
+          (def grid (.querySelector js/document ".accounts-grid"))
+          (wrapGrid grid #js {:duration 500})))
      :reagent-render
       (fn []
-        [:div.accounts-wrapper.js-grid
-          (repeat 10
-            [account-selector "Wallet 1" "300"])])}))
+        [:div.accounts-grid
+          (for [x (range 0 10)]
+            [account-selector (str "Wallet " x) "300"])])}))
 
 (defn accounts []
-  [:div.container
-    [:div#accounts
-      [accounts-grid]]])
+  [:div#accounts.container {:class [(when-not (= (@state :selected-account) 0) "collapsed")]}
+    [:div.accounts-wrapper
+      [accounts-grid]]
+    [:button.circle-button {:on-click #(swap! state assoc :selected-account 0)} "v"]])
 
 (defn wallet-ui []
   (create-class

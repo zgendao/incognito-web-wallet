@@ -3,4 +3,5 @@
             [alandipert.storage-atom :refer [local-storage]]))
 
 (def state (atom {:prv-price 0
-                  :wasm-loaded false}))
+                  :wasm-loaded false
+                  :selected-account 0}))

@@ -1,18 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap");
 :root {
-  --color-background: white;
+  --color-background: #ffffff;
   --color-background-secondary: #ECECEC;
   --color-primary: #5994F0;
   --color-secondary: #33373A;
-  --color-text-default: black;
+  --color-text-default: #000000;
   --color-text-default-soft: #7A7A7A;
-  --color-text-inverse: white;
+  --color-text-inverse: #ffffff;
   --border-radius: 20px;
 }
 
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 body {
@@ -20,16 +21,6 @@ body {
   font-family: "Red Hat Display", sans-serif;
   font-size: 20px;
   background-color: var(--color-background);
-}
-
-h6 {
-  font-size: 20px;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 0;
 }
 
 nav div {
@@ -42,25 +33,36 @@ nav div p {
   font-weight: 500;
 }
 
-::-webkit-scrollbar {
-  height: 5px;
-  width: 5px;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 0;
 }
 
-::-webkit-scrollbar-track {
-  display: none;
+h6 {
+  font-size: 20px;
 }
 
-::-webkit-scrollbar-thumb {
-  border-radius: 15px;
-  background: var(--color-background-secondary);
+p {
+  margin: 0;
 }
 
-button {
+button, a {
   cursor: pointer;
 }
 
-.circle-button {
+.btn {
+  background-color: var(--color-secondary);
+  color: var(--color-text-inverse);
+  border: none;
+  border-radius: 30px;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.circle-btn {
   height: 35px;
   width: 35px;
   background-color: var(--color-background-secondary);
@@ -71,38 +73,49 @@ button {
 #accounts {
   position: relative;
   padding: 0;
+  overflow: hidden;
   transition: 0.5s padding;
 }
-#accounts .circle-button {
+#accounts::after {
+  content: "";
   position: absolute;
-  right: 0;
-  top: 35px;
+  box-shadow: inset -160px 0 60px -60px var(--color-background);
+  top: 0;
+  bottom: 0;
+  right: -200px;
+  left: 0;
+  transition: right 0.5s;
+  pointer-events: none;
+}
+#accounts .circle-btn {
+  position: absolute;
+  right: -50px;
+  top: 55px;
   z-index: 1;
-  display: none;
+  transition: right 0.5s;
 }
 #accounts.collapsed {
-  padding: 20px 0;
+  padding: 40px 0;
+}
+#accounts.collapsed::after {
+  right: 0;
+}
+#accounts.collapsed .circle-btn {
+  right: 0;
 }
 #accounts.collapsed .accounts-wrapper {
   height: 100px;
   margin-top: 0;
 }
-#accounts.collapsed .circle-button {
-  display: block;
-}
-#accounts.collapsed::after {
-  content: "";
-  position: absolute;
-  box-shadow: inset -80px 0 30px -20px rgba(255, 255, 255, 0.8);
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  pointer-events: none;
-}
 #accounts.collapsed .accounts-grid {
-  grid-template-columns: repeat(100, 200px);
-  margin-top: 0;
+  grid-auto-columns: 200px;
+  grid-auto-flow: column;
+  margin: 0;
+}
+#accounts.collapsed .accounts-grid::after {
+  content: "";
+  height: 1px;
+  width: 50px;
 }
 #accounts.collapsed .account-selector {
   padding: 15px;
@@ -114,7 +127,27 @@ button {
 .accounts-wrapper {
   overflow-x: auto;
   height: calc(100vh - 70px);
-  transition: height 0.5s, margin 0.5s;
+  color: transparent;
+  scrollbar-color: transparent transparent;
+  scrollbar-width: thin;
+  transition: color 0.3s;
+  transition: height 0.5s, margin 0.5s, color 0.3s;
+}
+.accounts-wrapper::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+.accounts-wrapper::-webkit-scrollbar-track {
+  display: none;
+}
+.accounts-wrapper::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  border-radius: 15px;
+  box-shadow: inset 0 0 0 10px;
+}
+.accounts-wrapper:hover {
+  scrollbar-color: var(--color-background-secondary) transparent;
+  color: var(--color-background-secondary);
 }
 .accounts-wrapper::-webkit-scrollbar:vertical {
   display: none;
@@ -123,14 +156,14 @@ button {
 .accounts-grid {
   display: grid;
   grid-template-columns: repeat(5, 200px);
-  margin: 10% 0;
   gap: 50px;
-  width: 100%;
-  transition: transform 0.5s, margin 0.5s;
+  margin: 10% 0;
+  color: var(--color-text-default);
+  transition: margin 0.5s;
 }
 
 .account-selector {
-  background: var(--color-background-secondary);
+  background-color: var(--color-background-secondary);
   padding: 20px;
   border-radius: var(--border-radius);
   border: 5px solid transparent;
@@ -151,11 +184,87 @@ button {
 
 .account-selector__balance {
   height: 36px;
-  transition: all 0.5s;
   overflow: hidden;
+  transition: all 0.5s;
 }
 .account-selector__balance p {
   margin: 10px 0 0 0;
+}
+
+#main {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  height: 100%;
+  padding: 0;
+  transition: height 0s 0s, opacity 0.6s 0s;
+}
+#main > div {
+  display: flex;
+  align-items: center;
+}
+#main.hidden {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: height 0s 0.4s, opacity 0.4s 0s;
+}
+
+.header__amount {
+  justify-content: space-between;
+}
+.header__amount h1 {
+  margin: 0.2em 0;
+}
+
+.header__keys {
+  justify-content: flex-end;
+}
+
+.keys-wrapper {
+  position: relative;
+  height: 46px;
+  width: 100%;
+  margin-right: 20px;
+}
+
+.keys-modal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--color-background);
+  border-radius: 20px;
+  transition: padding 0.3s, box-shadow 0.3s;
+}
+.keys-modal > div:not(:first-child) {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s;
+}
+.keys-modal.opened {
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
+  padding: 20px 40px;
+}
+.keys-modal.opened > div:not(:first-child) {
+  height: 138px;
+}
+
+.key-elem {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+.key-elem p {
+  margin: 0 20px 0 0;
+}
+.key-elem div {
+  display: flex;
+}
+.key-elem div a {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /*# sourceMappingURL=style.css.map */

@@ -1,19 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap');
 
 :root {
-  --color-background: white;
+  --color-background: #ffffff;
   --color-background-secondary: #ECECEC;
   --color-primary: #5994F0;
   --color-secondary: #33373A;
-  --color-text-default: black;
+  --color-text-default: #000000;
   --color-text-default-soft: #7A7A7A;
-  --color-text-inverse: white;
+  --color-text-inverse: #ffffff;
   --border-radius: 20px;
 }
 
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 body {
@@ -21,16 +22,6 @@ body {
   font-family: 'Red Hat Display', sans-serif;
   font-size: 20px;
   background-color: var(--color-background);
-}
-
-h6 {
-  font-size: 20px;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 0;
 }
 
 nav div {
@@ -44,23 +35,40 @@ nav div {
   }
 }
 
-::-webkit-scrollbar {
-  height: 5px;
-  width: 5px;
-}
-::-webkit-scrollbar-track {
-  display: none;
-}
-::-webkit-scrollbar-thumb {
-  border-radius: 15px;
-  background: var(--color-background-secondary);
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 0;
 }
 
-button {
+h1, h2, h3, h4, h5, h6 {
+  //margin: 0.5em 0;
+}
+
+h6 {
+  font-size: 20px;
+}
+
+p {
+  margin: 0;
+}
+
+button, a {
   cursor: pointer;
 }
 
-.circle-button {
+.btn {
+  background-color: var(--color-secondary);
+  color: var(--color-text-inverse);
+  border: none;
+  border-radius: 30px;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.circle-btn {
   height: 35px;
   width: 35px;
   background-color: var(--color-background-secondary);
@@ -68,95 +76,60 @@ button {
   border-radius: 30px;
 }
 
-#accounts {
-  position: relative;
-  padding: 0;
-  transition: .5s padding;
+@mixin lightScrollbar ($color) {
+  color: transparent;
+  scrollbar-color: transparent transparent;
+  scrollbar-width: thin;
+  transition: color .3s;
 
-  .circle-button {
-    position: absolute;
-    right: 0;
-    top: 35px;
-    z-index: 1;
+  &::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
     display: none;
   }
-
-  &.collapsed {
-    padding: 20px 0;
-
-    .accounts-wrapper {
-      height: 100px;
-      margin-top: 0;
-    }
-
-    .circle-button {
-      display: block;
-    }
-    &::after {
-      content: "";
-      position: absolute;
-      box-shadow: inset -80px 0 30px -20px rgba(255, 255, 255, 0.8);
-      top: 0;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      pointer-events: none;
-    }
-    
-    .accounts-grid {
-      grid-template-columns: repeat(100, 200px);
-      margin-top: 0;
-    }
-    .account-selector {
-      padding: 15px;
-    }
-    .account-selector__balance {
-      height: 0;
-    }
+  &::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    border-radius: 15px; 
+    box-shadow: inset 0 0 0 10px;
   }
-}
-
-.accounts-wrapper {
-  overflow-x: auto;
-  height: calc(100vh - 70px);
-  transition: height .5s, margin .5s;
-
-  &::-webkit-scrollbar:vertical {
-    display: none;
-  }
-}
-.accounts-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 200px);
-  margin: 10% 0;
-  gap: 50px;
-  width: 100%;
-  transition: transform .5s, margin .5s;
-}
-.account-selector {
-  background: var(--color-background-secondary);
-  padding: 20px;
-  border-radius: var(--border-radius);
-  border: 5px solid transparent;
-  cursor: pointer;
-  overflow: hidden;
-  transition: padding .5s, height .5s;
 
   &:hover {
-    opacity: 0.8;
-  }
-  &.account-selector--active {
-    border: 5px solid var(--color-primary);
+    scrollbar-color: $color transparent;
+    color: $color;
   }
 }
-.account-selector__name {
-  margin: 0;
-}
-.account-selector__balance {
-  height: 36px;
-  transition: all .5s;
-  overflow: hidden;
-  p {
-    margin: 10px 0 0 0;
+
+@import "accounts";
+
+#main {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  height: 100%;
+  padding: 0;
+  transition: height 0s 0s, opacity .6s 0s;
+
+  > div {
+    display: flex;
+    align-items: center;
+  }
+
+  &.hidden {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    transition: height 0s .4s, opacity .4s 0s;
   }
 }
+
+.header__amount {
+  justify-content: space-between;
+
+  h1 {
+    margin: 0.2em 0;
+  }
+}
+
+@import "keys";

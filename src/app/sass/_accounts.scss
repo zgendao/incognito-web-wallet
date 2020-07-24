@@ -1,0 +1,114 @@
+#accounts {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  transition: .5s padding;
+
+  &::after {
+    content: "";
+    position: absolute;
+    box-shadow: inset -160px 0 60px -60px var(--color-background);
+    top: 0;
+    bottom: 0;
+    right: -200px;
+    left: 0;
+    transition: right .5s;
+    pointer-events: none;
+  }
+
+  .circle-btn {
+    position: absolute;
+    right: -50px;
+    top: 55px;
+    z-index: 1;
+    transition: right .5s;
+  }
+
+  &.collapsed {
+    padding: 40px 0;
+
+    &::after {
+      right: 0;
+    }
+
+    .circle-btn {
+      right: 0;
+    }
+
+    .accounts-wrapper {
+      height: 100px;
+      margin-top: 0;
+    }
+    
+    .accounts-grid {
+      grid-auto-columns: 200px;
+      grid-auto-flow: column;
+      margin: 0;
+
+      &::after {
+        content: "";;
+        height: 1px;
+        width: 50px;
+      }
+    }
+
+    .account-selector {
+      padding: 15px;
+    }
+    
+    .account-selector__balance {
+      height: 0;
+    }
+  }
+}
+
+.accounts-wrapper {
+  overflow-x: auto;
+  height: calc(100vh - 70px);
+  @include lightScrollbar(var(--color-background-secondary));
+  transition: height .5s, margin .5s, color .3s;
+  
+  &::-webkit-scrollbar:vertical {
+    display: none;
+  }
+}
+
+.accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 200px);
+  gap: 50px;
+  margin: 10% 0;
+  color: var(--color-text-default);
+  transition: margin .5s;
+}
+
+.account-selector {
+  background-color: var(--color-background-secondary);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  border: 5px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition: padding .5s, height .5s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+  &.account-selector--active {
+    border: 5px solid var(--color-primary);
+  }
+}
+
+.account-selector__name {
+  margin: 0;
+}
+
+.account-selector__balance {
+  height: 36px;
+  overflow: hidden;
+  transition: all .5s;
+  
+  p {
+    margin: 10px 0 0 0;
+  }
+}

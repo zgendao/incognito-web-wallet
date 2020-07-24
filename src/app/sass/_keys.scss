@@ -1,0 +1,59 @@
+.header__keys {
+  justify-content: flex-end;
+}
+
+.keys-wrapper {
+  position: relative;
+  height: 46px;
+  width: 100%;
+  margin-right: 20px;
+}
+
+.keys-modal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--color-background);
+  border-radius: 20px;
+  transition: padding .3s, box-shadow .3s;
+
+  > div:not(:first-child) {
+    height: 0;
+    overflow: hidden;
+    transition: height .3s;
+  }
+    
+  &.opened {
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
+    padding: 20px 40px;
+
+    > div:not(:first-child) {
+      height: 138px;
+    }
+  }
+}
+
+@mixin cutText {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.key-elem {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+
+  p {
+    margin: 0 20px 0 0;
+  }
+
+  div {
+    display: flex;
+
+    a {
+      @include cutText();
+    }
+  }
+}

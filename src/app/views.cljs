@@ -3,6 +3,8 @@
             ["qrcode" :as qrcode]
             [app.state :refer [state]]
             [app.api :refer [wallet]]
+            [goog.string :as gstring :refer [format]]
+            [goog.string.format]
             [animate-css-grid :refer [wrapGrid]]))
 
 (defn qr-code [text]
@@ -22,7 +24,7 @@
       [:img {:src "./images/logo.png" :width "30px" :height "30px"}]
       [:p "Incognito Web Wallet"]]
     [:div
-      [:p (:prv-price @state) " USD"]]]])
+      [:p (format "%.2f" (:prv-price @state)) " USD"]]]])
 
 (defn account-selector [name balance]
   [:div
@@ -50,14 +52,28 @@
   [:div#accounts.container {:class [(when-not (= (@state :selected-account) 0) "collapsed")]}
     [:div.accounts-wrapper
       [accounts-grid]]
-    [:button.circle-btn {:on-click #(swap! state assoc :selected-account 0)} "v"]])
+    [:button.circle-btn {:on-click #(swap! state assoc :selected-account 0)} "i"]])
 
 (defn key-elem [name address]
   [:div.key-elem
     [:p name]
     [:div
-      [:a {:href "asd.com"} address]
+      [:a address]
       [:span "i"]]])
+
+(defn coin [name symbol amount]
+  [:div.coin-wrapper {:class [(when (= (@state :selected-coin) symbol) "selected")]}
+    [:div.coin {:on-click #(swap! state assoc :selected-coin symbol)}
+      [:div.coin__img
+        [:img {:src (str "./images/coinLogos/" symbol ".png")}]]
+      [:div.coin__content
+        [:div.coin__content__main
+          [:h6 name]
+          [:p amount]]
+        [:div.coin__content__prv
+          [:p "$295.6654"]
+          [:p "$" (* amount 0.91)]]]]
+    [:button.circle-btn {:on-click #(swap! state assoc :selected-coin 0)} ">"]])
 
 (defn main []
   (create-class
@@ -94,7 +110,16 @@
                       [key-elem "Validator key:"
                                 (-> account .-nativeToken .-accountKeySet .-validatorKey)]]]]
                 [:button.circle-btn {:on-click #(swap! state assoc :keys-opened (not (@state :keys-opened)))}
-                  "v"]]])))}))
+                  "v"]]
+              [:div.coins-container
+                [coin "Privacy" "PRV" 73.44]
+                [coin "Ethereum" "ETH" 0.000456]
+                [coin "Bitcoin" "BTC" 0.0000193]
+                [coin "Tether USD" "USDT" 40]
+                [coin "Dai Stablecoin" "DAI" 0]]
+              [:div.actions-wrapper
+                [:p ""]]])))}))
+                
 (defn app []
   (if (:wasm-loaded @state)
     [:<>

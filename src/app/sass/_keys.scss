@@ -15,6 +15,7 @@
   right: 0;
   background-color: var(--color-background);
   border-radius: 20px;
+  z-index: 2;
   transition: padding .3s, box-shadow .3s;
 
   > div:not(:first-child) {

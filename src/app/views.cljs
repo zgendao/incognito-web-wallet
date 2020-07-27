@@ -75,6 +75,11 @@
           [:p "$" (* amount 0.91)]]]]
     [:button.circle-btn {:on-click #(swap! state assoc :selected-coin 0)} ">"]])
 
+(defn tab [name]
+  [:a.tab-btn {:on-click #(swap! state assoc :active-tab name)
+               :class [(when (= (@state :active-tab) name) "tab-btn--active")]}
+    name])
+
 (defn main []
   (create-class
     {:component-did-mount
@@ -117,8 +122,17 @@
                 [coin "Bitcoin" "BTC" 0.0000193]
                 [coin "Tether USD" "USDT" 40]
                 [coin "Dai Stablecoin" "DAI" 0]]
-              [:div.actions-wrapper
-                [:p ""]]])))}))
+              [:div.actions-container
+                [:div.actions-wrapper
+                  [:div.tabs-wrapper
+                    [:div.tabs-pagination
+                      [tab "Transaction history"]
+                      [tab "Send"]
+                      [:div.tabs__background]]
+                    [:div#transactions.tab {:class [(when (= (@state :active-tab) "Transaction history") "tab--active")]}
+                      [:p "Transaction history"]]
+                    [:div#send.tab {:class [(when (= (@state :active-tab) "Send") "tab--active")]}
+                      [:p "Send"]]]]]])))}))
                 
 (defn app []
   (if (:wasm-loaded @state)

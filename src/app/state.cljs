@@ -6,4 +6,5 @@
                   :wasm-loaded false
                   :selected-account 0
                   :selected-coin 0
+                  :active-tab "Transaction history"
                   :keys-opened false}))

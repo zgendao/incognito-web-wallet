@@ -1,4 +1,87 @@
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap");
+.tabs-pagination {
+  position: relative;
+  display: flex;
+  width: 100%;
+  line-height: 1em;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.tab-btn {
+  text-align: center;
+  z-index: 1;
+  flex: 1;
+  padding: 1em 0;
+  font-variation-settings: "wght" 500;
+}
+
+.tabs__background {
+  position: absolute;
+  background-color: var(--color-background);
+  width: 100px;
+  height: 1em;
+  padding: 1em 0;
+  box-sizing: content-box;
+  border-radius: 20px;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s cubic-bezier(0.38, 0.8, 0.32, 1.07);
+}
+
+.tab-btn--active:nth-child(1):nth-last-child(2) ~ .tabs__background {
+  width: calc(100% / 1);
+  left: calc((100% / 1) * 0);
+}
+
+.tab-btn--active:nth-child(1):nth-last-child(3) ~ .tabs__background {
+  width: calc(100% / 2);
+  left: calc((100% / 2) * 0);
+}
+
+.tab-btn--active:nth-child(2):nth-last-child(2) ~ .tabs__background {
+  width: calc(100% / 2);
+  left: calc((100% / 2) * 1);
+}
+
+.tab-btn--active:nth-child(1):nth-last-child(4) ~ .tabs__background {
+  width: calc(100% / 3);
+  left: calc((100% / 3) * 0);
+}
+
+.tab-btn--active:nth-child(2):nth-last-child(3) ~ .tabs__background {
+  width: calc(100% / 3);
+  left: calc((100% / 3) * 1);
+}
+
+.tab-btn--active:nth-child(3):nth-last-child(2) ~ .tabs__background {
+  width: calc(100% / 3);
+  left: calc((100% / 3) * 2);
+}
+
+.tab {
+  display: none;
+  animation-name: content;
+  animation-direction: normal;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1;
+  line-height: 1.4;
+}
+
+.tab--active {
+  display: block;
+}
+
+@keyframes content {
+  from {
+    opacity: 0;
+    transform: translateY(5%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
 @font-face {
   font-family: "SF Text";
   src: url("../fonts/SFNSText.woff2") format("woff2");
@@ -232,9 +315,15 @@ button, a {
   margin: 0.2em 0;
 }
 
-.actions-wrapper {
+.actions-container {
   background-color: var(--color-background-secondary);
   border-radius: 20px;
+}
+
+.actions-wrapper {
+  width: 100%;
+  height: 100%;
+  padding: 20px 30px;
 }
 
 .header__keys {
@@ -254,6 +343,7 @@ button, a {
   right: 0;
   background-color: var(--color-background);
   border-radius: 20px;
+  z-index: 2;
   transition: padding 0.3s, box-shadow 0.3s;
 }
 .keys-modal > div:not(:first-child) {

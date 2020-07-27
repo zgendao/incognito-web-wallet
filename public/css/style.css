@@ -4,8 +4,7 @@
   display: flex;
   width: 100%;
   line-height: 1em;
-  font-size: 18px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .tab-btn {
@@ -60,12 +59,13 @@
 
 .tab {
   display: none;
+  line-height: 1.4;
+  margin: 20px 0;
   animation-name: content;
   animation-direction: normal;
   animation-duration: 0.3s;
   animation-timing-function: ease-in-out;
   animation-iteration-count: 1;
-  line-height: 1.4;
 }
 
 .tab--active {
@@ -82,9 +82,73 @@
     transform: translateY(0%);
   }
 }
+.send-wrapper {
+  display: grid;
+  gap: 25px 30px;
+  grid-template-columns: 1fr 1fr;
+}
+.send-wrapper > * {
+  grid-column: span 2;
+}
+.send-wrapper > *:nth-child(2), .send-wrapper > *:nth-child(3) {
+  grid-column: auto;
+}
+.send-wrapper > .btn-wrapper {
+  text-align: right;
+  padding-top: 30px;
+}
+
+label {
+  display: block;
+  margin-bottom: 7px;
+  font-variation-settings: "wght" 500;
+}
+
+.input-wrapper {
+  position: relative;
+}
+.input-wrapper span {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 1em;
+}
+
+input {
+  width: 100%;
+  border: none;
+  background-color: var(--color-background);
+  padding: 0.9em 1.2em;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: inherit;
+  font-variation-settings: "wght" 400;
+}
+input::placeholder {
+  color: var(--color-text-default-soft);
+  opacity: 1;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 @font-face {
   font-family: "SF Text";
   src: url("../fonts/SFNSText.woff2") format("woff2");
+}
+@font-face {
+  font-family: "SF Display";
+  src: url("../fonts/SFNSDisplay.woff2") format("woff2");
 }
 :root {
   --color-background: #ffffff;
@@ -106,7 +170,7 @@
 body {
   margin: 0;
   font-family: "SF Text";
-  font-size: 20px;
+  font-size: 18px;
   background-color: var(--color-background);
 }
 
@@ -115,8 +179,8 @@ nav div {
   justify-content: space-between;
 }
 nav div p {
+  font-family: "SF Display";
   color: var(--color-text-default-soft);
-  font-size: 18px;
   font-variation-settings: "wght" 500;
   line-height: 30px;
   margin: 0 10px;
@@ -147,17 +211,22 @@ p {
 
 button, a {
   cursor: pointer;
+  font-family: "SF Display";
+  border: none;
+  background: none;
 }
 
 .btn {
   background-color: var(--color-secondary);
   color: var(--color-text-inverse);
-  border: none;
   border-radius: 30px;
   padding: 15px 30px;
   font-size: 18px;
   font-variation-settings: "wght" 500;
-  font-family: inherit;
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
 }
 
 .circle-btn {
@@ -168,11 +237,36 @@ button, a {
   border-radius: 30px;
 }
 
+.clickCatcher {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  background-color: var(--color-background);
+  opacity: 0;
+  z-index: 5;
+  transition: height 0s 0.3s, width 0s 0.3s, opacity 0.3s 0s;
+}
+.clickCatcher.active {
+  height: 100%;
+  width: 100%;
+  transition: height 0s 0s, width 0s 0s, opacity 0.3s 0s;
+}
+.clickCatcher.active#backLayer {
+  opacity: 0.7;
+}
+
 #accounts {
   position: relative;
   padding: 0;
   overflow: hidden;
-  transition: 0.5s padding;
+  z-index: 0;
+  transition: z-index 0s 0.3s, 0.5s padding;
+}
+#accounts.highlighted {
+  z-index: 10;
+  transition: z-index 0s 0s, 0.5s padding;
 }
 #accounts::after {
   content: "";
@@ -228,8 +322,7 @@ button, a {
   color: transparent;
   scrollbar-color: transparent transparent;
   scrollbar-width: thin;
-  transition: color 0.3s;
-  transition: height 0.5s, margin 0.5s, color 0.3s;
+  transition: color 0.3s, height 0.5s, margin 0.5s, color 0.3s;
 }
 .accounts-wrapper::-webkit-scrollbar {
   height: 5px;
@@ -262,12 +355,12 @@ button, a {
 
 .account-selector {
   background-color: var(--color-background-secondary);
-  padding: 20px;
+  padding: 25px 20px;
   border-radius: var(--border-radius);
   border: 5px solid transparent;
   cursor: pointer;
   overflow: hidden;
-  transition: padding 0.5s, height 0.5s;
+  transition: padding 0.5s, height 0.5s, border 0.2s;
 }
 .account-selector:hover {
   opacity: 0.8;
@@ -292,7 +385,7 @@ button, a {
 #main {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 60px;
+  gap: 50px 60px;
   height: 100%;
   padding: 0;
   transition: height 0s 0s, opacity 0.6s 0s;
@@ -306,6 +399,11 @@ button, a {
   height: 0;
   overflow: hidden;
   transition: height 0s 0.4s, opacity 0.4s 0s;
+}
+
+.header__amount, .header__keys {
+  font-family: "SF Display";
+  font-size: 20px;
 }
 
 .header__amount {
@@ -323,7 +421,7 @@ button, a {
 .actions-wrapper {
   width: 100%;
   height: 100%;
-  padding: 20px 30px;
+  padding: 20px 35px;
 }
 
 .header__keys {
@@ -356,7 +454,7 @@ button, a {
   padding: 20px 40px;
 }
 .keys-modal.opened > div:not(:first-child) {
-  height: 138px;
+  height: calc(3 * (1.2em + 20px));
 }
 
 .key-elem {
@@ -380,6 +478,14 @@ button, a {
 
 .coins-container {
   flex-direction: column;
+  border-radius: 20px;
+  padding-top: 10px;
+  z-index: 0;
+  transition: z-index 0s 0.3s;
+}
+.coins-container.highlighted {
+  z-index: 10;
+  transition: z-index 0s 0s;
 }
 
 .coin-wrapper {
@@ -427,7 +533,6 @@ button, a {
   display: flex;
   flex: 1;
   flex-direction: column;
-  font-size: 18px;
   cursor: pointer;
 }
 .coin__content > div {

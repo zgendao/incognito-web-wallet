@@ -1,8 +1,13 @@
 @use 'tabs';
+@use 'inputs';
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap');
 @font-face {
   font-family: 'SF Text';
   src: url('../fonts/SFNSText.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'SF Display';
+  src: url('../fonts/SFNSDisplay.woff2') format('woff2');
 }
 
 :root {
@@ -26,7 +31,7 @@ body {
   margin: 0;
   //font-family: 'Red Hat Display';
   font-family: 'SF Text';
-  font-size: 20px;
+  font-size: 18px;
   background-color: var(--color-background);
 }
 
@@ -35,8 +40,8 @@ nav div {
   justify-content: space-between;
 
   p {
+    font-family: 'SF Display';
     color: var(--color-text-default-soft);
-    font-size: 18px;
     font-variation-settings: 'wght' 500;
     line-height: 30px;
     margin: 0 10px;
@@ -69,17 +74,21 @@ p {
 
 button, a {
   cursor: pointer;
+  font-family: 'SF Display';
+  border: none;
+  background: none;
 }
 
 .btn {
   background-color: var(--color-secondary);
   color: var(--color-text-inverse);
-  border: none;
   border-radius: 30px;
   padding: 15px 30px;
   font-size: 18px;
   font-variation-settings: 'wght' 500;
-  font-family: inherit;
+}
+.btn--primary {
+  background-color: var(--color-primary);
 }
 
 .circle-btn {
@@ -90,11 +99,34 @@ button, a {
   border-radius: 30px;
 }
 
-@mixin lightScrollbar ($color) {
+.clickCatcher {
+  position: absolute;
+  top: 0;
+  left: 0;
+  //have to specify for transition-delay to work
+  height: 0;
+  width: 0;
+  background-color: var(--color-background);
+  opacity: 0;
+  z-index: 5;
+  transition: height 0s .3s, width 0s .3s, opacity .3s 0s;
+
+  &.active {
+    height: 100%;
+    width: 100%;
+    transition: height 0s 0s, width 0s 0s, opacity .3s 0s;
+
+    &#backLayer {
+      opacity: 0.7;
+    }
+  }
+}
+
+@mixin lightScrollbar ($color, $additionalTransitions...) {
   color: transparent;
   scrollbar-color: transparent transparent;
   scrollbar-width: thin;
-  transition: color .3s;
+  transition: color .3s, $additionalTransitions;
 
   &::-webkit-scrollbar {
     height: 5px;
@@ -115,12 +147,22 @@ button, a {
   }
 }
 
+@mixin highlightable ($additionalTransitions...) {
+  z-index: 0;
+  transition: z-index 0s .3s, $additionalTransitions;
+
+  &.highlighted {
+    z-index: 10;
+    transition: z-index 0s 0s, $additionalTransitions;
+  }
+}
+
 @import "accounts";
 
 #main {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 60px;
+  gap: 50px 60px;
   //have to specify height for transition-delay to work
   height: 100%;
   padding: 0;
@@ -139,6 +181,11 @@ button, a {
   }
 }
 
+.header__amount, .header__keys {
+  font-family: 'SF Display';
+  font-size: 20px;
+}
+
 .header__amount {
   justify-content: space-between;
 
@@ -155,7 +202,7 @@ button, a {
 .actions-wrapper {
   width: 100%;
   height: 100%;
-  padding: 20px 30px
+  padding: 20px 35px
 }
 
 @import "keys";

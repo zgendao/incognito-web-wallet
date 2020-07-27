@@ -4,7 +4,8 @@
 
 (def state (atom {:prv-price 0
                   :wasm-loaded false
-                  :selected-account 0
-                  :selected-coin 0
-                  :active-tab "Transaction history"
+                  :selected-account false
+                  :selected-coin false
+                  :active-tab "Send"
+                  :reciepent-address false
                   :keys-opened false}))

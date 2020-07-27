@@ -5,7 +5,8 @@
             [app.api :refer [wallet]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
-            [animate-css-grid :refer [wrapGrid]]))
+            [app.accounts :refer [accounts]]
+            [app.tabs :refer [tabs-component]]))
 
 (defn qr-code [text]
   (create-class
@@ -14,8 +15,7 @@
       (qrcode/toCanvas
        (dom-node element)
        text))
-    :reagent-render (fn []
-                      [:canvas#canvas])}))
+    :reagent-render (fn [] [:canvas#canvas])}))
 
 (defn navbar []
   [:nav
@@ -25,34 +25,6 @@
       [:p "Incognito Web Wallet"]]
     [:div
       [:p (format "%.2f" (:prv-price @state)) " USD"]]]])
-
-(defn account-selector [name balance]
-  [:div
-    [:div.account-selector {:on-click #(swap! state assoc :selected-account name)
-                            :class [(when (= (@state :selected-account) name) "account-selector--active")]}
-      [:div
-        [:h6.account-selector__name name]
-        [:div.account-selector__balance
-          [:p balance]]]]])
-
-(defn accounts-grid []
-  (create-class
-    {:component-did-mount
-      (fn []
-        (do
-          (def grid (.querySelector js/document ".accounts-grid"))
-          (wrapGrid grid #js {:duration 500})))
-     :reagent-render
-      (fn []
-        [:div.accounts-grid
-          (for [x (range 0 10)]
-            [account-selector (str "Account " x) "300"])])}))
-
-(defn accounts []
-  [:div#accounts.container {:class [(when-not (= (@state :selected-account) 0) "collapsed")]}
-    [:div.accounts-wrapper
-      [accounts-grid]]
-    [:button.circle-btn {:on-click #(swap! state assoc :selected-account 0)} "i"]])
 
 (defn key-elem [name address]
   [:div.key-elem
@@ -73,12 +45,18 @@
         [:div.coin__content__prv
           [:p "$295.6654"]
           [:p "$" (* amount 0.91)]]]]
-    [:button.circle-btn {:on-click #(swap! state assoc :selected-coin 0)} ">"]])
+    [:button.circle-btn {:on-click #(swap! state assoc :selected-coin false)} ">"]])
 
-(defn tab [name]
-  [:a.tab-btn {:on-click #(swap! state assoc :active-tab name)
-               :class [(when (= (@state :active-tab) name) "tab-btn--active")]}
-    name])
+(defn input [name label type placeholder end-element click-catcher]
+  [:div.input-group
+    [:label {:for name} label]
+    [:div.input-wrapper
+      [:input {:name name :type type :placeholder placeholder}]
+      (when end-element
+        [:span
+          end-element])
+      (when click-catcher
+        click-catcher)]])
 
 (defn main []
   (create-class
@@ -116,7 +94,7 @@
                                 (-> account .-nativeToken .-accountKeySet .-validatorKey)]]]]
                 [:button.circle-btn {:on-click #(swap! state assoc :keys-opened (not (@state :keys-opened)))}
                   "v"]]
-              [:div.coins-container
+              [:div.coins-container {:class [(when (= (@state :selected-coin) "?") "highlighted")]}
                 [coin "Privacy" "PRV" 73.44]
                 [coin "Ethereum" "ETH" 0.000456]
                 [coin "Bitcoin" "BTC" 0.0000193]
@@ -124,20 +102,33 @@
                 [coin "Dai Stablecoin" "DAI" 0]]
               [:div.actions-container
                 [:div.actions-wrapper
-                  [:div.tabs-wrapper
-                    [:div.tabs-pagination
-                      [tab "Transaction history"]
-                      [tab "Send"]
-                      [:div.tabs__background]]
-                    [:div#transactions.tab {:class [(when (= (@state :active-tab) "Transaction history") "tab--active")]}
-                      [:p "Transaction history"]]
-                    [:div#send.tab {:class [(when (= (@state :active-tab) "Send") "tab--active")]}
-                      [:p "Send"]]]]]])))}))
+                  [tabs-component
+                    {"Transaction history"
+                      [:p "Transaction history"]
+                     "Send"
+                      [:form.send-wrapper
+                        [input "reciepent" "To" "text" "Enter address (Incognito or external)"
+                          [:button {:type "button" :on-click #(swap! state assoc :reciepent-address "?")} "i"]]
+                        [input "amount" "Amount" "number"
+                          (if (@state :selected-coin) "0" "Select coin first")
+                          (when (@state :selected-coin) (@state :selected-coin))
+                          (when-not (@state :selected-coin)
+                            [:div.clickCatcher.active {:on-click #(swap! state assoc :selected-coin "?")}])]
+                        [input "fee" "Fee" "number" "0.00" "PRV"]
+                        [input "memo" "Memo" "text" "Add note (optional)"]
+                        [:div.btn-wrapper
+                          [:button.btn.btn--primary "Send Anonymously"]]]}]]]])))}))
                 
 (defn app []
   (if (:wasm-loaded @state)
     [:<>
       [navbar]
       [accounts]
-      [main]]
+      [main]
+      [:div#backLayer.clickCatcher
+        {:class [(when (or (= (@state :selected-coin) "?")
+                           (= (@state :reciepent-address) "?"))
+                    "active")]
+         :on-click (cond (= (@state :selected-coin) "?") #(swap! state assoc :selected-coin false)
+                         (= (@state :reciepent-address) "?") #(swap! state assoc :reciepent-address false))}]]
     [:h1 "Loading.."]))

@@ -3,8 +3,7 @@
   display: flex;
   width: 100%;
   line-height: 1em;
-  font-size: 18px;
-  margin-bottom: 30px
+  margin-bottom: 20px;
 }
 
 .tab-btn {
@@ -38,6 +37,8 @@
 
 .tab {
   display: none;
+  line-height: 1.4;
+  margin: 20px 0;
   animation: {
     name: content;
     direction: normal;
@@ -45,7 +46,6 @@
     timing-function: ease-in-out;
     iteration-count: 1;
   }
-  line-height: 1.4;
 }
 
 .tab--active {

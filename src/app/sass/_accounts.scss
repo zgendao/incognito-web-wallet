@@ -2,7 +2,7 @@
   position: relative;
   padding: 0;
   overflow: hidden;
-  transition: .5s padding;
+  @include highlightable(.5s padding);
 
   &::after {
     content: "";
@@ -65,8 +65,7 @@
 .accounts-wrapper {
   overflow-x: auto;
   height: calc(100vh - 70px);
-  @include lightScrollbar(var(--color-background-secondary));
-  transition: height .5s, margin .5s, color .3s;
+  @include lightScrollbar(var(--color-background-secondary), height .5s, margin .5s, color .3s);
   
   &::-webkit-scrollbar:vertical {
     display: none;
@@ -84,12 +83,12 @@
 
 .account-selector {
   background-color: var(--color-background-secondary);
-  padding: 20px;
+  padding: 25px 20px;
   border-radius: var(--border-radius);
   border: 5px solid transparent;
   cursor: pointer;
   overflow: hidden;
-  transition: padding .5s, height .5s;
+  transition: padding .5s, height .5s, border .2s;
 
   &:hover {
     opacity: 0.8;

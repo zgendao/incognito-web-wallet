@@ -19,7 +19,3 @@
    (let []
      (await (incognito-js/goServices.implementGoMethodUseWasm))
      (swap! state assoc :wasm-loaded true))))
-
-(def ^:export wallet (incognito-js/WalletInstance.))
-(def ^:export wallett (incognito-js/WalletInstance.))
-(def ^:export MasterAccount (incognito-js/MasterAccount.))

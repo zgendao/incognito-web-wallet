@@ -5,4 +5,4 @@
 (def state (atom {:prv-price 0
                   :wasm-loaded false}))
 
-(def local (local-storage (atom {}) :prefs))
+(def local (local-storage (atom {}) :local))

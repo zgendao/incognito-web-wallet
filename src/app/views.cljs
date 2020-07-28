@@ -4,7 +4,12 @@
             [cljs.core.async :refer [<!]]
             ["qrcode" :as qrcode]
             [app.state :refer [state local]]
-            [app.api :refer [wallet wallett MasterAccount]]))
+            ["incognito-js" :as incognito-js]))
+
+(defn generate-wallet [wallet name]
+  (.then
+   (.init wallet "xyz" name)
+   #(swap! local assoc :backupkey (.backup % (-> % .-mnemonic)) :pw (-> % .-mnemonic))))
 
 (defn qr-code [text]
   (create-class
@@ -13,78 +18,50 @@
       (qrcode/toCanvas
        (dom-node element)
        text))
-    :reagent-render (fn []
-                      [:canvas#canvas])}))
-
-(defn wallet-core [account]
-  (let []
-    [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column" :padding-bottom "60px" :padding-top "30px"}}
-     [:h3 "Your Web Wallet:"]
-             (when account
-                 [:div
-                    [:h6 "Name: " (-> account .-name)]
-                    [qr-code
-                     (-> account .-key .-keySet .-paymentAddressKeySerialized)]
-                    [:div
-                     [:label {:for "payment"} "Payment key:"]
-                     [:input {:type "text" :id "payment" :value (-> account .-key .-keySet .-paymentAddressKeySerialized)}]]
-                    [:div
-                     [:label {:for "private"} "Private key:"]
-                     [:input {:type "text" :id "private" :value (-> account .-key .-keySet .-privateKeySerialized)}]]
-                    [:div
-                     [:label {:for "validator"} "Validator key:"]
-                     [:input {:type "text" :id "validator" :value (-> account .-nativeToken .-accountKeySet .-validatorKey)}]]
-                    [:div
-                      [:button {:on-click #(swap! local assoc :wallets (js->clj (:masteraccounts @state)))} "Save"]]
-                               ])]))
-
-(defn wallet-ui []
-  (create-class
-   {:component-did-mount
-    (fn []
-      (.then
-       (.init wallet "my-passphrase" "TEST-WALLET")
-       #(do (swap! state assoc :accounts (.getAccounts (.-masterAccount wallet)))
-       (swap! state assoc :masteraccounts (.backup wallet "abc"))
-       (swap! state assoc :wall wallet))
-         ))
     :reagent-render
     (fn []
-      (wallet-core (first (js->clj (:accounts @state)))))
-        }))
+      [:canvas#canvas])}))
 
-;EZ AZ IMPORTÁLÓS, NEM MŰKÖDIK
-(defn stored-wallet-ui []
+(defn wallet-core [wallet]
+  [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column" :padding-bottom "60px" :padding-top "30px"}}
+   [:h3 "Your Web Wallet:"
+    [:div
+     (js/console.log wallet)
+     [:h6 "Name: " (-> wallet .-name)]
+     [qr-code (-> wallet .-masterAccount .-key .-keySet .-paymentAddressKeySerialized)]
+     [:div
+      [:label {:for "payment"} "Payment key:"]
+      [:input {:type "text" :id "payment" :value (-> wallet .-masterAccount .-key .-keySet .-paymentAddressKeySerialized)}]]
+     [:div
+      [:label {:for "private"} "Private key:"]
+      [:input {:type "text" :id "private" :value (-> wallet .-masterAccount .-key .-keySet .-privateKeySerialized)}]]
+     [:div
+      [:label {:for "validator"} "Validator key:"]
+      [:input {:type "text" :id "validator" :value (-> wallet .-masterAccount .-key .-keySet .-viewingKeySerialized)}]]]
+    [:button {:on-click #(reset! local {})} "Delete Wallet"]]])
+
+(defn wallet-ui [wallet]
   (create-class
-   {:component-did-mount
+   {:reagent-render
     (fn []
-      (.then (.importAccount (.-masterAccount wallet) (first (:wallets @local)) (second (:wallets @local)))
-        #(swap! state assoc :importaccounts %))
-         )
-    :reagent-render
-    (fn []
-      (wallet-core (:importaccounts @state)))
-                }))
+      (wallet-core wallet))}))
 
-(defn app []
-  (let [
-        accvector (:wallets @local)
-        ]
+(def wname (atom nil))
+(defn create-wallet [wallet]
   [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column"}}
-   [:h1 (:prv-price @state)]
+   [:p "Your wallet name:"
+    [:input {:type "text"
+             :value @wname
+             :on-change #(reset! wname (-> % .-target .-value))}]
+    [:button {:on-click #(generate-wallet wallet @wname)} "Create"]]])
+
+(defn app [wallet]
+  (js/console.log wallet)
+  [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column"}}
+   [:h3 (:prv-price @state)]
    (if (:wasm-loaded @state)
      [:div {:style {:width "100%"}}
-     [wallet-ui]
-     [:p (str accvector)]
-     [:p (str (type (:masteraccounts @state)))]
-     [:div
-       [:button {:on-click #(.then (.restore wallet accvector "abc")
-         (swap! state assoc :importaccounts "hello"))} "Mutat"]]
-    ;BACKUPDATA:
-     [:p (str (type (js->clj accvector)))]
-     [:p local]
-     [:p state]
-    ;EREDETI ACCOUNT:
-     [:p (str (type (first (js->clj (:accounts @state)))))]
-     ]
-     [:h1 "Loading.."])]))
+      (if (:backupkey @local)
+        [wallet-ui wallet]
+        [create-wallet wallet])]
+     [:h2 "Loading.."])])

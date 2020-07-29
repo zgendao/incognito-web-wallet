@@ -6,7 +6,8 @@
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
             [app.accounts :refer [accounts]]
-            [app.tabs :refer [tabs-component]]))
+            [app.tabs :refer [tabs-component]]
+            [app.forms :refer [send-form]]))
 
 (defn qr-code [text]
   (create-class
@@ -47,17 +48,6 @@
           [:p "$" (* amount 0.91)]]]]
     [:button.circle-btn {:on-click #(swap! state assoc :selected-coin false)} ">"]])
 
-(defn input [name label type placeholder end-element click-catcher]
-  [:div.input-group
-    [:label {:for name} label]
-    [:div.input-wrapper
-      [:input {:name name :type type :placeholder placeholder}]
-      (when end-element
-        [:span
-          end-element])
-      (when click-catcher
-        click-catcher)]])
-
 (defn main []
   (create-class
     {:component-did-mount
@@ -69,7 +59,7 @@
       (fn []
         (let [account (first (js->clj (:accounts @state)))]
           (when account
-            [:div#main.container {:class [(when (= (@state :selected-account) 0) "hidden")]}
+            [:div#main.container {:class [(when-not (@state :selected-account) "hidden")]}
               [:div.header__amount
                 ;[:h6 "Name: " (-> account .-name)]
                 [:div
@@ -106,18 +96,7 @@
                     {"Transaction history"
                       [:p "Transaction history"]
                      "Send"
-                      [:form.send-wrapper
-                        [input "reciepent" "To" "text" "Enter address (Incognito or external)"
-                          [:button {:type "button" :on-click #(swap! state assoc :reciepent-address "?")} "i"]]
-                        [input "amount" "Amount" "number"
-                          (if (@state :selected-coin) "0" "Select coin first")
-                          (when (@state :selected-coin) (@state :selected-coin))
-                          (when-not (@state :selected-coin)
-                            [:div.clickCatcher.active {:on-click #(swap! state assoc :selected-coin "?")}])]
-                        [input "fee" "Fee" "number" "0.00" "PRV"]
-                        [input "memo" "Memo" "text" "Add note (optional)"]
-                        [:div.btn-wrapper
-                          [:button.btn.btn--primary "Send Anonymously"]]]}]]]])))}))
+                      [send-form]}]]]])))}))
                 
 (defn app []
   (if (:wasm-loaded @state)
@@ -127,8 +106,8 @@
       [main]
       [:div#backLayer.clickCatcher
         {:class [(when (or (= (@state :selected-coin) "?")
-                           (= (@state :reciepent-address) "?"))
+                           (= (get-in @state [:send-data :reciepent-address]) "?"))
                     "active")]
          :on-click (cond (= (@state :selected-coin) "?") #(swap! state assoc :selected-coin false)
-                         (= (@state :reciepent-address) "?") #(swap! state assoc :reciepent-address false))}]]
+                         (= (get-in @state [:send-data :reciepent-address]) "?") #(swap! state assoc-in [:send-data :reciepent-address] nil))}]]
     [:h1 "Loading.."]))

@@ -114,11 +114,8 @@ button, a {
   &.active {
     height: 100%;
     width: 100%;
+    opacity: 0.7;
     transition: height 0s 0s, width 0s 0s, opacity .3s 0s;
-
-    &#backLayer {
-      opacity: 0.7;
-    }
   }
 }
 

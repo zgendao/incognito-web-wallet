@@ -3,12 +3,13 @@
             [app.state :refer [state]]))
 
 (defn tab-selector [name]
-  [:a.tab-btn {:on-click #(swap! state assoc :active-tab name)
+  [:a.tab-btn {:key name
+               :on-click #(swap! state assoc :active-tab name)
                :class [(when (= (@state :active-tab) name) "tab-btn--active")]}
     name])
 
 (defn tab [name content]
-  [:div.tab {:class [(when (= (@state :active-tab) name) "tab--active")]}
+  [:div.tab {:key name :class [(when (= (@state :active-tab) name) "tab--active")]}
     content])
 
 (defn tabs-component [tabs]

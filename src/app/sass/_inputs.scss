@@ -25,13 +25,18 @@ label {
 
 .input-wrapper {
   position: relative;
+  border-radius: 20px;
+  overflow: hidden;
 
   span {
     position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 0;
+    bottom: 0;
+    right: 0;
     line-height: 1em;
+    display: flex;
+    align-items: center;
+    padding-right: 20px;
   }
 }
 

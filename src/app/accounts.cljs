@@ -1,20 +1,31 @@
 (ns app.accounts
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            [app.state :refer [state]]
+            [app.storage :refer [state accounts coins]]
+            [goog.string :as gstring :refer [format]]
+            [goog.string.format]
             [animate-css-grid :refer [wrapGrid]]))
 
-(defn account-selector [key balance]
-  (let [name (str "Account " key)]
-    [:div {:key key}
+(defn get-balance [account]
+  (reduce +
+    (map
+      (fn [{:keys [id amount]}]
+        (* amount (get-in @coins [id "PriceUsd"])))
+      (account :coins))))
+
+(defn account-selector [account]
+  (let [key (.indexOf @accounts account)
+        name (account :name)
+        balance (get-balance account)]
+    [:div {:key key :style {:order key}}
       [:div.account-selector {:on-click (if-not (= (get-in @state [:send-data :reciepent-address]) "?")
-                                          #(swap! state assoc :selected-account name)
-                                          #(swap! state assoc-in [:send-data :reciepent-address] name))
-                              :class [(when (= (@state :selected-account) name) "account-selector--active")
-                                      (when (= (get-in @state [:send-data :reciepent-address]) name) "account-selector--reciepent")]}
+                                          #(swap! state assoc :selected-account key)
+                                          #(swap! state assoc-in [:send-data :reciepent-address] key))
+                              :class [(when (= (@state :selected-account) key) "account-selector--active")
+                                      (when (= (get-in @state [:send-data :reciepent-address]) key) "account-selector--reciepent")]}
         [:div
           [:h6.account-selector__name name]
           [:div.account-selector__balance
-            [:p balance]]]]]))
+            [:p (format "%.2f" balance) " USD"]]]]]))
 
 (defn accounts-grid []
   (create-class
@@ -26,10 +37,10 @@
      :reagent-render
       (fn []
         [:div.accounts-grid
-          (for [x (range 0 10)]
-            [account-selector x "300"])])}))
+          (for [account @accounts]
+            [account-selector account])])}))
 
-(defn accounts []
+(defn accounts-container []
   [:div#accounts.container {:class [(when-not (@state :selected-account) "opened opened--full")
                                     (when (= (get-in @state [:send-data :reciepent-address]) "?") "opened opened--half highlighted")]}                          
     [:div.accounts-wrapper

@@ -1,13 +1,14 @@
 (ns app.views
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             ["qrcode" :as qrcode]
-            [app.state :refer [state]]
+            [app.storage :refer [state accounts coins]]
             [app.api :refer [wallet]]
+            [app.accounts :refer [accounts-container]]
+            [app.header :refer [header]]
+            [app.coins :refer [coins-container]]
+            [app.actions :refer [actions-container]]
             [goog.string :as gstring :refer [format]]
-            [goog.string.format]
-            [app.accounts :refer [accounts]]
-            [app.tabs :refer [tabs-component]]
-            [app.forms :refer [send-form]]))
+            [goog.string.format]))
 
 (defn qr-code [text]
   (create-class
@@ -27,27 +28,6 @@
     [:div
       [:p (format "%.2f" (:prv-price @state)) " USD"]]]])
 
-(defn key-elem [name address]
-  [:div.key-elem
-    [:p name]
-    [:div
-      [:a address]
-      [:span "i"]]])
-
-(defn coin [name symbol amount]
-  [:div.coin-wrapper {:class [(when (= (@state :selected-coin) symbol) "selected")]}
-    [:div.coin {:on-click #(swap! state assoc :selected-coin symbol)}
-      [:div.coin__img
-        [:img {:src (str "./images/coinLogos/" symbol ".png")}]]
-      [:div.coin__content
-        [:div.coin__content__main
-          [:h6 name]
-          [:p amount]]
-        [:div.coin__content__prv
-          [:p "$295.6654"]
-          [:p "$" (* amount 0.91)]]]]
-    [:button.circle-btn {:on-click #(swap! state assoc :selected-coin false)} ">"]])
-
 (defn main []
   (create-class
     {:component-did-mount
@@ -60,54 +40,22 @@
         (let [account (first (js->clj (:accounts @state)))]
           (when account
             [:div#main.container {:class [(when-not (@state :selected-account) "hidden")]}
-              [:div.header__amount
-                ;[:h6 "Name: " (-> account .-name)]
-                [:div
-                  [:p "Total shielded balance"]
-                  [:h1 "$ 101.3245"]]
-                [:button.btn "+ Shield crypto"]]
-              [:div.header__keys
-                ;[qr-code
-                ;  (-> account .-key .-keySet .-paymentAddressKeySerialized)
-                [:div.keys-wrapper
-                  ;the modal below is absolute positioned, so a dummy element is needed for correct spacing
-                  ;[:p "-"]
-                  [:div.keys-modal {:class [(when (@state :keys-opened) "opened")]}
-                    [key-elem "Incognito address:"
-                              (-> account .-key .-keySet .-paymentAddressKeySerialized)]
-                    [:div
-                      [key-elem "Payment key:"
-                                (-> account .-key .-keySet .-paymentAddressKeySerialized)]
-                      [key-elem "Private key:"
-                                (-> account .-key .-keySet .-privateKeySerialized)]
-                      [key-elem "Validator key:"
-                                (-> account .-nativeToken .-accountKeySet .-validatorKey)]]]]
-                [:button.circle-btn {:on-click #(swap! state assoc :keys-opened (not (@state :keys-opened)))}
-                  "v"]]
-              [:div.coins-container {:class [(when (= (@state :selected-coin) "?") "highlighted")]}
-                [coin "Privacy" "PRV" 73.44]
-                [coin "Ethereum" "ETH" 0.000456]
-                [coin "Bitcoin" "BTC" 0.0000193]
-                [coin "Tether USD" "USDT" 40]
-                [coin "Dai Stablecoin" "DAI" 0]]
-              [:div.actions-container
-                [:div.actions-wrapper
-                  [tabs-component
-                    {"Transaction history"
-                      [:p "Transaction history"]
-                     "Send"
-                      [send-form]}]]]])))}))
+              [header]
+              [coins-container]
+              [actions-container]])))}))
+
+(defn back-layer []
+  [:div#backLayer.clickCatcher
+    {:class [(when (or (= (@state :selected-coin) "?")
+                       (= (get-in @state [:send-data :reciepent-address]) "?")) "active")]
+     :on-click (cond (= (@state :selected-coin) "?") #(swap! state assoc :selected-coin false)
+                     (= (get-in @state [:send-data :reciepent-address]) "?") #(swap! state assoc-in [:send-data :reciepent-address] nil))}])
                 
 (defn app []
   (if (:wasm-loaded @state)
     [:<>
       [navbar]
-      [accounts]
+      [accounts-container]
       [main]
-      [:div#backLayer.clickCatcher
-        {:class [(when (or (= (@state :selected-coin) "?")
-                           (= (get-in @state [:send-data :reciepent-address]) "?"))
-                    "active")]
-         :on-click (cond (= (@state :selected-coin) "?") #(swap! state assoc :selected-coin false)
-                         (= (get-in @state [:send-data :reciepent-address]) "?") #(swap! state assoc-in [:send-data :reciepent-address] nil))}]]
+      [back-layer]]
     [:h1 "Loading.."]))

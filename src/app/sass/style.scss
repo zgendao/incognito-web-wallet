@@ -35,6 +35,10 @@ body {
   background-color: var(--color-background);
 }
 
+#app {
+  position: relative;
+}
+
 nav div {
   display: flex;
   justify-content: space-between;

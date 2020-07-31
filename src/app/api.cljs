@@ -6,7 +6,7 @@
             [cljs-http.client :as http]
             ["incognito-js" :as incognito-js]
             [async-await.core :refer [async await]]
-            [app.state :refer [state]]))
+            [app.storage :refer [state]]))
 
 (defn price-request []
   (go (let [response (<! (http/get "https://api.incognito.org/ptoken/list" {:with-credentials? false :headers {"Content-Type" "application/json"}}))

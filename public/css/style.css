@@ -179,6 +179,10 @@ body {
   background-color: var(--color-background);
 }
 
+#app {
+  position: relative;
+}
+
 nav div {
   display: flex;
   justify-content: space-between;
@@ -327,7 +331,8 @@ button, a {
 .accounts-grid::after {
   content: "";
   height: 1px;
-  width: 50px;
+  width: 80px;
+  order: 100;
 }
 
 .account-selector {

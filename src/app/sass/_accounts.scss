@@ -45,7 +45,8 @@
   &::after {
     content: "";
     height: 1px;
-    width: 50px;
+    width: 80px;
+    order: 100
   }
 }
 

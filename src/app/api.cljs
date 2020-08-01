@@ -10,9 +10,10 @@
 
 (defn price-request []
   (go (let [response (<! (http/get "https://api.incognito.org/ptoken/list" {:with-credentials? false :headers {"Content-Type" "application/json"}}))
-            last-trade (first (:Result (:body response)))
-            price (/ (:PriceUsd last-trade) (:PricePrv last-trade))]
-        (swap! state assoc :prv-price price))))
+            ptokens (:Result (:body response))
+            price (/ (:PriceUsd (first ptokens)) (:PricePrv (first ptokens)))]
+        (do (swap! state assoc :prv-price price)
+            (swap! state assoc :ptokens (js->clj ptokens))))))
 
 (defn init-incognito []
   (async

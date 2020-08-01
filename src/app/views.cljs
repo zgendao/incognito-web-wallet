@@ -1,14 +1,9 @@
 (ns app.views
-  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            [cljs.core.async :refer [<!]]
             ["qrcode" :as qrcode]
             [app.state :refer [state local]]
             ["incognito-js" :as incognito-js]
             [async-await.core :refer [async await]]))
-
-(def render (atom 0))
-(def balances (atom {}))
 
 (defn qr-code [text]
   (create-class
@@ -23,16 +18,28 @@
 
 (defn create-backup [wallet]
   (swap! local assoc :backupkey (.backup wallet (-> wallet .-mnemonic)))
-  (reset! render (inc @render)))
+  (swap! state assoc :render (.getTime (js/Date.))))
 
 (defn get-balance [account]
   (.then
-   (-> account .-nativeToken (.getTotalBalance))
-   #(swap! balances assoc (-> account .-name) (/ % 1000000000))))
+   (-> account .-nativeToken (.getAvaiableBalance))
+   #(swap! state assoc-in [:balances (-> account .-name)] (/ % 1000000000))))
+
+(defn follow-token [wallet account token-id]
+  (-> account (.followTokenById token-id))
+  (create-backup wallet))
+
+(defn unfollow-token [wallet account token-id]
+  (-> account (.unfollowTokenById token-id))
+  (create-backup wallet))
+
+(defn get-following-tokens [token-ids]
+  (filter (fn [token] (some #(= % (:TokenID token)) token-ids)) (@state :ptokens)))
 
 (defn get-history [account]
-  (async
-   (await (-> account .-nativeToken (.getTxHistories)))))
+  (.then
+   (incognito-js/historyServices.getTxHistoryByPublicKey (-> account .-key .-keySet .-publicKeySerialized) nil)
+   #(js/console.log %)))
 
 (defn add-account [wallet name]
   (async
@@ -45,7 +52,7 @@
 
 (defn import-account [wallet name privkey]
   (-> wallet .-masterAccount (.importAccount name privkey))
-  (.setTimeout (create-backup wallet) 5000))
+  (create-backup wallet))
 
 (defn get-accounts [wallet]
   (-> wallet .-masterAccount .getAccounts))
@@ -53,74 +60,90 @@
 (defn send-prv [account amount to]
   (.then
    (-> account .-nativeToken (.transfer (clj->js [{:paymentAddressStr to :amount amount :message ""}]) 10))
-   #(js/console.log %)))
+   (fn [his] (js/console.log his))))
 
 (defn account [wallet acc]
   (reagent/create-class
    {:component-did-mount (fn [] (do (get-balance acc)))
     :reagent-render
     (fn []
-      [:div {:style {:margin-bottom "40px"}}
-       [:h4 "Account name: " (-> acc .-name)]
-       [:p (str "Balance " (@balances (-> acc .-name)))]
-       [qr-code (-> acc .-key .-keySet .-paymentAddressKeySerialized)]
-       [:div
-        [:label {:for "payment"} "Payment key:"]
-        [:input {:type "text" :id "payment" :value (-> acc .-key .-keySet .-paymentAddressKeySerialized)}]]
-       [:div
-        [:label {:for "private"} "Private key:"]
-        [:input {:type "text" :id "private" :value (-> acc .-key .-keySet .-privateKeySerialized)}]]
-       [:div
-        [:label {:for "validator"} "Validator key:"]
-        [:input {:type "text" :id "validator" :value (-> acc .-key .-keySet .-viewingKeySerialized)}]]
-       [:div
-        [:p "Send PRV"]
-        [:input {:type "number"
-                 :value (@state :send-amount)
-                 :placeholder "amount"
-                 :on-change #(swap! state assoc :send-amount (js/parseInt (-> % .-target .-value)))}]
-        [:input {:type "text"
-                 :value (@state :send-to)
-                 :placeholder "address"
-                 :on-change #(swap! state assoc :send-to (-> % .-target .-value))}]
-        [:button {:on-click #(send-prv acc (@state :send-amount) (@state :send-to))} "Send"]]
-       [:button {:style {:margin-top "20px"} :on-click #(remove-account wallet (-> acc .-name))} "Remove this acc"]])}))
+      (let [payment (-> acc .-key .-keySet .-paymentAddressKeySerialized)
+            private (-> acc .-key .-keySet .-paymentAddressKeySerialized)
+            validator (-> acc .-key .-keySet .-viewingKeySerialized)
+            name (-> acc .-name)
+            send-amount-key (keyword (str name "-send-amount"))
+            send-to-key (keyword (str name "-send-to"))
+            token-id-key (keyword (str name "-token-id"))]
+        [:div {:style {:margin-bottom "40px"}}
+         [:h4 "Account name: " name]
+         [:p (str "Balance " (get-in @state [:balances name]) " PRV")]
+         [qr-code payment]
+         [:div
+          [:label {:for "payment"} "Payment key:"]
+          [:input {:type "text" :id "payment" :value payment}]]
+         [:div
+          [:label {:for "private"} "Private key:"]
+          [:input {:type "text" :id "private" :value private}]]
+         [:div
+          [:label {:for "validator"} "Validator key:"]
+          [:input {:type "text" :id "validator" :value validator}]]
+         [:div
+          [:p "pTokens"]
+          [:input {:type "text"
+                   :value (@state token-id-key)
+                   :placeholder "token id"
+                   :on-change #(swap! state assoc token-id-key (-> % .-target .-value))}]
+          [:button {:on-click #(follow-token wallet acc (@state token-id-key))} "Follow"]
+          [:button {:on-click #(unfollow-token wallet acc (@state token-id-key))} "Unfollow"]
+          (for [ptoken (get-following-tokens (-> acc .-privacyTokenIds))]
+            [:div
+             [:h6 (str (:PSymbol ptoken) ": ")
+              [:input {:type "text" :value (:TokenID ptoken)}]]])]
+         [:div
+          [:p "Send PRV"]
+          [:input {:type "number"
+                   :value (@state send-amount-key)
+                   :placeholder "amount"
+                   :on-change #(swap! state assoc send-amount-key (js/parseInt (-> % .-target .-value)))}]
+          [:input {:type "text"
+                   :value (@state send-to-key)
+                   :placeholder "address"
+                   :on-change #(swap! state assoc send-to-key (-> % .-target .-value))}]
+          [:button {:on-click #(send-prv acc (@state send-amount-key) (@state send-to-key))} "Send"]]
+         [:button {:style {:margin-top "20px"} :on-click #(remove-account wallet (-> acc .-name))} "Remove this acc"]]))}))
 
 (defn wallet-ui [wallet]
-  (fn []
-    @render
-    [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column" :padding-bottom "60px" :padding-top "30px"}}
-     [:div
-      [:p "Create Account"]
-      [:input {:type "text"
-               :value (@state :acc-name)
-               :placeholder "name"
-               :on-change #(swap! state assoc :acc-name (-> % .-target .-value))}]
-      [:button {:on-click #(add-account wallet (@state :acc-name))} "Create"]
-      [:button {:on-click #(get-accounts wallet)} "Get Account"]
-      [:button {:on-click #(reset! local {})} "Delete Wallet"]]
-     [:div
-      [:p "Import Account"]
-      [:input {:type "text"
-               :value (@state :imp-name)
-               :placeholder "name"
-               :on-change #(swap! state assoc :imp-name (-> % .-target .-value))}]
-      [:input {:type "text"
-               :value (@state :priv-name)
-               :placeholder "private key"
-               :on-change #(swap! state assoc :priv-key (-> % .-target .-value))}]
-      [:button {:on-click #(import-account wallet (@state :imp-name) (@state :priv-name))} "Import"]]
-     [:h3 (str (-> wallet .-name) " Wallet:")
-      (for [acc (get-accounts wallet)]
-        [account wallet acc])]]))
-
-(defn render-wallet [wallet]
   (reagent/create-class
-   {:reagent-render (fn [] [wallet-ui wallet])}))
+   {:reagent-render
+    (fn []
+      [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column" :padding-bottom "60px" :padding-top "30px"}}
+       [:div
+        [:p "Create Account"]
+        [:input {:type "text"
+                 :value (@state :acc-name)
+                 :placeholder "name"
+                 :on-change #(swap! state assoc :acc-name (-> % .-target .-value))}]
+        [:button {:on-click #(add-account wallet (@state :acc-name))} "Create"]
+        [:button {:on-click #(get-accounts wallet)} "Get Account"]
+        [:button {:on-click #(reset! local {})} "Delete Wallet"]]
+       [:div
+        [:p "Import Account"]
+        [:input {:type "text"
+                 :value (@state :imp-name)
+                 :placeholder "name"
+                 :on-change #(swap! state assoc :imp-name (-> % .-target .-value))}]
+        [:input {:type "text"
+                 :value (@state :priv-key)
+                 :placeholder "private key"
+                 :on-change #(swap! state assoc :priv-key (-> % .-target .-value))}]
+        [:button {:on-click #(import-account wallet (@state :imp-name) (@state :priv-key))} "Import"]]
+       [:h3 (str (-> wallet .-name) " Wallet:")
+        (for [acc (get-accounts wallet)]
+          [account wallet acc])]])}))
 
 (defn generate-wallet [wallet name]
   (.then
-   (.init wallet (.getTime (js/Date.)) name)
+   (.init wallet (str (.getTime (js/Date.))) name)
    #(swap! local assoc :backupkey (.backup % (-> % .-mnemonic)) :pw (-> % .-mnemonic))))
 
 (defn create-wallet [wallet]
@@ -133,7 +156,7 @@
 
 (defn app [wallet]
   [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column"}}
-   [:h3 (:prv-price @state)]
+   [:h4 (str "PRV price: $" (:prv-price @state))]
    (if (:wasm-loaded @state)
      [:div {:style {:width "100%"}}
       (if (:backupkey @local)

@@ -6,6 +6,7 @@
             ["incognito-js" :as incognito-js]))
 
 (defn ^:dev/after-load start []
+  (incognito-js/storageService.implement (clj->js {:setMethod #(println (str %1 %2)) :getMethod #(println %) :removeMethod #(println %)}))
   (if (:backupkey @local)
     (.then
      (incognito-js/WalletInstance.restore (:backupkey @local) (:pw @local))

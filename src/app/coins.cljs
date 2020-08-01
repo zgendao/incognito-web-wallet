@@ -8,7 +8,8 @@
   (let [name (get-in @coins [id "Name"])
         symbol (get-in @coins [id "Symbol"])
         priceInUSD (get-in @coins [id "PriceUsd"])]
-    [:div.coin-wrapper {:class [(when (= (@state :selected-coin) id) "selected")]}
+    [:div.coin-wrapper {:key id
+                        :class [(when (= (@state :selected-coin) id) "selected")]}
       [:div.coin {:on-click #(swap! state assoc :selected-coin id)}
         [:div.coin__img
           [:img {:src (str "./images/coinLogos/" symbol ".png")}]]
@@ -22,7 +23,7 @@
       [:button.circle-btn {:on-click #(swap! state assoc :selected-coin false)} ">"]]))
 
 (defn coins-container []
-  [:div.coins-container {:class [(when (= (@state :selected-coin) "?") "highlighted")]}
+  (into [:div.coins-container {:class [(when (= (@state :selected-coin) "?") "highlighted")]}]
     (map (fn [{:keys [id amount]}]
           (coin id amount))
-      ((@accounts (@state :selected-account)) :coins))])
+      ((@accounts (@state :selected-account)) :coins))))

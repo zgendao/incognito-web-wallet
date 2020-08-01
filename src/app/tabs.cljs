@@ -2,29 +2,29 @@
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state]]))
 
-(defn tab-selector [name]
+(defn tab-selector [component-state name]
   [:a.tab-btn {:key name
-               :on-click #(swap! state assoc :active-tab name)
-               :class [(when (= (@state :active-tab) name) "tab-btn--active")]}
+               :on-click #(swap! state assoc component-state name)
+               :class [(when (= (@state component-state ) name) "tab-btn--active")]}
     name])
 
-(defn tab [name content]
-  [:div.tab {:key name :class [(when (= (@state :active-tab) name) "tab--active")]}
+(defn tab [component-state name content]
+  [:div.tab {:key name :class [(when (= (@state component-state) name) "tab--active")]}
     content])
 
-(defn tabs-component [tabs]
+(defn tabs-component [component-state tabs]
   [:div.tabs-wrapper
     [:div.tabs-pagination
       (for [[k v] tabs]
-        [tab-selector k])
+        [tab-selector component-state k])
       [:div.tabs__background]]
     (for [[k v] tabs]
-      [tab k v])])
+      [tab component-state k v])])
 
 
 ;input component
-(defn input [name label type placeholder end-element]
-  [:div.input-group
+(defn input [name label type placeholder end-element class]
+  [:div.input-group {:class class}
     [:label {:for name} label]
     [:div.input-wrapper
       [:input {:id name :name name :type type :placeholder placeholder

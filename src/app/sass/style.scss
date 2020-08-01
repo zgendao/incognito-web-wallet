@@ -68,7 +68,7 @@ h1, h2, h3, h4, h5, h6 {
   font-variation-settings: 'wght' 700;
 }
 
-h6 {
+h6, h5 {
   font-size: 18px;
 }
 
@@ -81,6 +81,7 @@ button, a {
   font-family: 'SF Display';
   border: none;
   background: none;
+  font-size: inherit;
 }
 
 .btn {

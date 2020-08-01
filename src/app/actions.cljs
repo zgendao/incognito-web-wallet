@@ -23,6 +23,6 @@
 (defn actions-container []
   [:div.actions-container
     [:div.actions-wrapper
-      [tabs-component
+      [tabs-component :actions-tab
         {"Transaction history" [:p "Transaction history"]
          "Send" [send-form]}]]])

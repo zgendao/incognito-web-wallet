@@ -82,9 +82,54 @@
     transform: translateY(0%);
   }
 }
-.send-wrapper {
+.animate-height {
+  overflow: hidden;
+  animation-direction: normal;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1;
+}
+.animate-height.in {
+  animation-name: height-in;
+}
+.animate-height.out {
+  height: 0;
+  animation-name: height-out;
+}
+
+@keyframes height-in {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 86px;
+    opacity: 1;
+  }
+}
+@keyframes height-out {
+  from {
+    height: 86px;
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+form {
   display: grid;
   gap: 25px 30px;
+}
+form > .btn-wrapper {
+  display: flex;
+  padding-top: 30px;
+}
+form > .btn-wrapper .btn {
+  margin-left: auto;
+}
+
+.send-wrapper {
   grid-template-columns: 1fr 1fr;
 }
 .send-wrapper > * {
@@ -92,10 +137,6 @@
 }
 .send-wrapper > *:nth-child(2), .send-wrapper > *:nth-child(3) {
   grid-column: auto;
-}
-.send-wrapper > .btn-wrapper {
-  text-align: right;
-  padding-top: 30px;
 }
 
 label {
@@ -210,7 +251,7 @@ h1, h2, h3, h4, h5, h6 {
   font-variation-settings: "wght" 700;
 }
 
-h6 {
+h6, h5 {
   font-size: 18px;
 }
 
@@ -223,6 +264,7 @@ button, a {
   font-family: "SF Display";
   border: none;
   background: none;
+  font-size: inherit;
 }
 
 .btn {
@@ -367,6 +409,71 @@ button, a {
   margin: 10px 0 0 0;
 }
 
+.add-account-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 20px;
+  border: 5px solid var(--color-background-secondary);
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: background-color 0.5s, opacity 0.3s 0s, visibility 0s 0.3s;
+}
+.add-account-wrapper.opened {
+  grid-column-end: span 2;
+  grid-row-end: span 2;
+  cursor: default;
+  height: auto;
+  background-color: var(--color-background-secondary);
+}
+.add-account-wrapper.opened .add-account {
+  width: 100%;
+  padding-top: 0;
+  height: 100%;
+}
+.add-account-wrapper.opened .add-account::after {
+  top: -110px;
+}
+.add-account-wrapper.opened .add-account:hover {
+  opacity: unset;
+}
+.add-account-wrapper.opened .tabs-wrapper {
+  margin-top: 0;
+}
+
+.add-account {
+  width: calc(200% + 40px);
+  flex-shrink: 0;
+  height: 0;
+  transform-origin: top left;
+  transition: padding 0.5s;
+}
+.add-account:after {
+  content: "+ Add account";
+  position: absolute;
+  color: var(--color-text-default-soft);
+  font-variation-settings: "wght" 600;
+  top: 0;
+  left: 0;
+  height: 110px;
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: top 0.5s;
+}
+.add-account .tabs-wrapper {
+  padding: 15px 20px;
+  margin-top: 50%;
+  transition: margin 0.5s;
+}
+.add-account .tabs-wrapper .tab {
+  animation: none;
+}
+
 #accounts.opened .circle-btn {
   right: -50px;
 }
@@ -397,6 +504,11 @@ button, a {
 }
 #accounts.opened.opened--full .account-selector__balance {
   height: 36px;
+}
+#accounts.opened.opened--full .add-account-wrapper {
+  opacity: 1;
+  visibility: visible;
+  transition: background-color 0.5s, opacity 0.3s 0.5s, visibility 0s 0.4s;
 }
 #accounts.opened.opened--half::before {
   box-shadow: inset 0 80px 20px -20px white;

@@ -84,6 +84,78 @@
   }
 }
 
+.add-account-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 20px;
+  border: 5px solid var(--color-background-secondary);
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: background-color .5s, opacity .3s 0s, visibility 0s .3s;
+  
+  &.opened {
+    grid-column-end: span 2;
+    grid-row-end: span 2;
+    cursor: default;
+    height: auto;
+    background-color: var(--color-background-secondary);
+
+    .add-account {
+      width: 100%;
+      padding-top: 0;
+      height: 100%;
+    
+      &::after {
+        top: -110px;
+      }
+      
+      &:hover {
+        opacity: unset;
+      }
+    }
+
+    .tabs-wrapper {
+      margin-top: 0;
+    }
+  }
+}
+.add-account {
+  width: calc(200% + 40px);
+  flex-shrink: 0;
+  height: 0;
+  transform-origin: top left;
+  transition: padding .5s;
+
+  &:after {
+    content: "+ Add account";
+    position: absolute;
+    color: var(--color-text-default-soft);
+    font-variation-settings: "wght" 600;
+    top: 0;
+    left: 0;
+    height: 110px;
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: top .5s;
+  }
+  
+  .tabs-wrapper {
+    padding: 15px 20px;
+    margin-top: 50%;
+    transition: margin .5s;
+
+    .tab {
+      animation: none;
+    }
+  }
+}
+
 #accounts.opened {
   .circle-btn {
     right: -50px;
@@ -122,6 +194,12 @@
     
     .account-selector__balance {
       height: 36px;
+    }
+
+    .add-account-wrapper {
+      opacity: 1;
+      visibility: visible;
+      transition: background-color .5s, opacity .3s .5s, visibility 0s .4s;
     }
   }
 

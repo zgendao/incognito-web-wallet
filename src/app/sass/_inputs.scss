@@ -1,6 +1,18 @@
-.send-wrapper {
+form {
   display: grid;
   gap: 25px 30px;
+
+  > .btn-wrapper {
+    display: flex;
+    padding-top: 30px;
+
+    .btn {
+      margin-left: auto;
+    }
+  }
+}
+
+.send-wrapper {
   grid-template-columns: 1fr 1fr;
 
   > * {
@@ -9,11 +21,6 @@
     &:nth-child(2), &:nth-child(3) {
       grid-column: auto
     }
-  }
-
-  > .btn-wrapper {
-    text-align: right;
-    padding-top: 30px;
   }
 }
 

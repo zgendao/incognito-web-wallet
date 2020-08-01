@@ -7,7 +7,9 @@
                       :keys-opened false
                       :selected-account false
                       :selected-coin false
-                      :active-tab "Send"
+                      :add-account-opened false
+                      :add-account-tab "Create new"
+                      :actions-tab "Send"
                       :send-data {:reciepent-address nil
                                   :amount nil
                                   :fee nil

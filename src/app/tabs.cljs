@@ -23,13 +23,23 @@
 
 
 ;input component
-(defn input [name label type placeholder end-element class]
+(defn input [form name label type placeholder end-element class]
   [:div.input-group {:class class}
     [:label {:for name} label]
     [:div.input-wrapper
       [:input {:id name :name name :type type :placeholder placeholder
-               :value (get-in @state [:send-data name])
-               :on-change #(swap! state assoc-in [:send-data name] (-> % .-target .-value))}]
+               :class (when end-element "input--withEndElement")
+               :style {"--end-element-length" (str (if (string? end-element) (count end-element) "2") "em")}
+               :value (get-in @state [form name])
+               :on-change (fn [e] (swap! state assoc-in [form name] (-> e .-target .-value))
+                                  (swap! state assoc-in [form :errors name] nil))}]
       (when end-element
         [:span
-          end-element])]])
+          end-element])]
+    [:p.input__error (get-in @state [form :errors name])]])
+
+(defn show-error [form name error-message]
+  (swap! state assoc-in [form :errors name] error-message))
+
+(defn no-errors? [form]
+  (if (empty? (get-in @state [form :errors])) true false))

@@ -82,41 +82,6 @@
     transform: translateY(0%);
   }
 }
-.animate-height {
-  overflow: hidden;
-  animation-direction: normal;
-  animation-duration: 0.3s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: 1;
-}
-.animate-height.in {
-  animation-name: height-in;
-}
-.animate-height.out {
-  height: 0;
-  animation-name: height-out;
-}
-
-@keyframes height-in {
-  from {
-    height: 0;
-    opacity: 0;
-  }
-  to {
-    height: 86px;
-    opacity: 1;
-  }
-}
-@keyframes height-out {
-  from {
-    height: 86px;
-    opacity: 1;
-  }
-  to {
-    height: 0;
-    opacity: 0;
-  }
-}
 form {
   display: grid;
   gap: 25px 30px;
@@ -174,6 +139,14 @@ input {
 input::placeholder {
   color: var(--color-text-default-soft);
   opacity: 1;
+}
+input.input--withEndElement {
+  padding-right: calc(var(--end-element-length) + 15px);
+}
+
+.input__error {
+  margin-top: 10px;
+  color: #ff6f00;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -306,6 +279,121 @@ button, a {
   transition: height 0s 0s, width 0s 0s, opacity 0.3s 0s;
 }
 
+.add-account-wrapper {
+  opacity: 0;
+  visibility: hidden;
+  width: 100px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 20px;
+  border: 5px solid var(--color-background-secondary);
+  background-color: var(--color-background);
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.5s, opacity 0.3s 0s, visibility 0s 0.3s;
+}
+
+.add-account {
+  width: calc(200% + 40px);
+  flex-shrink: 0;
+  height: 0;
+  transform-origin: top left;
+  transition: padding 0.5s;
+}
+
+.add-account:after {
+  content: "+ Add account";
+  position: absolute;
+  color: var(--color-text-default-soft);
+  font-variation-settings: "wght" 600;
+  top: 0;
+  left: 0;
+  height: 110px;
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: top 0.5s;
+}
+
+.add-account .tabs-wrapper {
+  padding: 15px 20px;
+  margin-top: 50%;
+  transition: margin 0.5s;
+}
+
+.add-account .tabs-wrapper .tab {
+  animation: none;
+}
+
+.add-account-wrapper.opened {
+  grid-column-end: span 2;
+  grid-row-end: span 2;
+  cursor: default;
+  height: auto;
+  background-color: var(--color-background-secondary);
+  animation-name: disableTransform;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes disableTransform {
+  to {
+    transform: none;
+  }
+}
+.add-account-wrapper.opened .add-account {
+  width: 100%;
+  padding-top: 0;
+  height: 100%;
+  animation-name: disableTransform;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes disableTransform {
+  to {
+    transform: none;
+  }
+}
+.add-account-wrapper.opened .add-account::after {
+  top: -110px;
+}
+
+.add-account-wrapper.opened .add-account:hover {
+  opacity: unset;
+}
+
+.add-account-wrapper.opened .tabs-wrapper {
+  margin-top: 0;
+}
+
+.animate-height {
+  overflow: hidden;
+  animation-name: height;
+  animation-direction: normal;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1;
+}
+
+.animate-height.out {
+  animation-direction: reverse;
+  animation-fill-mode: forwards;
+}
+
+@keyframes height {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 86px;
+    opacity: 1;
+  }
+}
 #accounts {
   position: relative;
   padding: 40px 0;
@@ -325,15 +413,25 @@ button, a {
   bottom: 0;
   right: 0;
   left: 0;
-  transition: right 0.5s, box-shadow 0.5s;
+  z-index: 1;
   pointer-events: none;
+  transition: right 0.5s, box-shadow 0.5s;
 }
 #accounts .circle-btn {
   position: absolute;
   right: 0;
   top: 53px;
-  z-index: 1;
+  z-index: 2;
   transition: right 0.5s;
+}
+
+.accounts__text {
+  position: absolute;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 3;
+  transition: opacity 0.2s 0s, visibility 0s 0.3s;
 }
 
 .accounts-wrapper {
@@ -370,14 +468,12 @@ button, a {
   color: var(--color-text-default);
   transition: margin 0.5s;
 }
-.accounts-grid::after {
-  content: "";
-  height: 1px;
-  width: 80px;
-  order: 100;
-}
 
 .account-selector {
+  position: relative;
+  order: var(--default-order);
+}
+.account-selector > div {
   background-color: var(--color-background-secondary);
   padding: 15px;
   border-radius: var(--border-radius);
@@ -386,14 +482,28 @@ button, a {
   overflow: hidden;
   transition: padding 0.5s, height 0.5s, border 0.2s;
 }
-.account-selector:hover {
+.account-selector > div:hover {
   opacity: 0.8;
 }
-.account-selector.account-selector--active {
+
+.account-selector--active > div {
   border: 5px solid var(--color-primary);
 }
-.account-selector.account-selector--reciepent {
+
+.account-selector--reciepent {
+  order: var(--after-selected-account);
+}
+.account-selector--reciepent > div {
   border: 5px dashed var(--color-primary);
+}
+.account-selector--reciepent:before {
+  content: "->";
+  opacity: 0;
+  position: absolute;
+  left: -35px;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: fadeIn 0.3s ease-in 0.5s 1 normal forwards;
 }
 
 .account-selector__name {
@@ -409,80 +519,12 @@ button, a {
   margin: 10px 0 0 0;
 }
 
-.add-account-wrapper {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  border-radius: 20px;
-  border: 5px solid var(--color-background-secondary);
-  overflow: hidden;
-  cursor: pointer;
-  opacity: 0;
-  visibility: hidden;
-  transition: background-color 0.5s, opacity 0.3s 0s, visibility 0s 0.3s;
-}
-.add-account-wrapper.opened {
-  grid-column-end: span 2;
-  grid-row-end: span 2;
-  cursor: default;
-  height: auto;
-  background-color: var(--color-background-secondary);
-}
-.add-account-wrapper.opened .add-account {
-  width: 100%;
-  padding-top: 0;
-  height: 100%;
-}
-.add-account-wrapper.opened .add-account::after {
-  top: -110px;
-}
-.add-account-wrapper.opened .add-account:hover {
-  opacity: unset;
-}
-.add-account-wrapper.opened .tabs-wrapper {
-  margin-top: 0;
-}
-
-.add-account {
-  width: calc(200% + 40px);
-  flex-shrink: 0;
-  height: 0;
-  transform-origin: top left;
-  transition: padding 0.5s;
-}
-.add-account:after {
-  content: "+ Add account";
-  position: absolute;
-  color: var(--color-text-default-soft);
-  font-variation-settings: "wght" 600;
-  top: 0;
-  left: 0;
-  height: 110px;
-  width: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: top 0.5s;
-}
-.add-account .tabs-wrapper {
-  padding: 15px 20px;
-  margin-top: 50%;
-  transition: margin 0.5s;
-}
-.add-account .tabs-wrapper .tab {
-  animation: none;
-}
-
 #accounts.opened .circle-btn {
   right: -50px;
 }
 #accounts.opened .accounts-grid {
   grid-template-columns: repeat(5, 200px);
   grid-auto-flow: unset;
-}
-#accounts.opened .accounts-grid::after {
-  content: unset;
 }
 #accounts.opened.opened--full {
   padding: 0;
@@ -499,30 +541,45 @@ button, a {
 #accounts.opened.opened--full .accounts-grid {
   margin: 10% 0;
 }
-#accounts.opened.opened--full .account-selector {
+#accounts.opened.opened--full .account-selector > div {
   padding: 25px 20px;
 }
 #accounts.opened.opened--full .account-selector__balance {
   height: 36px;
 }
 #accounts.opened.opened--full .add-account-wrapper {
+  width: auto;
+  min-height: 120px;
   opacity: 1;
   visibility: visible;
   transition: background-color 0.5s, opacity 0.3s 0.5s, visibility 0s 0.4s;
 }
 #accounts.opened.opened--half::before {
-  box-shadow: inset 0 80px 20px -20px white;
+  box-shadow: inset 0 140px 20px -20px var(--color-background);
 }
 #accounts.opened.opened--half::after {
   box-shadow: inset 0 -80px 20px -20px var(--color-background);
 }
+#accounts.opened.opened--half .accounts__text {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s 0.2s, visibility 0s 0s;
+}
 #accounts.opened.opened--half .accounts-grid {
-  margin: 50px 0;
+  margin: 100px 0;
 }
 #accounts.opened.opened--half .accounts-wrapper {
-  height: calc(25vh + 70px);
+  height: calc(30vh + 70px);
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 #main {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

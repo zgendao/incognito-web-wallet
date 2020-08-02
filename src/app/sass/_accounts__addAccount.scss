@@ -1,0 +1,120 @@
+@mixin disableTransform () {
+  animation: {
+    name: disableTransform;
+    duration: 2s;
+    fill-mode: forwards;
+  }
+
+  @keyframes disableTransform {
+    to {transform: none;}
+  }
+}
+
+.add-account-wrapper {
+  //in default view (accounts collapsed) it isn't visible
+  opacity: 0;
+  visibility: hidden;
+  //it serves as extra space to the right so the edit button and gradient
+  //doesn't cover the last account when scrolled to the end
+  width: 100px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 20px;
+  border: 5px solid var(--color-background-secondary);
+  background-color: var(--color-background);
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color .5s, opacity .3s 0s, visibility 0s .3s;
+}
+
+.add-account {
+  width: calc(200% + 40px);
+  flex-shrink: 0;
+  height: 0;
+  transform-origin: top left;
+  transition: padding .5s;
+
+  &:after {
+    content: "+ Add account";
+    position: absolute;
+    color: var(--color-text-default-soft);
+    font-variation-settings: "wght" 600;
+    top: 0;
+    left: 0;
+    height: 110px;
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: top .5s;
+  }
+  
+  .tabs-wrapper {
+    padding: 15px 20px;
+    margin-top: 50%;
+    transition: margin .5s;
+
+    .tab {
+      animation: none;
+    }
+  }
+}
+
+.add-account-wrapper.opened {
+  grid-column-end: span 2;
+  grid-row-end: span 2;
+  cursor: default;
+  height: auto;
+  background-color: var(--color-background-secondary);
+  @include disableTransform();
+  
+  .add-account {
+    width: 100%;
+    padding-top: 0;
+    height: 100%;
+    @include disableTransform();
+  
+    &::after {
+      top: -110px;
+    }
+    
+    &:hover {
+      opacity: unset;
+    }
+  }
+
+  .tabs-wrapper {
+    margin-top: 0;
+  }
+}
+
+.animate-height {
+  overflow: hidden;
+  animation: {
+    name: height;
+    direction: normal;
+    duration: 0.3s;
+    timing-function: ease-in-out;
+    iteration-count: 1;
+  }
+  
+  &.out {
+    animation: {
+      direction: reverse;
+      fill-mode: forwards;
+    }
+  }
+}
+
+@keyframes height {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 86px;
+    opacity: 1;
+  }
+}

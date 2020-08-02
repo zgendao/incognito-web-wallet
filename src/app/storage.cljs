@@ -5,15 +5,19 @@
 (defonce state (atom {:prv-price 0
                       :wasm-loaded false
                       :keys-opened false
-                      :selected-account false
-                      :selected-coin false
+                      :selected-account nil
+                      :selected-coin nil
                       :add-account-opened false
                       :add-account-tab "Create new"
+                      :add-account-data {:name nil
+                                         :private-key nil
+                                         :errors {}}
                       :actions-tab "Send"
                       :send-data {:reciepent-address nil
                                   :amount nil
                                   :fee nil
-                                  :note nil}}))
+                                  :note nil
+                                  :errors {}}}))
 
 (defonce accounts (atom [{:name "Account 0"
                           :keys {:incognito "12RxhL3XRDLkqL9pc3Z3sCn2E9y6Sg9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"

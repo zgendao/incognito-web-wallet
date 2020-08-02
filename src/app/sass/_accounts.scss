@@ -1,3 +1,5 @@
+@use "accounts__addAccount";
+
 #accounts {
   position: relative;
   padding: 40px 0;
@@ -12,17 +14,27 @@
     bottom: 0;
     right: 0;
     left: 0;
-    transition: right .5s, box-shadow .5s;
+    z-index: 1;
     pointer-events: none;
+    transition: right .5s, box-shadow .5s;
   }
 
   .circle-btn {
     position: absolute;
     right: 0;
     top: 53px;
-    z-index: 1;
+    z-index: 2;
     transition: right .5s;
   }
+}
+
+.accounts__text {
+  position: absolute;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 3;
+  transition: opacity .2s 0s, visibility 0s .3s;
 }
 
 .accounts-wrapper {
@@ -39,34 +51,44 @@
   gap: 50px;
   color: var(--color-text-default);
   transition: margin .5s;
-  
-  //extra space to the right so the edit button and gradient
-  //doesn't cover the last account when scrolled to the end
-  &::after {
-    content: "";
-    height: 1px;
-    width: 80px;
-    order: 100
-  }
 }
 
 .account-selector {
-  background-color: var(--color-background-secondary);
-  padding: 15px;
-  border-radius: var(--border-radius);
-  border: 5px solid transparent;
-  cursor: pointer;
-  overflow: hidden;
-  transition: padding .5s, height .5s, border .2s;
+  position: relative;
+  order: var(--default-order);
 
-  &:hover {
-    opacity: 0.8;
+  > div {
+    background-color: var(--color-background-secondary);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    border: 5px solid transparent;
+    cursor: pointer;
+    overflow: hidden;
+    transition: padding .5s, height .5s, border .2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
   }
-  &.account-selector--active {
-    border: 5px solid var(--color-primary);
-  }
-  &.account-selector--reciepent {
+}
+.account-selector--active > div {
+  border: 5px solid var(--color-primary);
+}
+.account-selector--reciepent {
+  order: var(--after-selected-account);
+  
+  > div {
     border: 5px dashed var(--color-primary);
+  }
+
+  &:before {
+    content: "->";
+    opacity: 0;
+    position: absolute;
+    left: -35px;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: fadeIn .3s ease-in .5s 1 normal forwards;
   }
 }
 
@@ -84,78 +106,6 @@
   }
 }
 
-.add-account-wrapper {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  border-radius: 20px;
-  border: 5px solid var(--color-background-secondary);
-  overflow: hidden;
-  cursor: pointer;
-  opacity: 0;
-  visibility: hidden;
-  transition: background-color .5s, opacity .3s 0s, visibility 0s .3s;
-  
-  &.opened {
-    grid-column-end: span 2;
-    grid-row-end: span 2;
-    cursor: default;
-    height: auto;
-    background-color: var(--color-background-secondary);
-
-    .add-account {
-      width: 100%;
-      padding-top: 0;
-      height: 100%;
-    
-      &::after {
-        top: -110px;
-      }
-      
-      &:hover {
-        opacity: unset;
-      }
-    }
-
-    .tabs-wrapper {
-      margin-top: 0;
-    }
-  }
-}
-.add-account {
-  width: calc(200% + 40px);
-  flex-shrink: 0;
-  height: 0;
-  transform-origin: top left;
-  transition: padding .5s;
-
-  &:after {
-    content: "+ Add account";
-    position: absolute;
-    color: var(--color-text-default-soft);
-    font-variation-settings: "wght" 600;
-    top: 0;
-    left: 0;
-    height: 110px;
-    width: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: top .5s;
-  }
-  
-  .tabs-wrapper {
-    padding: 15px 20px;
-    margin-top: 50%;
-    transition: margin .5s;
-
-    .tab {
-      animation: none;
-    }
-  }
-}
-
 #accounts.opened {
   .circle-btn {
     right: -50px;
@@ -164,10 +114,6 @@
   .accounts-grid {
     grid-template-columns: repeat(5, 200px);
     grid-auto-flow: unset;
-
-    &::after {
-      content: unset;
-    }
   }
 
   &.opened--full {
@@ -188,7 +134,7 @@
       margin: 10% 0;
     }
 
-    .account-selector {
+    .account-selector > div {
       padding: 25px 20px;
     }
     
@@ -197,6 +143,9 @@
     }
 
     .add-account-wrapper {
+      width: auto;
+      //when first in new row
+      min-height: 120px;
       opacity: 1;
       visibility: visible;
       transition: background-color .5s, opacity .3s .5s, visibility 0s .4s;
@@ -205,19 +154,34 @@
 
   &.opened--half {
     &::before {
-      box-shadow: inset 0 80px 20px -20px white;
+      box-shadow: inset 0 140px 20px -20px var(--color-background);
     }
     
     &::after {
       box-shadow: inset 0 -80px 20px -20px var(--color-background);
     }
 
+    .accounts__text {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .5s .2s, visibility 0s 0s;
+    }
+
     .accounts-grid {
-      margin: 50px 0;
+      margin: 100px 0;
     }
 
     .accounts-wrapper {
-      height: calc(25vh + 70px);
+      height: calc(30vh + 70px);
     }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

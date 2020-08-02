@@ -20,7 +20,8 @@
           [:div.coin__content__prv
             [:p "$" priceInUSD]
             [:p "$" (format "%.2f" (* amount priceInUSD))]]]]
-      [:button.circle-btn {:on-click #(swap! state assoc :selected-coin false)} ">"]]))
+      [:button.circle-btn {:on-click (fn [] (swap! state assoc :selected-coin nil)
+                                            (swap! state assoc-in [:send-data :amount] nil))} ">"]]))
 
 (defn coins-container []
   (into [:div.coins-container {:class [(when (= (@state :selected-coin) "?") "highlighted")]}]

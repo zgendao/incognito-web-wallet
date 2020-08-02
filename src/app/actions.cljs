@@ -7,18 +7,18 @@
   [:form.send-wrapper {:on-submit (fn [e]
                                     (.preventDefault e)
                                     ,,,)} ;backend: send function                                   
-    [input :reciepent-address "To" "text" "Enter address (Incognito or external)"
+    [input :send-data :reciepent-address "To" "text" "Enter address (Incognito or external)"
             [:button {:type "button" :on-click #(swap! state assoc-in [:send-data :reciepent-address] "?")} "i"]]            
-    [input :amount "Amount" "number"
+    [input :send-data :amount "Amount" "number"
             (if (@state :selected-coin) "0" "Select coin first")
             (cond
               (= (@state :selected-coin) "?") "?"
               (@state :selected-coin) ((@coins (@state :selected-coin)) "Symbol")
               :else [:div {:on-click #(swap! state assoc :selected-coin "?") :style {:height "100%" :width "400px"}}])]
-    [input :fee "Fee" "number" "0.00" "PRV"]
-    [input :note "Memo" "text" "Add note (optional)"]
+    [input :send-data :fee "Fee" "number" "0.00" "PRV"]
+    [input :send-data :note "Memo" "text" "Add note (optional)"]
     [:div.btn-wrapper
-      [:button.btn.btn--primary "Send Anonymously"]]])
+      [:button.btn.btn--primary {:type "submit"} "Send Anonymously"]]])
 
 (defn actions-container []
   [:div.actions-container

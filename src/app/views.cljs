@@ -3,7 +3,7 @@
             ["qrcode" :as qrcode]
             [app.storage :refer [state accounts coins]]
             [app.api :refer [wallet]]
-            [app.accounts :refer [accounts-container]]
+            [app.accounts :refer [accounts-container reciepent-address?]]
             [app.header :refer [header]]
             [app.coins :refer [coins-container]]
             [app.actions :refer [actions-container]]
@@ -47,9 +47,9 @@
 (defn back-layer []
   [:div#backLayer.clickCatcher
     {:class [(when (or (= (@state :selected-coin) "?")
-                       (= (get-in @state [:send-data :reciepent-address]) "?")) "active")]
-     :on-click (cond (= (@state :selected-coin) "?") #(swap! state assoc :selected-coin false)
-                     (= (get-in @state [:send-data :reciepent-address]) "?") #(swap! state assoc-in [:send-data :reciepent-address] nil))}])
+                       (reciepent-address? "?")) "active")]
+     :on-click (cond (= (@state :selected-coin) "?") #(swap! state assoc :selected-coin nil)
+                     (reciepent-address? "?") #(swap! state assoc-in [:send-data :reciepent-address] nil))}])
                 
 (defn app []
   (if (:wasm-loaded @state)

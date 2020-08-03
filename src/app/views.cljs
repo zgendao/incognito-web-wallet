@@ -36,7 +36,19 @@
 (defn get-following-tokens [token-ids]
   (filter (fn [token] (some #(= % (:TokenID token)) token-ids)) (@state :ptokens)))
 
-(defn get-history [account]
+(defn get-ptoken [account token-id symbol]
+  (async
+   (let [token (await (-> account (.getFollowingPrivacyToken token-id)))
+         balance (await (-> token (.getAvaiableBalance)))]
+     (when (> balance 0)
+       (swap! state assoc-in [:ptokens-balance token-id] {:symbol symbol :balance (first (-> balance .-words))})))))
+
+(defn get-ptokens-balance [account]
+  (for [token (@state :ptokens)]
+    (do (println token) ;NEM FUT EZ A CIKLUS WHY
+        (get-ptoken account (:TokenID token) (:Symbol token)))))
+
+(defn get-history [account] ;NEMJÓMMÉG
   (.then
    (incognito-js/historyServices.getTxHistoryByPublicKey (-> account .-key .-keySet .-publicKeySerialized) nil)
    #(js/console.log %)))
@@ -64,7 +76,7 @@
 
 (defn account [wallet acc]
   (reagent/create-class
-   {:component-did-mount (fn [] (do (get-balance acc)))
+   {:component-did-mount (fn [] (do (get-balance acc) (get-ptokens-balance acc)))
     :reagent-render
     (fn []
       (let [payment (-> acc .-key .-keySet .-paymentAddressKeySerialized)
@@ -73,7 +85,8 @@
             name (-> acc .-name)
             send-amount-key (keyword (str name "-send-amount"))
             send-to-key (keyword (str name "-send-to"))
-            token-id-key (keyword (str name "-token-id"))]
+            token-id-key (keyword (str name "-token-id"))
+            _ (get-ptokens-balance acc)]
         [:div {:style {:margin-bottom "40px"}}
          [:h4 "Account name: " name]
          [:p (str "Balance " (get-in @state [:balances name]) " PRV")]
@@ -88,7 +101,7 @@
           [:label {:for "validator"} "Validator key:"]
           [:input {:type "text" :id "validator" :value validator}]]
          [:div
-          [:p "pTokens"]
+          [:p "Followed pTokens"]
           [:input {:type "text"
                    :value (@state token-id-key)
                    :placeholder "token id"
@@ -99,6 +112,11 @@
             [:div
              [:h6 (str (:PSymbol ptoken) ": ")
               [:input {:type "text" :value (:TokenID ptoken)}]]])]
+         [:div
+          [:p "pTokens balance"]
+          (for [[k v] (@state :ptokens-balance)]
+            [:div
+             [:h6 (str (:symbol v) ": " (:balance v))]])]
          [:div
           [:p "Send PRV"]
           [:input {:type "number"

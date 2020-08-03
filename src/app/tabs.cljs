@@ -29,7 +29,7 @@
     [:div.input-wrapper
       [:input {:id name :name name :type type :placeholder placeholder
                :class (when end-element "input--withEndElement")
-               :style {"--end-element-length" (str (if (string? end-element) (count end-element) "2") "em")}
+               :style {"--end-element-length" (str (if (string? end-element) (count end-element) "2.5") "em")}
                :value (get-in @state [form name])
                :on-change (fn [e] (swap! state assoc-in [form name] (-> e .-target .-value))
                                   (swap! state assoc-in [form :errors name] nil))}]

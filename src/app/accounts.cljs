@@ -1,10 +1,12 @@
 (ns app.accounts
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
+            [app.icons :refer [edit-icon]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
             [app.tabs :refer [tabs-component input show-error no-errors?]]
-            [animate-css-grid :refer [wrapGrid]]))
+            [animate-css-grid :refer [wrapGrid]]
+            ["@tippyjs/react" :default Tippy]))
 
 (defn get-address [key]
   (get-in @accounts [key :keys :incognito]))
@@ -124,4 +126,5 @@
     [:h2.accounts__text "Select the account you want to send to"]
     [:div.accounts-wrapper
       [accounts-grid]]
-    [:button.circle-btn {:on-click (fn [] (switch-account nil))} "i"]])
+    [:> Tippy {:content "Show and edit all accounts"}
+      [:button.circle-btn {:on-click (fn [] (switch-account nil))} [edit-icon]]]])

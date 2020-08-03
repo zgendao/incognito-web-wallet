@@ -7,6 +7,7 @@
 
 .coin-wrapper {
   display: flex;
+  align-items: center;
   width: 100%;
   margin-bottom: 40px;
 
@@ -15,6 +16,16 @@
     opacity: 0;
     pointer-events: none;
     transition: opacity .1s;
+
+    //svg animation
+    &:hover {
+      line:first-child {
+        transform: translateY(21px);
+      }
+      line:last-child {
+        transform: translateY(-21px);
+      }
+    }
   }
 
   &.selected {

@@ -1,6 +1,7 @@
 (ns app.coins
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
+            [app.icons :refer [right-arrow-icon]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]))
 
@@ -21,7 +22,8 @@
             [:p "$" priceInUSD]
             [:p "$" (format "%.2f" (* amount priceInUSD))]]]]
       [:button.circle-btn {:on-click (fn [] (swap! state assoc :selected-coin nil)
-                                            (swap! state assoc-in [:send-data :amount] nil))} ">"]]))
+                                            (swap! state assoc-in [:send-data :amount] nil))}
+        [right-arrow-icon]]]))
 
 (defn coins-container []
   (into [:div.coins-container {:class [(when (= (@state :selected-coin) "?") "highlighted")]}]

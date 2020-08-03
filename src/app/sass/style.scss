@@ -1,5 +1,9 @@
 @use 'tabs';
 @use 'inputs';
+//@import url('../../node_modules/tippy.js/dist/tippy.css');
+@import url('https://unpkg.com/tippy.js@6.2.6/dist/tippy.css');
+@import url('https://unpkg.com/tippy.js@6.2.6/dist/backdrop.css');
+@import url('https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css');
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap');
 @font-face {
   font-family: 'SF Text';
@@ -84,6 +88,16 @@ button, a {
   font-size: inherit;
 }
 
+.inline-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 1.2em;
+  }
+}
+
 .btn {
   background-color: var(--color-secondary);
   color: var(--color-text-inverse);
@@ -97,13 +111,24 @@ button, a {
 }
 
 .circle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 35px;
   width: 35px;
   background-color: var(--color-background-secondary);
   border: 0;
   border-radius: 30px;
-}
 
+  svg {
+    width: 15px;
+    height: auto;
+
+    * {
+      transition: all .3s;
+    }
+  }
+}
 .clickCatcher {
   position: absolute;
   top: 0;

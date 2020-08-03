@@ -1,3 +1,6 @@
+@import url("https://unpkg.com/tippy.js@6.2.6/dist/tippy.css");
+@import url("https://unpkg.com/tippy.js@6.2.6/dist/backdrop.css");
+@import url("https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css");
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap");
 .tabs-pagination {
   position: relative;
@@ -125,6 +128,13 @@ label {
   align-items: center;
   padding-right: 20px;
 }
+.input-wrapper span button {
+  padding: 0;
+  display: flex;
+}
+.input-wrapper span svg {
+  width: 23px;
+}
 
 input {
   width: 100%;
@@ -240,6 +250,15 @@ button, a {
   font-size: inherit;
 }
 
+.inline-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.inline-icon svg {
+  width: 1.2em;
+}
+
 .btn {
   background-color: var(--color-secondary);
   color: var(--color-text-inverse);
@@ -254,11 +273,21 @@ button, a {
 }
 
 .circle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 35px;
   width: 35px;
   background-color: var(--color-background-secondary);
   border: 0;
   border-radius: 30px;
+}
+.circle-btn svg {
+  width: 15px;
+  height: auto;
+}
+.circle-btn svg * {
+  transition: all 0.3s;
 }
 
 .clickCatcher {
@@ -647,12 +676,19 @@ button, a {
   overflow: hidden;
   transition: height 0.3s;
 }
-.keys-modal.opened {
+
+.header__keys.opened .keys-modal {
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
   padding: 20px 40px;
 }
-.keys-modal.opened > div:not(:first-child) {
-  height: calc(3 * (1.2em + 20px));
+.header__keys.opened .keys-modal > div:not(:first-child) {
+  height: calc(3 * (1.3em + 20px));
+}
+.header__keys.opened .circle-btn svg line:first-child {
+  transform: translateX(21px);
+}
+.header__keys.opened .circle-btn svg line:last-child {
+  transform: translateX(-21px);
 }
 
 .key-elem {
@@ -688,6 +724,7 @@ button, a {
 
 .coin-wrapper {
   display: flex;
+  align-items: center;
   width: 100%;
   margin-bottom: 40px;
 }
@@ -696,6 +733,12 @@ button, a {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.1s;
+}
+.coin-wrapper .circle-btn:hover line:first-child {
+  transform: translateY(21px);
+}
+.coin-wrapper .circle-btn:hover line:last-child {
+  transform: translateY(-21px);
 }
 .coin-wrapper.selected .coin__content__main * {
   font-variation-settings: "wght" 700;

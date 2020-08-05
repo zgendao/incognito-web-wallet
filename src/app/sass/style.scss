@@ -2,7 +2,6 @@
 @use 'inputs';
 //@import url('../../node_modules/tippy.js/dist/tippy.css');
 @import url('https://unpkg.com/tippy.js@6.2.6/dist/tippy.css');
-@import url('https://unpkg.com/tippy.js@6.2.6/dist/backdrop.css');
 @import url('https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css');
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap');
 @font-face {
@@ -12,6 +11,13 @@
 @font-face {
   font-family: 'SF Display';
   src: url('../fonts/SFNSDisplay.woff2') format('woff2');
+}
+
+.tippy-box {
+  transition-delay: .3s;
+}
+.tippy-box[data-state=hidden] {
+  transition-delay: 0s;
 }
 
 :root {
@@ -108,6 +114,10 @@ button, a {
 }
 .btn--primary {
   background-color: var(--color-primary);
+}
+.btn--inverse {
+  background-color: var(--color-text-inverse);
+  color: var(--color-text-default);
 }
 
 .circle-btn {

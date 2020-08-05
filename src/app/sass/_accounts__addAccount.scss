@@ -110,11 +110,11 @@
 
 @keyframes height {
   from {
-    height: 0;
+    max-height: 0;
     opacity: 0;
   }
   to {
-    height: 86px;
+    max-height: 150px;
     opacity: 1;
   }
 }

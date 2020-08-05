@@ -2,6 +2,11 @@
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [react-svgmt :refer [SvgLoader SvgProxy]]))
 
+(defn copy-icon []
+  (reagent/create-element       
+    SvgLoader
+    #js {:path "/images/copy.svg"}))
+
 (defn qr-code-icon []
   (reagent/create-element       
     SvgLoader

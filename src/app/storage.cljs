@@ -11,7 +11,8 @@
                       :add-account-tab "Create new"
                       :add-account-data {:name nil
                                          :private-key nil
-                                         :errors {}}
+                                         :errors {}
+                                         :in-confirm-state false}
                       :actions-tab "Send"
                       :send-data {:reciepent-address nil
                                   :amount nil

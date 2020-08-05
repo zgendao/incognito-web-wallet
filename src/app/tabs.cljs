@@ -36,10 +36,16 @@
       (when end-element
         [:span
           end-element])]
-    [:p.input__error (get-in @state [form :errors name])]])
+    [:p.input__error {:class (when (get-in @state [form :errors name]) "show")} (get-in @state [form :errors name])]])
 
 (defn show-error [form name error-message]
   (swap! state assoc-in [form :errors name] error-message))
 
 (defn no-errors? [form]
   (if (empty? (get-in @state [form :errors])) true false))
+
+(defn in-confirm-state? [form]
+  (get-in @state [form :confirm-layer-opened]))
+
+(defn to-confirm-state [form]
+  (swap! state assoc-in [form :confirm-layer-opened] true))

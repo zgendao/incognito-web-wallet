@@ -1,5 +1,4 @@
 @import url("https://unpkg.com/tippy.js@6.2.6/dist/tippy.css");
-@import url("https://unpkg.com/tippy.js@6.2.6/dist/backdrop.css");
 @import url("https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css");
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap");
 .tabs-pagination {
@@ -89,12 +88,70 @@ form {
   display: grid;
   gap: 25px 30px;
 }
-form > .btn-wrapper {
+form .btn-wrapper {
   display: flex;
   padding-top: 30px;
+  margin-top: auto;
 }
-form > .btn-wrapper .btn {
+form .btn-wrapper > *:last-child {
+  position: relative;
   margin-left: auto;
+}
+
+.confirm-layer {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: var(--color-text-inverse);
+  padding: 25px;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 3;
+  transition: opacity 0.3s 0s, visibility 0s 0.3s;
+}
+.confirm-layer h3 {
+  margin-top: 0;
+}
+.confirm-layer p {
+  text-align: justify;
+}
+
+.confirm-background {
+  position: absolute;
+  height: 0;
+  width: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--color-secondary);
+  border-radius: 500px;
+  transition: height 0.5s, width 0.5s;
+}
+
+form.confirm-state .confirm-layer {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s 0s, visibility 0s 0s;
+}
+form.confirm-state .confirm-background {
+  height: 1000px;
+  width: 1000px;
+  z-index: 2;
+}
+
+pre {
+  background-color: var(--color-text-inverse);
+  color: var(--color-text-default);
+  padding: 0.7em 1em;
+  border-radius: 20px;
+  font-family: inherit;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-right: calc(var(--end-element-length) + 15px);
 }
 
 .send-wrapper {
@@ -109,7 +166,6 @@ form > .btn-wrapper .btn {
 
 label {
   display: block;
-  margin-bottom: 7px;
   font-variation-settings: "wght" 500;
 }
 
@@ -117,6 +173,7 @@ label {
   position: relative;
   border-radius: 20px;
   overflow: hidden;
+  margin-top: 7px;
 }
 .input-wrapper span {
   position: absolute;
@@ -131,6 +188,9 @@ label {
 .input-wrapper span button {
   padding: 0;
   display: flex;
+}
+.input-wrapper span button:nth-child(2) {
+  margin-left: 10px;
 }
 .input-wrapper span svg {
   width: 23px;
@@ -155,8 +215,15 @@ input.input--withEndElement {
 }
 
 .input__error {
-  margin-top: 10px;
   color: #ff6f00;
+  max-height: 0;
+  opacity: 0;
+  transition: height 0.3s, opacity 0.3s, margin 0.3s;
+}
+.input__error.show {
+  margin-top: 10px;
+  max-height: calc(3 * 1.4em + 10px);
+  opacity: 1;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -179,6 +246,14 @@ input[type=number] {
   font-family: "SF Display";
   src: url("../fonts/SFNSDisplay.woff2") format("woff2");
 }
+.tippy-box {
+  transition-delay: 0.3s;
+}
+
+.tippy-box[data-state=hidden] {
+  transition-delay: 0s;
+}
+
 :root {
   --color-background: #ffffff;
   --color-background-secondary: #ECECEC;
@@ -270,6 +345,11 @@ button, a {
 
 .btn--primary {
   background-color: var(--color-primary);
+}
+
+.btn--inverse {
+  background-color: var(--color-text-inverse);
+  color: var(--color-text-default);
 }
 
 .circle-btn {
@@ -415,11 +495,11 @@ button, a {
 
 @keyframes height {
   from {
-    height: 0;
+    max-height: 0;
     opacity: 0;
   }
   to {
-    height: 86px;
+    max-height: 150px;
     opacity: 1;
   }
 }
@@ -698,6 +778,7 @@ button, a {
 }
 .key-elem p {
   margin: 0 20px 0 0;
+  cursor: help;
 }
 .key-elem div {
   display: flex;

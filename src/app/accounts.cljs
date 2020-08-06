@@ -2,11 +2,12 @@
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
             [app.icons :refer [copy-icon qr-code-icon edit-icon]]
+            [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
+            [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
-            [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state]]
             [animate-css-grid :refer [wrapGrid]]
-            ["@tippyjs/react" :default Tippy]))
+            ["@tippyjs/react" :default Tippy :refer (useSingleton)]))
 
 (defn get-address [key]
   (get-in @accounts [key :keys :incognito]))
@@ -61,16 +62,28 @@
           (to-confirm-state :add-account-data))))
     (do
       (swap! accounts conj {:name (get-in @state [:add-account-data :name])
-                                :keys {:incognito (rand-str 100)
-                                        :public (rand-str 100)
-                                        :private (rand-str 100)
-                                        :readonly (rand-str 100)
-                                        :validator (rand-str 100)}
-                                :coins [{:id 0
-                                          :amount 0}
-                                        {:id (+ 1 (rand-int 5))
-                                          :amount (rand-int 100)}]})
+                            :keys {:incognito (rand-str 100)
+                                    :public (rand-str 100)
+                                    :private (rand-str 100)
+                                    :readonly (rand-str 100)
+                                    :validator (rand-str 100)}
+                            :coins [{:id 0
+                                      :amount 0}
+                                    {:id (+ 1 (rand-int 5))
+                                      :amount (rand-int 100)}]})
       (close-add-account-panel))))
+
+(defn singleton-buttons-react []
+  (let [[source target] (useSingleton #js {:overrides #js ["allowHTML"]})]
+    (reagent/as-element
+      [:span
+        [:> Tippy {:singleton source
+                   :hideOnClick false
+                   :animation "shift-away"
+                   :moveTransition "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0s"}]
+        [copy-to-clipboard-component "valami" target
+          [:button {:type "button"} [copy-icon]]]
+        [show-qr-code-component "valami" target]])))
 
 (defn add-account-tab [import?]
   [:form {:class (when (in-confirm-state? :add-account-data) "confirm-state")
@@ -90,24 +103,19 @@
            The only way you can restore them is by their private key, so always save them in a safe place."]
       [:div.input-wrapper
         [:pre {:style {"--end-element-length" "4em"}} "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"]
-        [:span
-          [:> Tippy {:content "Copy to clipboard" :animation "shift-away"}
-            [:button [copy-icon]]]
-          [:> Tippy {:content "Show QR code" :animation "shift-away"}
-            [:button [qr-code-icon]]]]]
+        [:> singleton-buttons-react]]
       [:div.btn-wrapper
         [:button.btn.btn--inverse {:type "submit"} "I'm safe"]]]])
         
-
 (defn add-account-panel []
   [:div.add-account-wrapper {:style {:order 100}
                              :on-click (when-not (@state :add-account-opened)
                                           #(swap! state assoc :add-account-opened true))
                              :class (when (@state :add-account-opened) "opened")}
     [:div.add-account
-        [tabs-component :add-account-tab
-          {"Create new" [add-account-tab false]
-           "Import existing" [add-account-tab true]}]]])
+      [tabs-component :add-account-tab
+        {"Create new" [add-account-tab false]
+         "Import existing" [add-account-tab true]}]]])
 
 (defn account-selector [account]
   (let [key (.indexOf @accounts account)

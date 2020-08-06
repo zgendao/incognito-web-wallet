@@ -1,8 +1,6 @@
 @use 'tabs';
 @use 'inputs';
-//@import url('../../node_modules/tippy.js/dist/tippy.css');
-@import url('https://unpkg.com/tippy.js@6.2.6/dist/tippy.css');
-@import url('https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css');
+@use 'tippy';
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap');
 @font-face {
   font-family: 'SF Text';
@@ -11,13 +9,6 @@
 @font-face {
   font-family: 'SF Display';
   src: url('../fonts/SFNSDisplay.woff2') format('woff2');
-}
-
-.tippy-box {
-  transition-delay: .3s;
-}
-.tippy-box[data-state=hidden] {
-  transition-delay: 0s;
 }
 
 :root {

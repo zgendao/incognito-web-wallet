@@ -1,0 +1,41 @@
+//@import url('../../node_modules/tippy.js/dist/tippy.css');
+@import url('https://unpkg.com/tippy.js@6.2.6/dist/tippy.css');
+@import url('https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css');
+@import url('https://unpkg.com/tippy.js@6.2.6/dist/backdrop.css');
+
+.tippy-box {
+  background-color: var(--color-secondary);
+  border-radius: 10px;
+  padding: 2px 3px
+}
+.tippy-box[data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: var(--color-secondary);
+}
+.tippy-box[data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: var(--color-secondary);
+}
+.tippy-box[data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: var(--color-secondary);
+}
+.tippy-box[data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: var(--color-secondary);
+}
+
+//moveTransition fix
+.tippy-box:not([data-animatefill]) {
+  transition-delay: .3s;
+}
+.tippy-box[data-state=hidden] {
+  transition-delay: 0s;
+}
+
+//hide underlaying tooltips
+div[data-tippy-root]:nth-last-of-type(2) {
+  .tippy-content {
+    opacity: 0;
+  }
+}
+
+.tippy-box[data-theme='skeleton'] {
+  background-color: transparent;
+}

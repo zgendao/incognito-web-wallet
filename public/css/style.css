@@ -1,5 +1,6 @@
 @import url("https://unpkg.com/tippy.js@6.2.6/dist/tippy.css");
 @import url("https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css");
+@import url("https://unpkg.com/tippy.js@6.2.6/dist/backdrop.css");
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap");
 .tabs-pagination {
   position: relative;
@@ -238,6 +239,44 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+.tippy-box {
+  background-color: var(--color-secondary);
+  border-radius: 10px;
+  padding: 2px 3px;
+}
+
+.tippy-box[data-placement^=top] > .tippy-arrow::before {
+  border-top-color: var(--color-secondary);
+}
+
+.tippy-box[data-placement^=bottom] > .tippy-arrow::before {
+  border-bottom-color: var(--color-secondary);
+}
+
+.tippy-box[data-placement^=left] > .tippy-arrow::before {
+  border-left-color: var(--color-secondary);
+}
+
+.tippy-box[data-placement^=right] > .tippy-arrow::before {
+  border-right-color: var(--color-secondary);
+}
+
+.tippy-box:not([data-animatefill]) {
+  transition-delay: 0.3s;
+}
+
+.tippy-box[data-state=hidden] {
+  transition-delay: 0s;
+}
+
+div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
+  opacity: 0;
+}
+
+.tippy-box[data-theme=skeleton] {
+  background-color: transparent;
+}
+
 @font-face {
   font-family: "SF Text";
   src: url("../fonts/SFNSText.woff2") format("woff2");
@@ -246,14 +285,6 @@ input[type=number] {
   font-family: "SF Display";
   src: url("../fonts/SFNSDisplay.woff2") format("woff2");
 }
-.tippy-box {
-  transition-delay: 0.3s;
-}
-
-.tippy-box[data-state=hidden] {
-  transition-delay: 0s;
-}
-
 :root {
   --color-background: #ffffff;
   --color-background-secondary: #ECECEC;
@@ -401,7 +432,7 @@ button, a {
   background-color: var(--color-background);
   overflow: hidden;
   cursor: pointer;
-  transition: background-color 0.5s, opacity 0.3s 0s, visibility 0s 0.3s;
+  transition: background-color 0.5s, border 5s, opacity 0.3s 0s, visibility 0s 0.3s;
 }
 
 .add-account {
@@ -420,7 +451,7 @@ button, a {
   top: 0;
   left: 0;
   height: 110px;
-  width: 200px;
+  width: 190px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -428,7 +459,7 @@ button, a {
 }
 
 .add-account .tabs-wrapper {
-  padding: 15px 20px;
+  padding: 20px 25px;
   margin-top: 50%;
   transition: margin 0.5s;
 }
@@ -442,6 +473,7 @@ button, a {
   grid-row-end: span 2;
   cursor: default;
   height: auto;
+  border-width: 0px;
   background-color: var(--color-background-secondary);
   animation-name: disableTransform;
   animation-duration: 2s;
@@ -661,7 +693,7 @@ button, a {
   min-height: 120px;
   opacity: 1;
   visibility: visible;
-  transition: background-color 0.5s, opacity 0.3s 0.5s, visibility 0s 0.4s;
+  transition: background-color 0.5s, border 0.5s, opacity 0.3s 0.5s, visibility 0s 0.4s;
 }
 #accounts.opened.opened--half::before {
   box-shadow: inset 0 140px 20px -20px var(--color-background);

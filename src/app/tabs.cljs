@@ -21,7 +21,6 @@
     (for [[k v] tabs]
       [tab component-state k v])])
 
-
 ;input component
 (defn input [form name label type placeholder end-element class]
   [:div.input-group {:class class}

@@ -18,7 +18,7 @@
     "qrcode": "^1.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-svgmt": "^1.1.11",
+    "react-inlinesvg": "^2.0.1",
     "sass": "^1.26.10"
   },
   "devDependencies": {

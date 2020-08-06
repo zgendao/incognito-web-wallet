@@ -3,36 +3,24 @@
             [app.storage :refer [state accounts coins]]
             [app.accounts :refer [get-balance]]
             [app.icons :refer [qr-code-icon down-arrow-icon]]
+            [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
-            ["@tippyjs/react" :default Tippy :refer (useSingleton)]))
-
-(defn copy-to-clipboard [val]
-  (let [temp (js/document.createElement "textarea")]
-    (set! (.-value temp) val)
-    (.appendChild js/document.body temp)
-    (.select temp)
-    (js/document.execCommand "copy")
-    (.removeChild js/document.body temp)))
+            ["@tippyjs/react" :default Tippy :refer [useSingleton]]))
 
 (defn key-elem [name key tooltip target]
-  [:div.key-elem
-    [:> Tippy {:content tooltip :singleton target}
-      [:p name]]
-    [:div
-      [:> Tippy {:content "Click to copy" :singleton target :hideOnClick false}
-        [:a {:on-click #(do (copy-to-clipboard (-> % .-target .-innerHTML)))}
-             ;               (set! (.. (.querySelector js/document ".tippy-content") -firstElementChild -innerHTML)
-             ;                     "Copied"))}
-             ;:on-mouse-out #(set! (.. (.querySelector js/document ".tippy-content") -firstElementChild -innerHTML)
-              ;                    "Click to copy"))}
-          (get-in (@accounts (@state :selected-account)) [:keys key])]]
-      [:> Tippy {:content "Show QR code" :singleton target}
-        [:button.inline-icon [qr-code-icon]]]]])
+  (let [address (get-in (@accounts (@state :selected-account)) [:keys key])]
+    (fn []
+      [:div.key-elem
+        [:> Tippy {:content tooltip :singleton target}
+          [:p name]]
+        [:div
+          [copy-to-clipboard-component address target [:a address]]
+          [show-qr-code-component address target]]])))
 
 ;have to use React functional component for the useSingleton hook to work
 (defn header__keys-react []
-  (let [[source target] (useSingleton #js {:overrides #js ["hideOnClick"]})]
+  (let [[source target] (useSingleton #js {:overrides #js ["hideOnClick" "allowHTML"]})]
     (reagent/as-element
       [:<>
         [:> Tippy {:singleton source
@@ -45,7 +33,7 @@
               [key-elem "Public key:" :public "todo" target]
               [key-elem "Private key:" :private "Acts like a password for your account. Store it in a safe place!" target]
               [key-elem "Validator key:" :validator "todo" target]]]]
-        [:> Tippy {:content "Show all keys" :singleton target}
+        [:> Tippy {:content (if (@state :keys-opened) "Hide" "Show all keys") :singleton target}
           [:button.circle-btn {:on-click #(swap! state assoc :keys-opened (not (@state :keys-opened)))}
             [down-arrow-icon]]]])))
 

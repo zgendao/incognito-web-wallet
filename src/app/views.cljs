@@ -1,6 +1,5 @@
 (ns app.views
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            ["qrcode" :as qrcode]
             [app.storage :refer [state accounts coins]]
             [app.api :refer [wallet]]
             [app.accounts :refer [accounts-container reciepent-address?]]
@@ -9,15 +8,6 @@
             [app.actions :refer [actions-container]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]))
-
-(defn qr-code [text]
-  (create-class
-   {:component-did-mount
-    (fn [element]
-      (qrcode/toCanvas
-       (dom-node element)
-       text))
-    :reagent-render (fn [] [:canvas#canvas])}))
 
 (defn navbar []
   [:nav

@@ -1,12 +1,16 @@
 (ns app.tabs
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            [app.storage :refer [state]]))
+            [app.storage :refer [state]]
+            ["@tippyjs/react" :default Tippy]))
 
-(defn tab-selector [component-state name]
+(defn tab-selector [component-state name disabled?]
   [:a.tab-btn {:key name
-               :on-click #(swap! state assoc component-state name)
-               :class [(when (= (@state component-state ) name) "tab-btn--active")]}
-    name])
+               :on-click (when-not disabled? #(swap! state assoc component-state name))
+               :class [(when (= (@state component-state ) name) "tab-btn--active")
+                       (when disabled? "disabled")]}
+    (if disabled?
+      [:> Tippy {:content "Not available yet" :animation "shift-away"} [:p name]]
+      name)])
 
 (defn tab [component-state name content]
   [:div.tab {:key name :class [(when (= (@state component-state) name) "tab--active")]}
@@ -15,11 +19,11 @@
 (defn tabs-component [component-state tabs]
   [:div.tabs-wrapper
     [:div.tabs-pagination
-      (for [[k v] tabs]
-        [tab-selector component-state k])
+      (for [[name content] tabs]
+        [tab-selector component-state name (= content :disabled)])
       [:div.tabs__background]]
-    (for [[k v] tabs]
-      [tab component-state k v])])
+    (for [[name content] tabs]
+      [tab component-state name content])])
 
 ;input component
 (defn input [form name label type placeholder end-element class]

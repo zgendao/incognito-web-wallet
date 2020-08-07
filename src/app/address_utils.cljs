@@ -39,4 +39,4 @@
              :onShow (fn [instance] (.setProps instance #js {:trigger "mouseenter"}))
              :onUntrigger (fn [instance] (.setProps instance #js {:trigger "click"}))}
     [:> Tippy {:content "Show QR code" :singleton target :hideOnClick false}
-      [:button.inline-icon {:type "button"} [qr-code-icon]]]])
+      [:button.display-icon {:type "button"} [qr-code-icon]]]])

@@ -56,18 +56,24 @@
 .account-selector {
   position: relative;
   order: var(--default-order);
+  overflow: hidden;
 
   > div {
+    position: relative;
     background-color: var(--color-background-secondary);
     padding: 15px;
-    border-radius: var(--border-radius);
+    border-radius: 20px;
     border: 5px solid transparent;
     cursor: pointer;
     overflow: hidden;
-    transition: padding .5s, height .5s, border .2s;
+    transition: padding .5s, height .0s .5s, width 0s .5s, border-color .2s;
 
     &:hover {
       opacity: 0.8;
+
+      .account-selector__icon svg {
+        opacity: 1;
+      }
     }
   }
 }
@@ -103,6 +109,16 @@
   
   p {
     margin: 10px 0 0 0;
+  }
+}
+
+.account-selector__icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+
+  svg {
+    opacity: 0;
   }
 }
 

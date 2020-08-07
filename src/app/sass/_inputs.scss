@@ -1,7 +1,8 @@
 form {
   display: grid;
   gap: 25px 30px;
-
+}
+form, .confirm-layer {
   .btn-wrapper {
     display: flex;
     padding-top: 30px;
@@ -12,66 +13,6 @@ form {
       margin-left: auto;
     }
   }
-}
-
-.confirm-layer {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  color: var(--color-text-inverse);
-  padding: 25px;
-  visibility: hidden;
-  opacity: 0;
-  z-index: 3;
-  transition: opacity .3s 0s, visibility 0s .3s;
-
-  h3 {
-    margin-top: 0;
-  }
-  p {
-    text-align: justify;
-  }
-}
-
-.confirm-background {
-  position: absolute;
-  height: 0;
-  width: 0;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--color-secondary);
-  border-radius: 500px;
-  transition: height .5s, width .5s;
-}
-
-form.confirm-state {
-  .confirm-layer {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity .3s 0s, visibility 0s 0s;
-  }
-
-  .confirm-background {
-    height: 1000px;
-    width: 1000px;
-    z-index: 2;
-  }
-}
-
-pre {
-  background-color: var(--color-text-inverse);
-  color: var(--color-text-default);
-  padding: 0.7em 1em;
-  border-radius: 20px;
-  font-family: inherit;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  padding-right: calc(var(--end-element-length) + 15px);
 }
 
 .send-wrapper {

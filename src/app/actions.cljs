@@ -42,5 +42,5 @@
   [:div.actions-container
     [:div.actions-wrapper
       [tabs-component :actions-tab
-        {"Transaction history" [:p "Transaction history"]
+        {"Transaction history" :disabled
          "Send" [send-form]}]]])

@@ -36,11 +36,8 @@
   transform-origin: top left;
   transition: padding .5s;
 
-  &:after {
-    content: "+ Add account";
+  .add-account__title {
     position: absolute;
-    color: var(--color-text-default-soft);
-    font-variation-settings: "wght" 600;
     top: 0;
     left: 0;
     height: 110px;
@@ -48,6 +45,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--color-text-default-soft);
+    --icon-color: var(--color-text-default-soft);
+    font-variation-settings: "wght" 600;
+    margin: 0;
     transition: top .5s;
   }
   
@@ -67,7 +68,7 @@
   grid-row-end: span 2;
   cursor: default;
   height: auto;
-  border-width: 0px;
+  //border-width: 0px;
   background-color: var(--color-background-secondary);
   @include disableTransform();
   
@@ -77,7 +78,7 @@
     height: 100%;
     @include disableTransform();
   
-    &::after {
+    .add-account__title {
       top: -110px;
     }
     

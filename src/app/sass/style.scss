@@ -19,7 +19,6 @@
   --color-text-default: #000000;
   --color-text-default-soft: #7A7A7A;
   --color-text-inverse: #ffffff;
-  --border-radius: 20px;
 }
 
 * {
@@ -83,9 +82,32 @@ button, a {
   border: none;
   background: none;
   font-size: inherit;
+  color: inherit;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+.disabled {
+  cursor: not-allowed !important;
+  opacity: 0.2;
+
+  * {
+    cursor: not-allowed !important;
+  }
 }
 
 .inline-icon {
+  display: flex;
+  align-items: center;
+
+  svg {
+    height: .9em;
+    margin-left: -8px;
+    margin-right: 8px;
+  }
+}
+.display-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -235,3 +257,4 @@ button, a {
 
 @import "keys";
 @import "coins";
+@import "confirm-state";

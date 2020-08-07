@@ -29,6 +29,12 @@
   transition-delay: 0s;
 }
 
+//top-start arrow center
+.tippy-box[data-placement='top-start'] > .tippy-arrow {
+  left: 50% !important;
+  transform: translate(-50%, 0) !important;
+}
+
 //hide underlaying tooltips
 div[data-tippy-root]:nth-last-of-type(2) {
   .tippy-content {

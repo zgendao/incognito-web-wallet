@@ -1,7 +1,7 @@
 (ns app.accounts
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
-            [app.icons :refer [copy-icon qr-code-icon edit-icon]]
+            [app.icons :refer [plus-icon copy-icon qr-code-icon edit-icon delete-icon]]
             [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
             [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state]]
             [goog.string :as gstring :refer [format]]
@@ -39,6 +39,9 @@
                                   :fee nil
                                   :note nil}))
 
+(defn remove-account [key]
+  (swap! accounts #(vec (concat (subvec @accounts 0 key) (subvec @accounts (inc key))))))
+  
 ;temporary
 (defn rand-str [len]
   (apply str (take len (repeatedly #(char (+ (rand 26) 65))))))
@@ -96,16 +99,17 @@
       [:button {:type "button" :on-click #(close-add-account-panel)} "Cancel"]
       [:div
         [:button.btn {:type "submit"} (if import? "Import" "Create") " wallet"]
-        [:div.confirm-background]]]
-    [:div.confirm-layer
-      [:h3 "Make sure you won't lose access!"]
-      [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
-           The only way you can restore them is by their private key, so always save them in a safe place."]
-      [:div.input-wrapper
-        [:pre {:style {"--end-element-length" "4em"}} "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"]
-        [:> singleton-buttons-react]]
-      [:div.btn-wrapper
-        [:button.btn.btn--inverse {:type "submit"} "I'm safe"]]]])
+        [:div.confirm-background.confirm-background--medium]]]
+    (when (in-confirm-state? :add-account-data)
+      [:div.confirm-layer
+        [:h3 "Make sure you won't lose access!"]
+        [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
+            The only way you can restore them is by their private key, so always save them in a safe place."]
+        [:div.input-wrapper
+          [:pre {:style {"--end-element-length" "4em"}} "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"]
+          [:> singleton-buttons-react]]
+        [:div.btn-wrapper
+          [:button.btn.btn--inverse {:type "submit"} "I'm safe"]]])])
         
 (defn add-account-panel []
   [:div.add-account-wrapper {:style {:order 100}
@@ -113,6 +117,8 @@
                                           #(swap! state assoc :add-account-opened true))
                              :class (when (@state :add-account-opened) "opened")}
     [:div.add-account
+      [:h4.inline-icon.add-account__title
+        [plus-icon] "Add account"]
       [tabs-component :add-account-tab
         {"Create new" [add-account-tab false]
          "Import existing" [add-account-tab true]}]]])
@@ -120,22 +126,43 @@
 (defn account-selector [account]
   (let [key (.indexOf @accounts account)
         name (account :name)
-        balance (get-balance account)]
-    [:div.account-selector {:key key
-                            :style {"--default-order" key
-                                    "--after-selected-account" (if (< key (@state :selected-account))
-                                                                (inc (@state :selected-account))
-                                                                (@state :selected-account))}
-                            :class [(when (= (@state :selected-account) key) "account-selector--active")
-                                    (when (reciepent-address? (get-address key)) "account-selector--reciepent")]}
-      [:div {:on-click (if (reciepent-address? "?")
-                          (when-not (= key (@state :selected-account))
-                            #(swap! state assoc-in [:send-data :reciepent-address] (get-address key)))
-                          #(switch-account key))} 
-        [:div
-          [:h6.account-selector__name name]
-          [:div.account-selector__balance
-            [:p (format "%.2f" balance) " USD"]]]]]))
+        balance (get-balance account)
+        delete (atom false)]
+    (fn []
+      [:div.account-selector {:key name
+                              :style {"--default-order" key
+                                      "--after-selected-account" (if (< key (@state :selected-account))
+                                                                  (inc (@state :selected-account))
+                                                                  (@state :selected-account))}
+                              :class [(when (= (@state :selected-account) key) "account-selector--active")
+                                      (when (reciepent-address? (get-address key)) "account-selector--reciepent")
+                                      (when @delete "confirm-state")]}
+        [:div {:on-click (when-not @delete
+                            (if (reciepent-address? "?")
+                              (when-not (= key (@state :selected-account))
+                                #(swap! state assoc-in [:send-data :reciepent-address] (get-address key)))
+                              #(switch-account key)))}
+          [:div
+            [:h6.account-selector__name name]
+            [:div.account-selector__balance
+              [:p (format "%.2f" balance) " USD"]]
+            [:div.account-selector__icon
+              [:> Tippy {:content "Remove account" :animation "shift-away"}
+                [:button.display-icon
+                  {:on-click (fn [e] (.stopPropagation e)
+                                    (reset! delete true))}
+                  [delete-icon]]]
+              [:div.confirm-background.confirm-background--large]]]
+          (when @delete
+            [:div.confirm-layer
+              [:h3 "Are you sure? Don't lose access to your money!"]
+              [:p "Only remove " [:b name] " if you have your private keys saved in a safe place,
+                   so you can restore it later or import it in another wallet."]
+              [:div.btn-wrapper
+                [:button {:type "button" :on-click #(reset! delete false)} "Cancel"]
+                [:button.btn.btn--inverse {:type "submit"
+                                           :on-click #(remove-account key)}
+                  "I know what I'm doing"]]])]])))
 
 (defn accounts-grid []
   (create-class

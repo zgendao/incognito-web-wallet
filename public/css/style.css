@@ -89,70 +89,15 @@ form {
   display: grid;
   gap: 25px 30px;
 }
-form .btn-wrapper {
+
+form .btn-wrapper, .confirm-layer .btn-wrapper {
   display: flex;
   padding-top: 30px;
   margin-top: auto;
 }
-form .btn-wrapper > *:last-child {
+form .btn-wrapper > *:last-child, .confirm-layer .btn-wrapper > *:last-child {
   position: relative;
   margin-left: auto;
-}
-
-.confirm-layer {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  color: var(--color-text-inverse);
-  padding: 25px;
-  visibility: hidden;
-  opacity: 0;
-  z-index: 3;
-  transition: opacity 0.3s 0s, visibility 0s 0.3s;
-}
-.confirm-layer h3 {
-  margin-top: 0;
-}
-.confirm-layer p {
-  text-align: justify;
-}
-
-.confirm-background {
-  position: absolute;
-  height: 0;
-  width: 0;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--color-secondary);
-  border-radius: 500px;
-  transition: height 0.5s, width 0.5s;
-}
-
-form.confirm-state .confirm-layer {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.3s 0s, visibility 0s 0s;
-}
-form.confirm-state .confirm-background {
-  height: 1000px;
-  width: 1000px;
-  z-index: 2;
-}
-
-pre {
-  background-color: var(--color-text-inverse);
-  color: var(--color-text-default);
-  padding: 0.7em 1em;
-  border-radius: 20px;
-  font-family: inherit;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  padding-right: calc(var(--end-element-length) + 15px);
 }
 
 .send-wrapper {
@@ -269,6 +214,11 @@ input[type=number] {
   transition-delay: 0s;
 }
 
+.tippy-box[data-placement=top-start] > .tippy-arrow {
+  left: 50% !important;
+  transform: translate(-50%, 0) !important;
+}
+
 div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   opacity: 0;
 }
@@ -293,7 +243,6 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   --color-text-default: #000000;
   --color-text-default-soft: #7A7A7A;
   --color-text-inverse: #ffffff;
-  --border-radius: 20px;
 }
 
 * {
@@ -354,14 +303,37 @@ button, a {
   border: none;
   background: none;
   font-size: inherit;
+  color: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.disabled {
+  cursor: not-allowed !important;
+  opacity: 0.2;
+}
+.disabled * {
+  cursor: not-allowed !important;
 }
 
 .inline-icon {
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 .inline-icon svg {
+  height: 0.9em;
+  margin-left: -8px;
+  margin-right: 8px;
+}
+
+.display-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.display-icon svg {
   width: 1.2em;
 }
 
@@ -443,11 +415,8 @@ button, a {
   transition: padding 0.5s;
 }
 
-.add-account:after {
-  content: "+ Add account";
+.add-account .add-account__title {
   position: absolute;
-  color: var(--color-text-default-soft);
-  font-variation-settings: "wght" 600;
   top: 0;
   left: 0;
   height: 110px;
@@ -455,6 +424,10 @@ button, a {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--color-text-default-soft);
+  --icon-color: var(--color-text-default-soft);
+  font-variation-settings: "wght" 600;
+  margin: 0;
   transition: top 0.5s;
 }
 
@@ -473,7 +446,6 @@ button, a {
   grid-row-end: span 2;
   cursor: default;
   height: auto;
-  border-width: 0px;
   background-color: var(--color-background-secondary);
   animation-name: disableTransform;
   animation-duration: 2s;
@@ -499,7 +471,7 @@ button, a {
     transform: none;
   }
 }
-.add-account-wrapper.opened .add-account::after {
+.add-account-wrapper.opened .add-account .add-account__title {
   top: -110px;
 }
 
@@ -613,18 +585,23 @@ button, a {
 .account-selector {
   position: relative;
   order: var(--default-order);
+  overflow: hidden;
 }
 .account-selector > div {
+  position: relative;
   background-color: var(--color-background-secondary);
   padding: 15px;
-  border-radius: var(--border-radius);
+  border-radius: 20px;
   border: 5px solid transparent;
   cursor: pointer;
   overflow: hidden;
-  transition: padding 0.5s, height 0.5s, border 0.2s;
+  transition: padding 0.5s, height 0s 0.5s, width 0s 0.5s, border-color 0.2s;
 }
 .account-selector > div:hover {
   opacity: 0.8;
+}
+.account-selector > div:hover .account-selector__icon svg {
+  opacity: 1;
 }
 
 .account-selector--active > div {
@@ -658,6 +635,15 @@ button, a {
 }
 .account-selector__balance p {
   margin: 10px 0 0 0;
+}
+
+.account-selector__icon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.account-selector__icon svg {
+  opacity: 0;
 }
 
 #accounts.opened .circle-btn {
@@ -908,6 +894,82 @@ button, a {
   font-variation-settings: "wght" 400;
   color: var(--color-text-default-soft);
   margin-top: 5px;
+}
+
+.account-selector.confirm-state {
+  grid-column-end: span 2;
+  grid-row-end: span 3;
+  border-radius: 20px;
+}
+.account-selector.confirm-state > div {
+  height: 100%;
+  width: 100%;
+  cursor: default;
+}
+.account-selector.confirm-state > div:hover {
+  opacity: unset;
+}
+
+.confirm-layer {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: var(--color-text-inverse);
+  padding: 25px;
+  visibility: hidden;
+  opacity: 0;
+  z-index: 3;
+  transition: opacity 0.3s 0s, visibility 0s 0.3s;
+}
+.confirm-layer h3 {
+  margin-top: 0;
+}
+.confirm-layer p {
+  text-align: justify;
+}
+
+.confirm-background {
+  position: absolute;
+  height: 0;
+  width: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--color-secondary);
+  border-radius: 750px;
+  transition: height 0.5s, width 0.5s;
+}
+
+.confirm-state .confirm-layer {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s 0s, visibility 0s 0s;
+}
+.confirm-state .confirm-background {
+  z-index: 2;
+}
+.confirm-state .confirm-background.confirm-background--medium {
+  height: 1000px;
+  width: 1000px;
+}
+.confirm-state .confirm-background.confirm-background--large {
+  height: 1500px;
+  width: 1500px;
+}
+
+pre {
+  background-color: var(--color-text-inverse);
+  color: var(--color-text-default);
+  padding: 0.7em 1em;
+  border-radius: 20px;
+  font-family: inherit;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding-right: calc(var(--end-element-length) + 15px);
 }
 
 /*# sourceMappingURL=style.css.map */

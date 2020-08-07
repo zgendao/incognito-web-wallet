@@ -2,7 +2,7 @@
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
             [app.accounts :refer [get-balance]]
-            [app.icons :refer [qr-code-icon down-arrow-icon]]
+            [app.icons :refer [plus-icon qr-code-icon down-arrow-icon]]
             [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
@@ -43,6 +43,9 @@
       [:div
         [:p "Total shielded balance"]
         [:h1 "$ " (format "%.2f" (get-balance (@accounts (@state :selected-account))))]]
-      [:button.btn "+ Shield crypto"]]
+      [:> Tippy {:content "Not available yet" :animation "shift-away"}
+        [:div.disabled
+          [:button.btn.inline-icon {:disabled true}
+            [plus-icon "white"] "Shield crypto"]]]]
     [:div.header__keys {:class [(when (@state :keys-opened) "opened")]}
       [:> header__keys-react]]])

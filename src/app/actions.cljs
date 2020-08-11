@@ -2,8 +2,7 @@
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
             [app.tabs :refer [tabs-component input show-error no-errors?]]
-            [app.icons :refer [account-icon]]
-            [app.accounts :refer [wallet]]
+            [app.icons :refer [account-icon infinity-icon]]
             ["@tippyjs/react" :default Tippy]))
 
 
@@ -27,20 +26,29 @@
         (if (= (get-in @state [:selected-account]) (.-name acc))
           (send-prv acc)))))
 
+(defn set-max-amount []
+  (swap! state assoc-in [:send-data :amount]
+    (get
+      (some (fn [{:keys [id amount]}] (= id (@state :selected-coin)))
+        (@accounts (@state :selected-account) :coins))
+      :amount)))
+
 (defn send-form []
   [:form.send-wrapper {:on-submit (fn [e]
                                     (.preventDefault e)
                                     (send))} ;backend: send function
     [input :send-data :reciepent-address "To" "text" "Enter address (Incognito or external)"
-           [:> Tippy {:content "Select from your accounts" :animation "shift-away"}
-            [:button {:type "button" :on-click #(swap! state assoc-in [:send-data :reciepent-address] "?")} [account-icon]]]]
+           [[:> Tippy {:content "Select from your accounts" :animation "shift-away"}
+              [:button {:type "button" :on-click #(swap! state assoc-in [:send-data :reciepent-address] "?")} [account-icon]]]]]            
     [input :send-data :amount "Amount" "number"
             (if (@state :selected-coin) "0" "Select coin first")
             (cond
-              (= (@state :selected-coin) "?") "?"
-              (@state :selected-coin) ((@coins (@state :selected-coin)) "Symbol")
-              :else [:div {:on-click #(swap! state assoc :selected-coin "?") :style {:height "100%" :width "400px"}}])]
-    [input :send-data :fee "Fee" "number" "0.00" "PRV"]
+              (= (@state :selected-coin) "?") ["?"]
+              (@state :selected-coin) [[:> Tippy {:content "Set maximum amount" :animation "shift-away"}
+                                        [:button {:type "button" :style {"margin-right" "15px"}
+                                                  :on-click #(set-max-amount)} [infinity-icon]]]
+                                       (get-in @coins [(@state :selected-coin) "Symbol"])]
+              :else [[:div {:on-click #(swap! state assoc :selected-coin "?") :style {:height "100%" :width "500px"}}]])]
     [input :send-data :note "Memo" "text" "Add note (optional)"]
     [:div.btn-wrapper
       [:div]

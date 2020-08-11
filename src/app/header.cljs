@@ -24,15 +24,23 @@
       [:<>
         [:> Tippy {:singleton source
                    :animation "shift-away"
+                   :delay #js [0 100]
                    :moveTransition "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0s"}]
         [:div.keys-wrapper
           [:div.keys-modal
-            [key-elem "Incognito address:" :incognito "Use it to recieve any cryptocurrency from another Incognito address" target]
+            [key-elem "Incognito address:" :incognito
+                      "Use it to recieve any cryptocurrency from another Incognito address." target]
             [:div
-              [key-elem "Public key:" :public "todo" target]
-              [key-elem "Private key:" :private "Acts like a password for your account. Store it in a safe place!" target]
-              [key-elem "Validator key:" :validator "todo" target]]]]
-        [:> Tippy {:content (if (@state :keys-opened) "Hide" "Show all keys") :singleton target}
+              [key-elem "Public key:" :public
+                        "Used for authentication and can be shared with third-party services." target]
+              [key-elem "Private key:" :private
+                        "Acts like a password for your account.
+                         It's the only way to regain access to your funds in case of device loss,
+                         so store it in a safe place!" target]
+              [key-elem "Validator key:" :validator
+                        "Used by Node owners. This is what an account can get assigned to a Node by,
+                         so it'll use that account for staking and withdrawing earnings." target]]]]
+        [:> Tippy {:content (if (@state :keys-opened) "Hide" "Show keys") :singleton target}
           [:button.circle-btn {:on-click #(swap! state assoc :keys-opened (not (@state :keys-opened)))}
             [down-arrow-icon]]]])))
 

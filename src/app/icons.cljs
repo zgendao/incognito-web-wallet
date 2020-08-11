@@ -25,3 +25,6 @@
 
 (defn delete-icon [color]
   [:> SVG {:uniquifyIDs true :src "/images/delete.svg" :style {"--icon-color" "black"}}])
+
+(defn infinity-icon [color]
+  [:> SVG {:uniquifyIDs true :src "/images/infinity.svg" :style {"--icon-color" "black"}}])

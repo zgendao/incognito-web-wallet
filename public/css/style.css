@@ -260,6 +260,7 @@ body {
 
 #app {
   position: relative;
+  padding: 0 20px;
 }
 
 nav div {
@@ -574,18 +575,22 @@ button:disabled {
 
 .accounts-grid {
   display: grid;
-  grid-auto-columns: 200px;
+  grid-auto-columns: calc((100vw - 40px - 3 * 50px) / 4);
   grid-auto-flow: column;
   margin: 0;
   gap: 50px;
   color: var(--color-text-default);
   transition: margin 0.5s;
 }
+@media screen and (min-width: 1240px) {
+  .accounts-grid {
+    grid-auto-columns: 200px;
+  }
+}
 
 .account-selector {
   position: relative;
   order: var(--default-order);
-  overflow: hidden;
 }
 .account-selector > div {
   position: relative;
@@ -641,17 +646,25 @@ button:disabled {
   position: absolute;
   right: 10px;
   top: 10px;
+  visibility: hidden;
 }
 .account-selector__icon svg {
   opacity: 0;
+  transition: opacity 0.2s;
 }
 
 #accounts.opened .circle-btn {
   right: -50px;
 }
 #accounts.opened .accounts-grid {
-  grid-template-columns: repeat(5, 200px);
+  grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
+  grid-auto-rows: minmax(100px, auto);
   grid-auto-flow: unset;
+}
+@media screen and (min-width: 1240px) {
+  #accounts.opened .accounts-grid {
+    grid-template-columns: repeat(5, 200px);
+  }
 }
 #accounts.opened.opened--full {
   padding: 0;
@@ -673,6 +686,9 @@ button:disabled {
 }
 #accounts.opened.opened--full .account-selector__balance {
   height: 36px;
+}
+#accounts.opened.opened--full .account-selector__icon {
+  visibility: visible;
 }
 #accounts.opened.opened--full .add-account-wrapper {
   width: auto;
@@ -797,13 +813,14 @@ button:disabled {
 .key-elem p {
   margin: 0 20px 0 0;
   cursor: help;
+  white-space: nowrap;
 }
 .key-elem div {
   display: flex;
 }
 .key-elem div a {
   color: var(--color-primary);
-  max-width: 200px;
+  max-width: 190px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -900,6 +917,7 @@ button:disabled {
   grid-column-end: span 2;
   grid-row-end: span 3;
   border-radius: 20px;
+  overflow: hidden;
 }
 .account-selector.confirm-state > div {
   height: 100%;
@@ -970,6 +988,23 @@ pre {
   text-overflow: ellipsis;
   overflow: hidden;
   padding-right: calc(var(--end-element-length) + 15px);
+}
+
+.mobileView h1 {
+  color: var(--color-secondary);
+}
+.mobileView p {
+  text-align: justify;
+}
+.mobileView div {
+  margin-top: 60px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  max-width: 600px;
+}
+.mobileView div img {
+  width: 100%;
 }
 
 /*# sourceMappingURL=style.css.map */

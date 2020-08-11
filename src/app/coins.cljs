@@ -10,8 +10,7 @@
   (let [name (get-in @coins [id "Name"])
         symbol (get-in @coins [id "Symbol"])
         priceInUSD (get-in @coins [id "PriceUsd"])]
-    [:div.coin-wrapper {:key id
-                        :class [(when (= (@state :selected-coin) id) "selected")]}
+    [:div.coin-wrapper {:class [(when (= (@state :selected-coin) id) "selected")]}
       [:div.coin {:on-click #(swap! state assoc :selected-coin id)}
         [:div.coin__img
           [:img {:src (str "./images/coinLogos/" symbol ".png")}]]
@@ -29,8 +28,8 @@
 (defn coins-container []
   (into [:div.coins-container {:class [(when (= (@state :selected-coin) "?") "highlighted")]}]
     [(map (fn [{:keys [id amount]}]
-            (coin id amount))
-        ((@accounts (@state :selected-account)) :coins))
+            ^{:key id} [coin id amount])
+        (get-in @accounts [(@state :selected-account) :coins] []))
      [:> Tippy {:content "Not available yet" :interactive true :placement "top-start" :animation "shift-away"}
       [:div.coin-wrapper.disabled {:style {:width "auto" :align-self "flex-start"}}
         [:div.coin

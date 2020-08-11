@@ -9,14 +9,13 @@
             ["@tippyjs/react" :default Tippy :refer [useSingleton]]))
 
 (defn key-elem [name key tooltip target]
-  (let [address (get-in (@accounts (@state :selected-account)) [:keys key])]
-    (fn []
-      [:div.key-elem
-        [:> Tippy {:content tooltip :singleton target}
-          [:p name]]
-        [:div
-          [copy-to-clipboard-component address target [:a address]]
-          [show-qr-code-component address target]]])))
+  (let [address (get-in @accounts [(@state :selected-account) :keys key] "")]
+    [:div.key-elem
+      [:> Tippy {:content tooltip :singleton target}
+        [:p name]]
+      [:div
+        [copy-to-clipboard-component address target [:a address]]
+        [show-qr-code-component address target]]]))
 
 ;have to use React functional component for the useSingleton hook to work
 (defn header__keys-react []
@@ -42,7 +41,7 @@
     [:div.header__amount
       [:div
         [:p "Total shielded balance"]
-        [:h1 "$ " (format "%.2f" (get-balance (@accounts (@state :selected-account))))]]
+        [:h1 "$ " (format "%.2f" (get-balance (get @accounts (@state :selected-account) {})))]]
       [:> Tippy {:content "Not available yet" :animation "shift-away"}
         [:div.disabled
           [:button.btn.inline-icon {:disabled true}

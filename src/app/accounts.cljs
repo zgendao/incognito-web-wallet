@@ -32,6 +32,7 @@
 
 (defn switch-account [to]
   (when (@state :add-account-opened) (close-add-account-panel))
+  (when (@state :delete-account-opened) (swap! state assoc :delete-account-opened false))
   (swap! state assoc :selected-account to)
   (swap! state assoc :selected-coin nil)
   (swap! state assoc :send-data {:reciepent-address nil
@@ -40,8 +41,9 @@
                                   :note nil}))
 
 (defn remove-account [key]
-  (swap! accounts #(vec (concat (subvec @accounts 0 key) (subvec @accounts (inc key))))))
-  
+  ;(swap! accounts #(vec (concat (subvec @accounts 0 key) (subvec @accounts (inc key))))))
+  (swap! accounts #(dissoc @accounts key)))
+
 ;temporary
 (defn rand-str [len]
   (apply str (take len (repeatedly #(char (+ (rand 26) 65))))))
@@ -53,7 +55,7 @@
       
       (when (clojure.string/blank? (get-in @state [:add-account-data :name]))
         (show-error :add-account-data :name "Please enter a name for your account"))
-      (when (contains? (set (map :name @accounts)) (get-in @state [:add-account-data :name]))
+      (when (contains? (set (keys @accounts)) (get-in @state [:add-account-data :name]))
         (show-error :add-account-data :name "You already have an account with this name. Please choose another one!"))
       (when import?
         (when (clojure.string/blank? (get-in @state [:add-account-data :private-key]))
@@ -64,29 +66,42 @@
           ,,, ;backend: generate or import
           (to-confirm-state :add-account-data))))
     (do
-      (swap! accounts conj {:name (get-in @state [:add-account-data :name])
-                            :keys {:incognito (rand-str 100)
+      (swap! accounts assoc (get-in @state [:add-account-data :name])
+                            {:keys {:incognito (rand-str 100)
                                     :public (rand-str 100)
                                     :private (rand-str 100)
                                     :readonly (rand-str 100)
                                     :validator (rand-str 100)}
-                            :coins [{:id 0
-                                      :amount 0}
-                                    {:id (+ 1 (rand-int 5))
-                                      :amount (rand-int 100)}]})
+                             :coins [{:id 0
+                                       :amount 0}
+                                     {:id (+ 1 (rand-int 5))
+                                       :amount (rand-int 100)}]})
       (close-add-account-panel))))
 
-(defn singleton-buttons-react []
-  (let [[source target] (useSingleton #js {:overrides #js ["allowHTML"]})]
+(defn singleton-buttons-react [key]
+  (let [[source target] (useSingleton #js {:overrides #js ["allowHTML hideOnClick"]})]
     (reagent/as-element
       [:span
         [:> Tippy {:singleton source
-                   :hideOnClick false
                    :animation "shift-away"
                    :moveTransition "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0s"}]
-        [copy-to-clipboard-component "valami" target
+        [copy-to-clipboard-component (.-children key) target
           [:button {:type "button"} [copy-icon]]]
-        [show-qr-code-component "valami" target]])))
+        [show-qr-code-component (.-children key) target]])))
+  
+(defn save-private-key-confirm-layer [title desc key submit-text submit-fn cancel-btn? cancel-fn]
+  [:div.confirm-layer
+    [:h3 title]
+    desc
+    [:div.input-wrapper
+      [:pre {:style {"--end-element-length" "4em"}} key]
+      [:> singleton-buttons-react key]]
+    [:div.btn-wrapper
+      (when cancel-btn?
+        [:button {:type "button" :on-click cancel-fn} "Cancel"])
+      [:button.btn.btn--inverse {:type "submit"
+                                 :on-click submit-fn}
+        submit-text]]])
 
 (defn add-account-tab [import?]
   [:form {:class (when (in-confirm-state? :add-account-data) "confirm-state")
@@ -101,15 +116,12 @@
         [:button.btn {:type "submit"} (if import? "Import" "Create") " wallet"]
         [:div.confirm-background.confirm-background--medium]]]
     (when (in-confirm-state? :add-account-data)
-      [:div.confirm-layer
-        [:h3 "Make sure you won't lose access!"]
+      [save-private-key-confirm-layer
+        "Make sure you won't lose access!"
         [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
-            The only way you can restore them is by their private key, so always save them in a safe place."]
-        [:div.input-wrapper
-          [:pre {:style {"--end-element-length" "4em"}} "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"]
-          [:> singleton-buttons-react]]
-        [:div.btn-wrapper
-          [:button.btn.btn--inverse {:type "submit"} "I'm safe"]]])])
+             The only way you can restore them is by their private key, so always save them in a safe place."]
+        "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
+        "I'm safe"])])
         
 (defn add-account-panel []
   [:div.add-account-wrapper {:style {:order 100}
@@ -123,46 +135,47 @@
         {"Create new" [add-account-tab false]
          "Import existing" [add-account-tab true]}]]])
 
-(defn account-selector [account]
-  (let [key (.indexOf @accounts account)
-        name (account :name)
-        balance (get-balance account)
-        delete (atom false)]
-    (fn []
-      [:div.account-selector {:key name
-                              :style {"--default-order" key
-                                      "--after-selected-account" (if (< key (@state :selected-account))
-                                                                  (inc (@state :selected-account))
-                                                                  (@state :selected-account))}
-                              :class [(when (= (@state :selected-account) key) "account-selector--active")
-                                      (when (reciepent-address? (get-address key)) "account-selector--reciepent")
-                                      (when @delete "confirm-state")]}
-        [:div {:on-click (when-not @delete
-                            (if (reciepent-address? "?")
-                              (when-not (= key (@state :selected-account))
-                                #(swap! state assoc-in [:send-data :reciepent-address] (get-address key)))
-                              #(switch-account key)))}
-          [:div
-            [:h6.account-selector__name name]
-            [:div.account-selector__balance
-              [:p (format "%.2f" balance) " USD"]]
-            [:div.account-selector__icon
-              [:> Tippy {:content "Remove account" :animation "shift-away"}
-                [:button.display-icon
-                  {:on-click (fn [e] (.stopPropagation e)
-                                    (reset! delete true))}
-                  [delete-icon]]]
-              [:div.confirm-background.confirm-background--large]]]
-          (when @delete
-            [:div.confirm-layer
-              [:h3 "Are you sure? Don't lose access to your money!"]
+(defn get-order-number [account-name]
+  (.indexOf (keys @accounts) account-name))
+
+(defn account-selector [name account]
+  (let [self-order (get-order-number name)
+        selected-account-order (get-order-number (@state :selected-account))
+        balance (get-balance account)]
+    [:div.account-selector {:style {"--default-order" self-order
+                                    "--after-selected-account" (if (< self-order selected-account-order)
+                                                                (inc selected-account-order)
+                                                                selected-account-order)}
+                            :class [(when (= (@state :selected-account) name) "account-selector--active")
+                                    (when (reciepent-address? (get-address name)) "account-selector--reciepent")
+                                    (when (= (@state :delete-account-opened) name) "confirm-state")]}
+      [:div {:on-click (when-not (= (@state :delete-account-opened) name)
+                          (if (reciepent-address? "?")
+                            (when-not (= name (@state :selected-account))
+                              #(swap! state assoc-in [:send-data :reciepent-address] (get-address name)))
+                            #(switch-account name)))}
+        [:div
+          [:h6.account-selector__name name]
+          [:div.account-selector__balance
+            [:p (format "%.2f" balance) " USD"]]
+          [:div.account-selector__icon
+            [:> Tippy {:content "Remove account" :animation "shift-away"}
+              [:button.display-icon {:type "button"
+                                      :on-click (fn [e] (.stopPropagation e)
+                                                        (swap! state assoc :delete-account-opened name))}
+                [delete-icon]]]
+            [:div.confirm-background.confirm-background--large]]]
+        (when (= (@state :delete-account-opened) name)
+          [save-private-key-confirm-layer
+            "Are you sure? Don't lose access to your money!"
+            (reagent/as-element
               [:p "Only remove " [:b name] " if you have your private keys saved in a safe place,
-                   so you can restore it later or import it in another wallet."]
-              [:div.btn-wrapper
-                [:button {:type "button" :on-click #(reset! delete false)} "Cancel"]
-                [:button.btn.btn--inverse {:type "submit"
-                                           :on-click #(remove-account key)}
-                  "I know what I'm doing"]]])]])))
+                    so you can restore it later or import it in another wallet."])
+            (get-in @accounts [name :keys :private])
+            "I know what I'm doing"
+            #(remove-account name)
+            true
+            #(swap! state assoc :delete-account-opened false)])]]))
 
 (defn accounts-grid []
   (create-class
@@ -175,8 +188,8 @@
       (fn []
         (into [:div.accounts-grid]
           [
-            (for [account @accounts]
-              [account-selector account])
+            (for [[name data] @accounts]
+              ^{:key name} [account-selector name data])
             [add-account-panel]]))}))
 
 (defn accounts-container []

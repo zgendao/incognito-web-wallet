@@ -4,8 +4,7 @@
             ["@tippyjs/react" :default Tippy]))
 
 (defn tab-selector [component-state name disabled?]
-  [:a.tab-btn {:key name
-               :on-click (when-not disabled? #(swap! state assoc component-state name))
+  [:a.tab-btn {:on-click (when-not disabled? #(swap! state assoc component-state name))
                :class [(when (= (@state component-state ) name) "tab-btn--active")
                        (when disabled? "disabled")]}
     (if disabled?
@@ -13,17 +12,17 @@
       name)])
 
 (defn tab [component-state name content]
-  [:div.tab {:key name :class [(when (= (@state component-state) name) "tab--active")]}
+  [:div.tab {:class [(when (= (@state component-state) name) "tab--active")]}
     content])
 
 (defn tabs-component [component-state tabs]
   [:div.tabs-wrapper
     [:div.tabs-pagination
       (for [[name content] tabs]
-        [tab-selector component-state name (= content :disabled)])
+        ^{:key name} [tab-selector component-state name (= content :disabled)])
       [:div.tabs__background]]
     (for [[name content] tabs]
-      [tab component-state name content])])
+      ^{:key name} [tab component-state name content])])
 
 ;input component
 (defn input [form name label type placeholder end-element class]

@@ -37,6 +37,7 @@ body {
 
 #app {
   position: relative;
+  padding: 0 20px;
 }
 
 nav div {
@@ -258,3 +259,23 @@ button:disabled {
 @import "keys";
 @import "coins";
 @import "confirm-state";
+
+.mobileView {
+  h1 {
+    color: var(--color-secondary);
+  }
+  p {
+    text-align: justify;
+  }
+  div {
+    margin-top: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    max-width: 600px;
+
+    img {
+      width: 100%;
+    }
+  }
+}

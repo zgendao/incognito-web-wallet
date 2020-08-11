@@ -47,7 +47,7 @@
 }
 
 @mixin cutText {
-  max-width: 200px;
+  max-width: 190px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -61,6 +61,7 @@
   p {
     margin: 0 20px 0 0;
     cursor: help;
+    white-space: nowrap;
   }
 
   div {

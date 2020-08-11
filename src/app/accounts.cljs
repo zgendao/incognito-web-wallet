@@ -1,13 +1,58 @@
 (ns app.accounts
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            [app.storage :refer [state accounts coins]]
+  ;          [app.api :refer [wallet init-wallet]]
+            [app.storage :refer [state accounts coins local]]
             [app.icons :refer [plus-icon copy-icon qr-code-icon edit-icon delete-icon]]
             [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
             [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
             [animate-css-grid :refer [wrapGrid]]
-            ["@tippyjs/react" :default Tippy :refer (useSingleton)]))
+            ["@tippyjs/react" :default Tippy :refer (useSingleton)]
+            [goog.object :as g]
+            [async-await.core :refer [async await]]))
+
+(defn wallet [] (g/get js/window "wallet"))
+
+(defn init-wallet []
+  (swap! state assoc :accounts (.getAccounts (.-masterAccount (wallet))))
+  (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
+    (swap! accounts assoc (.-name acc) {:keys {:incognito (.-paymentAddressKeySerialized (.-keySet (.-key acc)))
+                                               :public (.-publicKeySerialized (.-keySet (.-key acc)))
+                                               :private (.-privateKeySerialized (.-keySet (.-key acc)))
+                                               :readonly (.-viewingKeySerialized (.-keySet (.-key acc)))
+                                               :validator (.-validatorKey (.-keySet (.-key acc)))}
+                                        :coins
+                                        ;(js->clj (.-privacyTokenIds acc))})
+
+                                              [{:id 0
+                                                 :amount 0
+                                                {:id 1
+                                                 :amount 1}
+                                                {:id 2
+                                                 :amount 2}
+                                                {:id 3
+                                                 :amount 40}
+                                                {:id 4
+                                                 :amount 0}}]})
+
+    (js/console.log (.-privacyTokenIds acc))))
+
+
+(defn create-backup []
+  (swap! local assoc :backupkey (.backup (wallet) (-> (wallet) .-mnemonic)))
+  (swap! state assoc :render (.getTime (js/Date.))))
+;  (init-wallet))
+
+(defn create-account []
+  (async
+   (await (-> (wallet) .-masterAccount (.addAccount (get-in @state [:add-account-data :name]))))
+   (create-backup)))
+
+(defn import-account []
+  (async
+    (await (-> (wallet) .-masterAccount (.importAccount (get-in @state [:add-account-data :name]) (get-in @state [:add-account-data :private-key]))))
+    (create-backup)))
 
 (defn get-address [key]
   (get-in @accounts [key :keys :incognito]))
@@ -30,6 +75,7 @@
                                         :errors {}
                                         :in-confirm-state false}))
 
+
 (defn switch-account [to]
   (when (@state :add-account-opened) (close-add-account-panel))
   (when (@state :delete-account-opened) (swap! state assoc :delete-account-opened false))
@@ -42,7 +88,9 @@
 
 (defn remove-account [key]
   ;(swap! accounts #(vec (concat (subvec @accounts 0 key) (subvec @accounts (inc key))))))
-  (swap! accounts #(dissoc @accounts key)))
+  (swap! accounts #(dissoc @accounts key))
+  (-> (wallet) .-masterAccount (.removeAccount key))
+  (create-backup))
 
 ;temporary
 (defn rand-str [len]
@@ -52,31 +100,34 @@
   (if-not (in-confirm-state? :add-account-data)
     (do
       (swap! state assoc-in [:add-account-data :errors] {})
-      
+
       (when (clojure.string/blank? (get-in @state [:add-account-data :name]))
         (show-error :add-account-data :name "Please enter a name for your account"))
       (when (contains? (set (keys @accounts)) (get-in @state [:add-account-data :name]))
         (show-error :add-account-data :name "You already have an account with this name. Please choose another one!"))
       (when import?
         (when (clojure.string/blank? (get-in @state [:add-account-data :private-key]))
-          (show-error :add-account-data :private-key "Please enter the private key of the account you want to import")))
-      
-      (when (no-errors? :add-account-data) 
-        (do
-          ,,, ;backend: generate or import
-          (to-confirm-state :add-account-data))))
-    (do
-      (swap! accounts assoc (get-in @state [:add-account-data :name])
-                            {:keys {:incognito (rand-str 100)
-                                    :public (rand-str 100)
-                                    :private (rand-str 100)
-                                    :readonly (rand-str 100)
-                                    :validator (rand-str 100)}
-                             :coins [{:id 0
-                                       :amount 0}
-                                     {:id (+ 1 (rand-int 5))
-                                       :amount (rand-int 100)}]})
-      (close-add-account-panel))))
+          (show-error :add-account-data :private-key "Please enter the private key of the account you want to import"))
+        (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
+          (when (= (.-privateKeySerialized (.-keySet (.-key acc))) (get-in @state [:add-account-data :private-key]))
+            (show-error :add-account-data :private-key "This account has been already added!"))))
+
+      (when (no-errors? :add-account-data)
+        (do (if import? (import-account) (create-account))
+            (to-confirm-state :add-account-data))))
+
+    (close-add-account-panel)))
+
+      ; (swap! accounts assoc (get-in @state [:add-account-data :name])
+      ;                       {:keys {:incognito (rand-str 100)
+      ;                               :public (rand-str 100)
+      ;                               :private (rand-str 100)
+      ;                               :readonly (rand-str 100)
+      ;                               :validator (rand-str 100)}
+      ;                        :coins [{:id 0
+      ;                                  :amount 0}
+      ;                                {:id (+ 1 (rand-int 5))
+      ;                                  :amount (rand-int 100)}]})
 
 (defn singleton-buttons-react [key]
   (let [[source target] (useSingleton #js {:overrides #js ["allowHTML hideOnClick"]})]
@@ -88,7 +139,7 @@
         [copy-to-clipboard-component (.-children key) target
           [:button {:type "button"} [copy-icon]]]
         [show-qr-code-component (.-children key) target]])))
-  
+
 (defn save-private-key-confirm-layer [title desc key submit-text submit-fn cancel-btn? cancel-fn]
   [:div.confirm-layer
     [:h3 title]
@@ -120,9 +171,11 @@
         "Make sure you won't lose access!"
         [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
              The only way you can restore them is by their private key, so always save them in a safe place."]
-        "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
-        "I'm safe"])])
-        
+;        "privkey"
+        (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))
+        "I'm safe"
+        #(init-wallet)])])
+
 (defn add-account-panel []
   [:div.add-account-wrapper {:style {:order 100}
                              :on-click (when-not (@state :add-account-opened)

@@ -3,11 +3,18 @@
             [app.storage :refer [state accounts coins]]
             [app.tabs :refer [tabs-component input show-error no-errors?]]
             [app.icons :refer [account-icon]]
+            [app.accounts :refer [wallet]]
             ["@tippyjs/react" :default Tippy]))
+
+
+(defn send-prv [account]
+  (.then
+   (-> account .-nativeToken (.transfer (clj->js [{:paymentAddressStr (get-in @state [:send-data :reciepent-address]) :amount (get-in @state [:send-data :amount]) :message (get-in @state [:send-data :note])}]) 400))
+   (fn [his] (js/console.log his))))
 
 (defn send []
   (swap! state assoc-in [:send-data :errors] {})
-  
+
   (when (clojure.string/blank? (get-in @state [:send-data :reciepent-address]))
     (show-error :send-data :reciepent-address "Please enter the address you want to send to"))
   (when (clojure.string/blank? (get-in @state [:send-data :amount]))
@@ -15,17 +22,18 @@
   (when (clojure.string/blank? (get-in @state [:send-data :fee]))
     (show-error :send-data :fee "Please set the fee"))
 
-  (when (no-errors? :send-data) 
-    (do
-      ,,,))) ;backend: send)))
+  (when (no-errors? :send-data)
+      (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
+        (if (= (get-in @state [:selected-account]) (.-name acc))
+          (send-prv acc)))))
 
 (defn send-form []
   [:form.send-wrapper {:on-submit (fn [e]
                                     (.preventDefault e)
-                                    (send))} ;backend: send function                                   
+                                    (send))} ;backend: send function
     [input :send-data :reciepent-address "To" "text" "Enter address (Incognito or external)"
            [:> Tippy {:content "Select from your accounts" :animation "shift-away"}
-            [:button {:type "button" :on-click #(swap! state assoc-in [:send-data :reciepent-address] "?")} [account-icon]]]]            
+            [:button {:type "button" :on-click #(swap! state assoc-in [:send-data :reciepent-address] "?")} [account-icon]]]]
     [input :send-data :amount "Amount" "number"
             (if (@state :selected-coin) "0" "Select coin first")
             (cond

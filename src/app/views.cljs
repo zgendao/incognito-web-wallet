@@ -1,13 +1,15 @@
 (ns app.views
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            [app.storage :refer [state accounts coins]]
-            [app.api :refer [wallet]]
-            [app.accounts :refer [accounts-container reciepent-address?]]
+            [app.storage :refer [state accounts coins local]]
+;            [app.api :refer [wallet init-wallet]]
+            [app.accounts :refer [accounts-container reciepent-address? wallet init-wallet]]
             [app.header :refer [header]]
             [app.coins :refer [coins-container]]
             [app.actions :refer [actions-container]]
             [goog.string :as gstring :refer [format]]
-            [goog.string.format]))
+            [goog.string.format]
+            ["incognito-js" :as incognito-js]
+            [goog.object :as g]))
 
 (defn navbar [showExchangeRate?]
   [:nav
@@ -23,9 +25,10 @@
   (create-class
     {:component-did-mount
       (fn []
-        (.then
-          (.init wallet "my-passphrase" "TEST-WALLET")
-          #(swap! state assoc :accounts (.getAccounts (.-masterAccount wallet)))))
+        (init-wallet)
+        (js/console.log (wallet)))
+;        (js/console.log (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))))
+        ;  (js/console.log (.-name acc))))
      :reagent-render
       (fn []
         (let [account (first (js->clj (:accounts @state)))]
@@ -45,7 +48,7 @@
 (defn download-from [store link]
   [:a {:href link}
     [:img {:src (str "./images/appStoreLogos/" store ".png")}]])
-    
+
 (defn mobile-view []
   [:<>
     [navbar]

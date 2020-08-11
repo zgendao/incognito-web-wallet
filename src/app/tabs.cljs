@@ -24,20 +24,28 @@
     (for [[name content] tabs]
       ^{:key name} [tab component-state name content])])
 
-;input component
-(defn input [form name label type placeholder end-element class]
+
+;form stuff
+(defn get-end-element-length [el]
+  (if (string? el) (count el) 2.5))
+
+(defn input [form name label type placeholder end-elements class]
   [:div.input-group {:class class}
     [:label {:for name} label]
     [:div.input-wrapper
       [:input {:id name :name name :type type :placeholder placeholder
-               :class (when end-element "input--withEndElement")
-               :style {"--end-element-length" (str (if (string? end-element) (count end-element) "2.5") "em")}
+               :class (when end-elements "input--withEndElement")
+               :style {"--end-element-length" (str (reduce +
+                                                    (map (fn [el] (get-end-element-length el))
+                                                      end-elements))
+                                                "em")}
                :value (get-in @state [form name])
                :on-change (fn [e] (swap! state assoc-in [form name] (-> e .-target .-value))
                                   (swap! state assoc-in [form :errors name] nil))}]
-      (when end-element
-        [:span
-          end-element])]
+      (when end-elements
+        (into [:span]
+          (for [el end-elements]
+            el)))]
     [:p.input__error {:class (when (get-in @state [form :errors name]) "show")} (get-in @state [form :errors name])]])
 
 (defn show-error [form name error-message]

@@ -15,18 +15,6 @@ form, .confirm-layer {
   }
 }
 
-.send-wrapper {
-  grid-template-columns: 1fr 1fr;
-
-  > * {
-    grid-column: span 2;
-
-    &:nth-child(2), &:nth-child(3) {
-      grid-column: auto
-    }
-  }
-}
-
 label {
   display: block;
   font-variation-settings: "wght" 500;
@@ -38,7 +26,7 @@ label {
   overflow: hidden;
   margin-top: 7px;
 
-  span {
+  > span {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -48,16 +36,15 @@ label {
     align-items: center;
     padding-right: 20px;
 
+    *:nth-child(2) {
+      margin-left: 10px;
+    }
     button {
       padding: 0;
       display: flex;
-
-      &:nth-child(2) {
-        margin-left: 10px;
-      }
     }
     svg {
-      width: 23px;
+      height: 23px;
     }
   }
 }

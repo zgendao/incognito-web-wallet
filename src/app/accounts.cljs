@@ -84,6 +84,7 @@
       [:span
         [:> Tippy {:singleton source
                    :animation "shift-away"
+                   :delay #js [0 100]
                    :moveTransition "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0s"}]
         [copy-to-clipboard-component (.-children key) target
           [:button {:type "button"} [copy-icon]]]

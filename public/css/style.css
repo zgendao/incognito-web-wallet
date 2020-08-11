@@ -100,16 +100,6 @@ form .btn-wrapper > *:last-child, .confirm-layer .btn-wrapper > *:last-child {
   margin-left: auto;
 }
 
-.send-wrapper {
-  grid-template-columns: 1fr 1fr;
-}
-.send-wrapper > * {
-  grid-column: span 2;
-}
-.send-wrapper > *:nth-child(2), .send-wrapper > *:nth-child(3) {
-  grid-column: auto;
-}
-
 label {
   display: block;
   font-variation-settings: "wght" 500;
@@ -121,7 +111,7 @@ label {
   overflow: hidden;
   margin-top: 7px;
 }
-.input-wrapper span {
+.input-wrapper > span {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -131,15 +121,15 @@ label {
   align-items: center;
   padding-right: 20px;
 }
-.input-wrapper span button {
+.input-wrapper > span *:nth-child(2) {
+  margin-left: 10px;
+}
+.input-wrapper > span button {
   padding: 0;
   display: flex;
 }
-.input-wrapper span button:nth-child(2) {
-  margin-left: 10px;
-}
-.input-wrapper span svg {
-  width: 23px;
+.input-wrapper > span svg {
+  height: 23px;
 }
 
 input {

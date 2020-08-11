@@ -17,7 +17,6 @@
                       :actions-tab "Send"
                       :send-data {:reciepent-address nil
                                   :amount nil
-                                  :fee nil
                                   :note nil
                                   :errors {}}}))
 

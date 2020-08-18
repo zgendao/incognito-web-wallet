@@ -6,23 +6,28 @@
             [goog.string.format]
             ["@tippyjs/react" :default Tippy]))
 
+(defn switch-coin [to]
+  (swap! state assoc :selected-coin to)
+  (swap! state assoc-in [:send-data :amount] nil)
+  (swap! state assoc-in [:send-data :in-confirm-state] false))
+
 (defn coin [id amount]
   (let [name (get-in @coins [id "Name"])
         symbol (get-in @coins [id "Symbol"])
         priceInUSD (get-in @coins [id "PriceUsd"])]
     [:div.coin-wrapper {:class [(when (= (@state :selected-coin) id) "selected")]}
-      [:div.coin {:on-click #(swap! state assoc :selected-coin id)}
-        [:div.coin__img
-          [:img {:src (str "./images/coinLogos/" symbol ".png")}]]
-        [:div.coin__content
-          [:div.coin__content__main
-            [:h6 name]
-            [:p amount]]
-          [:div.coin__content__prv
-            [:p "$" priceInUSD]
-            [:p "$" (format "%.2f" (* amount priceInUSD))]]]]
-      [:button.circle-btn {:on-click (fn [] (swap! state assoc :selected-coin nil)
-                                            (swap! state assoc-in [:send-data :amount] nil))}
+      [:> Tippy {:content "Select to send" :animation "shift-away" :delay #js [500 0]}
+        [:div.coin {:on-click #(switch-coin id)}
+          [:div.coin__img
+            [:img {:src (str ".././node_modules/cryptocurrency-icons/svg/color/" symbol ".svg")}]]
+          [:div.coin__content
+            [:div.coin__content__main
+              [:h6 name]
+              [:p amount]]
+            [:div.coin__content__prv
+              [:p "$" priceInUSD]
+              [:p "$" (format "%.2f" (* amount priceInUSD))]]]]]
+      [:button.circle-btn {:on-click #(switch-coin nil)}
         [right-arrow-icon]]]))
 
 (defn coins-container []

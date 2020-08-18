@@ -17,8 +17,11 @@
                       :actions-tab "Send"
                       :send-data {:reciepent-address nil
                                   :amount nil
+                                  :fee 0.0000001
                                   :note nil
-                                  :errors {}}}))
+                                  :errors {}
+                                  :in-confirm-state false
+                                  :sent false}}))
 
 (defonce accounts (atom {"Account 0" {:keys {:incognito "12RxhL3XRDLkqL9pc3Z3sCn2E9y6Sg9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
                                               :public "12RxhL3XRDLkqL9pc3Z3sCn2E9y6Sg9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"

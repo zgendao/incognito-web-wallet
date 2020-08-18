@@ -29,7 +29,7 @@
 (defn get-end-element-length [el]
   (if (string? el) (count el) 2.5))
 
-(defn input [form name label type placeholder end-elements class]
+(defn input [form name label type placeholder end-elements class max]
   [:div.input-group {:class class}
     [:label {:for name} label]
     [:div.input-wrapper
@@ -40,6 +40,7 @@
                                                       end-elements))
                                                 "em")}
                :value (get-in @state [form name])
+               :max max
                :on-change (fn [e] (swap! state assoc-in [form name] (-> e .-target .-value))
                                   (swap! state assoc-in [form :errors name] nil))}]
       (when end-elements
@@ -55,7 +56,11 @@
   (if (empty? (get-in @state [form :errors])) true false))
 
 (defn in-confirm-state? [form]
-  (get-in @state [form :confirm-layer-opened]))
+  (get-in @state [form :in-confirm-state]))
 
 (defn to-confirm-state [form]
-  (swap! state assoc-in [form :confirm-layer-opened] true))
+  (swap! state assoc-in [form :in-confirm-state] true))
+
+(defn close-confirm-state [form]
+  (swap! state assoc-in [form :in-confirm-state] false)
+  (swap! state assoc-in [form :sent] false))

@@ -2,6 +2,63 @@
 @import url("https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css");
 @import url("https://unpkg.com/tippy.js@6.2.6/dist/backdrop.css");
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap");
+#app {
+  min-height: 100vh;
+}
+
+.loadingScreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.loadingScreen svg {
+  animation: 2s linear infinite svg-animation;
+  width: 50px;
+}
+.loadingScreen circle {
+  animation: 1.4s ease-in-out infinite both circle-animation;
+  display: block;
+  fill: transparent;
+  stroke: var(--text-md);
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 280;
+  stroke-width: 10px;
+  transform-origin: 50% 50%;
+}
+
+@keyframes svg-animation {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+@keyframes circle-animation {
+  0%, 25% {
+    stroke-dashoffset: 280;
+    transform: rotate(0);
+  }
+  50%, 75% {
+    stroke-dashoffset: 75;
+    transform: rotate(45deg);
+  }
+  100% {
+    stroke-dashoffset: 280;
+    transform: rotate(360deg);
+  }
+}
+.tabs-wrapper {
+  padding: 20px 25px;
+}
+
 .tabs-pagination {
   position: relative;
   display: flex;
@@ -63,7 +120,7 @@
 .tab {
   display: none;
   line-height: 1.4;
-  margin: 20px 0;
+  margin-top: 20px;
   animation-name: content;
   animation-direction: normal;
   animation-duration: 0.3s;
@@ -233,6 +290,7 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   --color-text-default: #000000;
   --color-text-default-soft: #7A7A7A;
   --color-text-inverse: #ffffff;
+  --color-text-inverse-soft: #ffffffb6;
 }
 
 * {
@@ -288,6 +346,10 @@ p {
   margin: 0;
 }
 
+a {
+  text-decoration: none;
+}
+
 button, a {
   cursor: pointer;
   font-family: "SF Display";
@@ -314,6 +376,11 @@ button:disabled {
   align-items: center;
 }
 .inline-icon svg {
+  height: 1em;
+  margin-right: 12px;
+}
+
+.btn.inline-icon svg {
   height: 0.9em;
   margin-left: -8px;
   margin-right: 8px;
@@ -335,6 +402,7 @@ button:disabled {
   padding: 15px 30px;
   font-size: 18px;
   font-variation-settings: "wght" 500;
+  transition: background-color 0.3s;
 }
 
 .btn--primary {
@@ -362,6 +430,10 @@ button:disabled {
 }
 .circle-btn svg * {
   transition: all 0.3s;
+}
+
+.text-inverse-soft {
+  color: var(--color-text-inverse-soft);
 }
 
 .clickCatcher {
@@ -476,7 +548,7 @@ button:disabled {
 
 .animate-height {
   overflow: hidden;
-  animation-name: height;
+  animation-name: height-in;
   animation-direction: normal;
   animation-duration: 0.3s;
   animation-timing-function: ease-in-out;
@@ -484,11 +556,11 @@ button:disabled {
 }
 
 .animate-height.out {
-  animation-direction: reverse;
+  animation-name: height-out;
   animation-fill-mode: forwards;
 }
 
-@keyframes height {
+@keyframes height-in {
   from {
     max-height: 0;
     opacity: 0;
@@ -496,6 +568,16 @@ button:disabled {
   to {
     max-height: 150px;
     opacity: 1;
+  }
+}
+@keyframes height-out {
+  from {
+    max-height: 150px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
   }
 }
 #accounts {
@@ -744,15 +826,52 @@ button:disabled {
   margin: 0.2em 0;
 }
 
-.actions-container {
+.cut-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions-container .tabs-wrapper {
+  align-self: flex-start;
+  width: 100%;
+  padding: 20px 35px;
+  position: relative;
+  overflow: hidden;
   background-color: var(--color-background-secondary);
   border-radius: 20px;
 }
-
-.actions-wrapper {
-  width: 100%;
-  height: 100%;
+.actions-container .btn-wrapper {
+  margin-bottom: 20px;
+}
+.actions-container .confirm-layer {
   padding: 20px 35px;
+}
+
+.send-confirm-data {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-auto-rows: auto;
+  gap: 15px 20px;
+  margin: 20px 0 40px 0;
+}
+.send-confirm-data p:nth-child(even) {
+  font-variation-settings: "wght" 600;
+}
+
+#about {
+  grid-column: 1/3;
+  margin: 0 auto 20px auto;
+}
+#about p {
+  color: var(--color-text-default-soft);
+  margin: 5px;
+  font-size: 12px;
+  font-variation-settings: "wght" 500;
+}
+#about p a {
+  color: var(--color-text-default);
+  font-variation-settings: "wght" 600;
 }
 
 .header__keys {
@@ -784,6 +903,7 @@ button:disabled {
 .header__keys.opened .keys-modal {
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
   padding: 20px 40px;
+  z-index: 5;
 }
 .header__keys.opened .keys-modal > div:not(:first-child) {
   height: calc(3 * (1.3em + 20px));
@@ -811,9 +931,6 @@ button:disabled {
 .key-elem div a {
   color: var(--color-primary);
   max-width: 190px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .coins-container {
@@ -933,9 +1050,6 @@ button:disabled {
   z-index: 3;
   transition: opacity 0.3s 0s, visibility 0s 0.3s;
 }
-.confirm-layer h3 {
-  margin-top: 0;
-}
 .confirm-layer p {
   text-align: justify;
 }
@@ -950,6 +1064,10 @@ button:disabled {
   background-color: var(--color-secondary);
   border-radius: 750px;
   transition: height 0.5s, width 0.5s;
+}
+
+.confirm-background--primary {
+  background-color: var(--color-primary);
 }
 
 .confirm-state .confirm-layer {
@@ -995,6 +1113,10 @@ pre {
 }
 .mobileView div img {
   width: 100%;
+}
+
+.marginTop-0 {
+  margin-top: 0;
 }
 
 /*# sourceMappingURL=style.css.map */

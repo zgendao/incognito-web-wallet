@@ -33,9 +33,6 @@
   z-index: 3;
   transition: opacity .3s 0s, visibility 0s .3s;
 
-  h3 {
-    margin-top: 0;
-  }
   p {
     text-align: justify;
   }
@@ -51,6 +48,9 @@
   background-color: var(--color-secondary);
   border-radius: 750px;
   transition: height .5s, width .5s;
+}
+.confirm-background--primary {
+  background-color: var(--color-primary);
 }
 
 .confirm-state {

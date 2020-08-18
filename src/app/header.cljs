@@ -14,7 +14,7 @@
       [:> Tippy {:content tooltip :singleton target}
         [:p name]]
       [:div
-        [copy-to-clipboard-component address target [:a address]]
+        [copy-to-clipboard-component address target [:a.cut-text address]]
         [show-qr-code-component address target]]]))
 
 ;have to use React functional component for the useSingleton hook to work

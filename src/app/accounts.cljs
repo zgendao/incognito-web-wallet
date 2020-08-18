@@ -5,6 +5,7 @@
             [app.icons :refer [plus-icon copy-icon qr-code-icon edit-icon delete-icon]]
             [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
             [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state]]
+            [app.actions :refer [reset-send-data]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
             [animate-css-grid :refer [wrapGrid]]
@@ -81,16 +82,19 @@
   (when (@state :delete-account-opened) (swap! state assoc :delete-account-opened false))
   (swap! state assoc :selected-account to)
   (swap! state assoc :selected-coin nil)
-  (swap! state assoc :send-data {:reciepent-address nil
-                                  :amount nil
-                                  :fee nil
-                                  :note nil}))
+  (reset-send-data))
 
 (defn remove-account [key]
   ;(swap! accounts #(vec (concat (subvec @accounts 0 key) (subvec @accounts (inc key))))))
   (swap! accounts #(dissoc @accounts key))
   (-> (wallet) .-masterAccount (.removeAccount key))
   (create-backup))
+
+(defn switch-reciepent-account [to]
+  (when-not (= to (@state :selected-account))
+    (do
+      (swap! state assoc-in [:send-data :reciepent-address] (get-address to))
+      (swap! state assoc-in [:send-data :errors :reciepent-address] nil))))
 
 ;temporary
 (defn rand-str [len]
@@ -143,7 +147,7 @@
 
 (defn save-private-key-confirm-layer [title desc key submit-text submit-fn cancel-btn? cancel-fn]
   [:div.confirm-layer
-    [:h3 title]
+    [:h3.marginTop-0 title]
     desc
     [:div.input-wrapper
       [:pre {:style {"--end-element-length" "4em"}} key]
@@ -205,8 +209,7 @@
                                     (when (= (@state :delete-account-opened) name) "confirm-state")]}
       [:div {:on-click (when-not (= (@state :delete-account-opened) name)
                           (if (reciepent-address? "?")
-                            (when-not (= name (@state :selected-account))
-                              #(swap! state assoc-in [:send-data :reciepent-address] (get-address name)))
+                            #(switch-reciepent-account name)
                             #(switch-account name)))}
         [:div
           [:h6.account-selector__name name]

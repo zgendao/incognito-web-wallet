@@ -19,8 +19,11 @@
                       :actions-tab "Send"
                       :send-data {:reciepent-address nil
                                   :amount nil
+                                  :fee 0.0000001
                                   :note nil
-                                  :errors {}}}))
+                                  :errors {}
+                                  :in-confirm-state false
+                                  :sent false}}))
 
 (defonce accounts (atom {}))
 

@@ -6,6 +6,7 @@
             [app.header :refer [header]]
             [app.coins :refer [coins-container]]
             [app.actions :refer [actions-container]]
+            [app.icons :refer [loader]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
             ["incognito-js" :as incognito-js]
@@ -20,6 +21,12 @@
     (when showExchangeRate?
       [:div
         [:p (format "%.2f" (:prv-price @state)) " USD"]])]])
+
+(defn about []
+  [:div#about
+    [:p "Made by " [:a {:href "https://zgen.hu" :target "_blank"} "ZGEN DAO"] ", the bureaucracy-free online guild."]
+    [:p "Send your feature requests to: " [:a {:href "mailto:contact@zgen.hu" :target "_blank"} "crypto@zgen.hu"]]
+    [:p "Source: " [:a {:href "https://github.com/zgendao/incognito-web-wallet" :target "_blank"} "zgendao/incognito-web-wallet"]]])
 
 (defn main []
   (create-class
@@ -36,7 +43,8 @@
             [:div#main.container {:class [(when-not (@state :selected-account) "hidden")]}
               [header]
               [coins-container]
-              [actions-container]])))}))
+              [actions-container]
+              [about]])))}))
 
 (defn back-layer []
   [:div#backLayer.clickCatcher
@@ -69,5 +77,7 @@
         [accounts-container]
         [main]
         [back-layer]]
-      [:h1 "Loading.."])
+      [:<>
+        [navbar]
+        [loader]])
     [mobile-view]))

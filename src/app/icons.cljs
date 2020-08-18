@@ -28,3 +28,11 @@
 
 (defn infinity-icon [color]
   [:> SVG {:uniquifyIDs true :src "/images/infinity.svg" :style {"--icon-color" "black"}}])
+
+(defn check-icon [color]
+  [:> SVG {:uniquifyIDs true :src "/images/check.svg" :style {"--icon-color" color}}])
+
+(defn loader []
+  [:span.loadingScreen
+    [:svg {:viewBox "0 0 100 100" :xmlns "http://www.w3.org/2000/svg" :stroke "black"}
+      [:circle {:cx "50" :cy "50" :r "45"}]]])

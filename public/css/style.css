@@ -1,6 +1,6 @@
-@import url("https://unpkg.com/tippy.js@6.2.6/dist/tippy.css");
-@import url("https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css");
-@import url("https://unpkg.com/tippy.js@6.2.6/dist/backdrop.css");
+@import url("../../node_modules/tippy.js/dist/tippy.css");
+@import url("../../node_modules/tippy.js/animations/shift-away.css");
+@import url("../../node_modules/tippy.js/dist/backdrop.css");
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap");
 #app {
   min-height: 100vh;
@@ -308,6 +308,8 @@ body {
 
 #app {
   position: relative;
+  display: flex;
+  flex-direction: column;
   padding: 0 20px;
 }
 
@@ -329,6 +331,7 @@ nav div .navbar__brand p {
 
 .container {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 20px 0;
 }
@@ -860,12 +863,15 @@ button:disabled {
 }
 
 #about {
-  grid-column: 1/3;
-  margin: 0 auto 20px auto;
+  display: flex;
+  justify-content: center;
+  margin: auto;
+  margin-bottom: 0;
+  padding-top: 40px;
 }
 #about p {
   color: var(--color-text-default-soft);
-  margin: 5px;
+  margin: 5px 10px;
   font-size: 12px;
   font-variation-settings: "wght" 500;
 }
@@ -986,8 +992,8 @@ button:disabled {
   text-align: center;
 }
 .coin .coin__img img {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
 }
 .coin:hover {
   opacity: 0.8;

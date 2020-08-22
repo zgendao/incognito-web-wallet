@@ -19,5 +19,5 @@
          {:entries [app.core]}}
 
         :devtools
-        {:http-root   "public"
+        {:http-root   "./"
          :http-port   4000}}}}

@@ -16,14 +16,14 @@
   [:nav
    [:div.container
     [:div.navbar__brand
-      [:img {:src "./images/logo.png" :width "30px" :height "30px"}]
+      [:img {:src "./public/images/logo2.png" :width "30px" :height "30px"}]
       [:p "Incognito Web Wallet"]]
     (when showExchangeRate?
       [:div
         [:p (format "%.2f" (:prv-price @state)) " USD"]])]])
 
 (defn about []
-  [:div#about
+  [:div#about.container
     [:p "Made by " [:a {:href "https://zgen.hu" :target "_blank"} "ZGEN DAO"] ", the bureaucracy-free online guild."]
     [:p "Send your feature requests to: " [:a {:href "mailto:contact@zgen.hu" :target "_blank"} "crypto@zgen.hu"]]
     [:p "Source: " [:a {:href "https://github.com/zgendao/incognito-web-wallet" :target "_blank"} "zgendao/incognito-web-wallet"]]])
@@ -43,8 +43,7 @@
             [:div#main.container {:class [(when-not (@state :selected-account) "hidden")]}
               [header]
               [coins-container]
-              [actions-container]
-              [about]])))}))
+              [actions-container]])))}))
 
 (defn back-layer []
   [:div#backLayer.clickCatcher
@@ -55,8 +54,8 @@
 
 (defn download-from [store link]
   [:a {:href link}
-    [:img {:src (str "./images/appStoreLogos/" store ".png")}]])
-
+    [:img {:src (str "./public/images/appStoreLogos/" store ".png")}]])
+    
 (defn mobile-view []
   [:<>
     [navbar]
@@ -76,6 +75,7 @@
         [navbar true]
         [accounts-container]
         [main]
+        [about]
         [back-layer]]
       [:<>
         [navbar]

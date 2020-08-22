@@ -39,6 +39,8 @@ body {
 
 #app {
   position: relative;
+  display: flex;
+  flex-direction: column;
   padding: 0 20px;
 }
 
@@ -62,6 +64,7 @@ nav div {
 
 .container {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 20px 0;
 }
@@ -301,12 +304,15 @@ button:disabled {
 }
 
 #about {
-  grid-column: 1/3;
-  margin: 0 auto 20px auto;
+  display: flex;
+  justify-content: center;
+  margin: auto;
+  margin-bottom: 0;
+  padding-top: 40px;
 
   p {
     color: var(--color-text-default-soft);
-    margin: 5px;
+    margin: 5px 10px;
     font-size: 12px;
     font-variation-settings: "wght" 500;
 

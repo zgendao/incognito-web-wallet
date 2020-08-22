@@ -1,7 +1,6 @@
-//@import url('../../node_modules/tippy.js/dist/tippy.css');
-@import url('https://unpkg.com/tippy.js@6.2.6/dist/tippy.css');
-@import url('https://unpkg.com/tippy.js@6.2.6/animations/shift-away.css');
-@import url('https://unpkg.com/tippy.js@6.2.6/dist/backdrop.css');
+@import url('../../node_modules/tippy.js/dist/tippy.css');
+@import url('../../node_modules/tippy.js/animations/shift-away.css');
+@import url('../../node_modules/tippy.js/dist/backdrop.css');
 
 .tippy-box {
   background-color: var(--color-secondary);

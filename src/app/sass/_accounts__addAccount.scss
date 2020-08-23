@@ -26,7 +26,7 @@
   background-color: var(--color-background);
   overflow: hidden;
   cursor: pointer;
-  transition: background-color .5s, border 5s, opacity .3s 0s, visibility 0s .3s;
+  transition: background-color .5s, border 5s, opacity .3s 0s, visibility 0s .3s, width .3s;
 }
 
 .add-account {

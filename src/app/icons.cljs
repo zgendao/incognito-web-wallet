@@ -32,6 +32,9 @@
 (defn check-icon [color]
   [:> SVG {:uniquifyIDs true :src "/public/images/icons/check.svg" :style {"--icon-color" color}}])
 
+(defn save-icon [color]
+  [:> SVG {:uniquifyIDs true :src "/public/images/icons/save.svg" :style {"--icon-color" "black"}}])
+
 (defn loader []
   [:span.loadingScreen
     [:svg {:viewBox "0 0 100 100" :xmlns "http://www.w3.org/2000/svg" :stroke "black"}

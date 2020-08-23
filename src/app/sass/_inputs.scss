@@ -63,10 +63,10 @@ input {
     color: var(--color-text-default-soft);
     opacity: 1;
   }
+}
 
-  &.input--withEndElement {
-    padding-right: calc(var(--end-element-length) + 15px);
-  }
+.withEndElement {
+  padding-right: calc(var(--end-element-length) + 15px);
 }
 
 .input__error {

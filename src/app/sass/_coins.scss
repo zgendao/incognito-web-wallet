@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 .coins-container {
   flex-direction: column;
   border-radius: 20px;

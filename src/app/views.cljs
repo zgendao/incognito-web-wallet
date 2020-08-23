@@ -14,7 +14,7 @@
   [:nav
    [:div.container
     [:div.navbar__brand
-      [:img {:src "./public/images/logo2.png" :width "30px" :height "30px"}]
+      [:img {:src "./public/images/logo.png" :width "30px" :height "30px"}]
       [:p "Incognito Web Wallet"]]
     (when showExchangeRate?
       [:div
@@ -72,7 +72,7 @@
         [navbar true]
         [accounts-container]
         [main]
-        [about]
+        (when (@state :selected-account) [about])
         [back-layer]]
       [:<>
         [navbar]

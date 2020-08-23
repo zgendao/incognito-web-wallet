@@ -1,8 +1,8 @@
 (ns app.accounts
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
-            [app.icons :refer [plus-icon copy-icon qr-code-icon edit-icon delete-icon]]
-            [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
+            [app.icons :refer [plus-icon copy-icon qr-code-icon edit-icon delete-icon save-icon]]
+            [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component copy-to-clipboard]]
             [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state]]
             [app.actions :refer [reset-send-data]]
             [goog.string :as gstring :refer [format]]
@@ -99,7 +99,7 @@
     [:h3.marginTop-0 title]
     desc
     [:div.input-wrapper
-      [:pre {:style {"--end-element-length" "4em"}} key]
+      [:pre.withEndElement {:style {"--end-element-length" "4em"}} key]
       [:> singleton-buttons-react key]]
     [:div.btn-wrapper
       (when cancel-btn?
@@ -112,13 +112,13 @@
   [:form {:class (when (in-confirm-state? :add-account-data) "confirm-state")
           :on-submit (fn [e] (.preventDefault e)
                              (add-account import?))}
-    [input :add-account-data :name "Name" "text" "Name your wallet"]
+    [input :add-account-data :name "Name" "text" "Name your account"]
     [input :add-account-data :private-key "Private key" "text" "Paste from your phone" ""
            (str "animate-height" (when-not (or import? (in-confirm-state? :add-account-data)) " out"))]
     [:div.btn-wrapper
       [:button {:type "button" :on-click #(close-add-account-panel)} "Cancel"]
       [:div
-        [:button.btn {:type "submit"} (if import? "Import" "Create") " wallet"]
+        [:button.btn {:type "submit"} (if import? "Import" "Create") " account"]
         [:div.confirm-background.confirm-background--medium]]]
     (when (in-confirm-state? :add-account-data)
       [save-private-key-confirm-layer
@@ -175,7 +175,7 @@
             (reagent/as-element
               [:p "Only remove " [:b name] " if you have your private keys saved in a safe place,
                     so you can restore it later or import it in another wallet."])
-            (get-in @accounts [name :keys :private])
+            (get-in account [:keys :private])
             "I know what I'm doing"
             #(remove-account name)
             true
@@ -196,10 +196,29 @@
               ^{:key name} [account-selector name data])
             [add-account-panel]]))}))
 
+(defn backup-tooltip []
+  (let [content (reduce str (for [[name data] @accounts]
+                              (str "AccountName: " name "\nPrivateKey: " (get-in data [:keys :private]) "\n\n")))]
+    [:<>
+      [:p "You can restore all saved accounts by the data below. Make sure to store it in a safe place!"]
+      [:div.input-wrapper
+        [:pre content]]
+      [:div.btn-wrapper
+        [:> Tippy {:content "Copied" :trigger "click"}
+          [:button.btn.inline-icon {:on-click #(copy-to-clipboard content)}
+            [copy-icon] "Copy to clipboard"]]]]))
+
 (defn accounts-container []
   [:div#accounts.container {:class [(when-not (@state :selected-account) "opened opened--full")
                                     (when (reciepent-address? "?") "opened opened--half highlighted")]}
-    [:h2.accounts__text "Select the account you want to send to"]
+    [:div.accounts-header.accounts-header--manage
+      [:h2 "Your accounts"]
+      [:> Tippy {:content (reagent/as-element [backup-tooltip]) :interactive true
+                 :maxWidth 525 :placement "left-start" :arrow true :appendTo #(.getElementById js/document "app")
+                 :allowHTML true :trigger "click" :animation "height"}
+        [:> Tippy {:content "Backup all accounts" :placement "left-start" :hideOnClick false :zIndex 1}
+          [:button.display-icon [save-icon]]]]]
+    [:h2.accounts-header.accounts-header--reciepent "Select the account you want to send to"]
     [:div.accounts-wrapper
       [accounts-grid]]
     [:> Tippy {:content "Manage accounts" :animation "shift-away"}

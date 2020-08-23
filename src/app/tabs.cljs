@@ -34,7 +34,7 @@
     [:label {:for name} label]
     [:div.input-wrapper
       [:input {:id name :name name :type type :placeholder placeholder
-               :class (when end-elements "input--withEndElement")
+               :class (when end-elements "withEndElement")
                :style {"--end-element-length" (str (reduce +
                                                     (map (fn [el] (get-end-element-length el))
                                                       end-elements))

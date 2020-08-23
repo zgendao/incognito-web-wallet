@@ -203,7 +203,8 @@ input::placeholder {
   color: var(--color-text-default-soft);
   opacity: 1;
 }
-input.input--withEndElement {
+
+.withEndElement {
   padding-right: calc(var(--end-element-length) + 15px);
 }
 
@@ -253,7 +254,7 @@ input[type=number] {
   border-right-color: var(--color-secondary);
 }
 
-.tippy-box:not([data-animatefill]) {
+.tippy-box:not([data-animatefill]):not([data-animation=height]) {
   transition-delay: 0.3s;
 }
 
@@ -261,9 +262,8 @@ input[type=number] {
   transition-delay: 0s;
 }
 
-.tippy-box[data-placement=top-start] > .tippy-arrow {
-  left: 50% !important;
-  transform: translate(-50%, 0) !important;
+.tippy-box[data-placement=left-start] > .tippy-arrow {
+  transform: translate(0px, 8px) !important;
 }
 
 div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
@@ -272,6 +272,69 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
 
 .tippy-box[data-theme=skeleton] {
   background-color: transparent;
+}
+
+.tippy-box[data-animation=height] {
+  opacity: 0;
+}
+.tippy-box[data-animation=height] > .tippy-content {
+  display: flex;
+  max-height: 0;
+  padding: 20px;
+  overflow: hidden;
+  transition-property: transform, visibility, opacity, max-height;
+}
+.tippy-box[data-animation=height] > .tippy-content > div {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.tippy-box[data-animation=height] p {
+  font-size: 18px;
+}
+.tippy-box[data-animation=height] .input-wrapper {
+  overflow-y: scroll;
+  background-color: var(--color-background);
+  margin-top: 20px;
+  scrollbar-width: thin;
+  transition: color 0.3s;
+  scrollbar-color: rgba(53, 53, 53, 0.3) transparent;
+  color: rgba(53, 53, 53, 0.3);
+}
+.tippy-box[data-animation=height] .input-wrapper::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+.tippy-box[data-animation=height] .input-wrapper::-webkit-scrollbar-track {
+  display: none;
+}
+.tippy-box[data-animation=height] .input-wrapper::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  border-radius: 15px;
+  box-shadow: inset 0 0 0 10px;
+}
+.tippy-box[data-animation=height] .input-wrapper pre {
+  margin: 0;
+  font-size: 16px;
+  border-radius: 0;
+  min-height: 200px;
+}
+.tippy-box[data-animation=height] .btn-wrapper {
+  position: absolute;
+  bottom: 35px;
+  right: 30px;
+  border-radius: 20px;
+  background-color: var(--color-background);
+}
+.tippy-box[data-animation=height] .btn {
+  box-shadow: 0px 5px 6px 2px #0000002b;
+}
+
+.tippy-box[data-animation=height][data-state=visible] {
+  opacity: 1;
+}
+.tippy-box[data-animation=height][data-state=visible] > .tippy-content {
+  max-height: 400px;
 }
 
 @font-face {
@@ -405,7 +468,10 @@ button:disabled {
   padding: 15px 30px;
   font-size: 18px;
   font-variation-settings: "wght" 500;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, opacity 0.1s;
+}
+.btn:hover {
+  opacity: 0.9;
 }
 
 .btn--primary {
@@ -470,7 +536,7 @@ button:disabled {
   background-color: var(--color-background);
   overflow: hidden;
   cursor: pointer;
-  transition: background-color 0.5s, border 5s, opacity 0.3s 0s, visibility 0s 0.3s;
+  transition: background-color 0.5s, border 5s, opacity 0.3s 0s, visibility 0s 0.3s, width 0.3s;
 }
 
 .add-account {
@@ -606,7 +672,7 @@ button:disabled {
   pointer-events: none;
   transition: right 0.5s, box-shadow 0.5s;
 }
-#accounts .circle-btn {
+#accounts > .circle-btn {
   position: absolute;
   right: 0;
   top: 53px;
@@ -614,22 +680,28 @@ button:disabled {
   transition: right 0.5s;
 }
 
-.accounts__text {
+.accounts-header {
   position: absolute;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
   margin: 0;
   opacity: 0;
   visibility: hidden;
   z-index: 3;
   transition: opacity 0.2s 0s, visibility 0s 0.3s;
 }
+.accounts-header h2 {
+  margin: 0;
+}
 
 .accounts-wrapper {
   overflow-x: auto;
   height: 100px;
-  color: transparent;
-  scrollbar-color: transparent transparent;
   scrollbar-width: thin;
   transition: color 0.3s, height 0.5s, margin 0.5s, color 0.3s;
+  color: transparent;
+  scrollbar-color: transparent transparent;
 }
 .accounts-wrapper::-webkit-scrollbar {
   height: 5px;
@@ -733,7 +805,6 @@ button:disabled {
 }
 #accounts.opened .accounts-grid {
   grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
-  grid-auto-rows: minmax(100px, auto);
   grid-auto-flow: unset;
 }
 @media screen and (min-width: 1240px) {
@@ -741,20 +812,31 @@ button:disabled {
     grid-template-columns: repeat(5, 200px);
   }
 }
+#accounts.opened .accounts-header {
+  transition: opacity 0.5s 0.2s, visibility 0s 0s;
+}
 #accounts.opened.opened--full {
-  padding: 0;
+  padding: 80px 0 0 0;
 }
 #accounts.opened.opened--full::after, #accounts.opened.opened--full::before {
   right: -200px;
 }
+#accounts.opened.opened--full::before {
+  box-shadow: inset 0 170px 20px -20px var(--color-background);
+}
 #accounts.opened.opened--full .accounts-wrapper {
-  height: calc(100vh - 70px);
+  height: calc(100vh - 150px);
 }
 #accounts.opened.opened--full .accounts-wrapper::-webkit-scrollbar:vertical {
   display: none;
 }
+#accounts.opened.opened--full .accounts-header--manage {
+  opacity: 1;
+  visibility: visible;
+}
 #accounts.opened.opened--full .accounts-grid {
-  margin: 10% 0;
+  margin: 100px 0;
+  grid-auto-rows: minmax(100px, auto);
 }
 #accounts.opened.opened--full .account-selector > div {
   padding: 25px 20px;
@@ -766,7 +848,7 @@ button:disabled {
   visibility: visible;
 }
 #accounts.opened.opened--full .add-account-wrapper {
-  width: auto;
+  width: 100%;
   min-height: 120px;
   opacity: 1;
   visibility: visible;
@@ -778,10 +860,9 @@ button:disabled {
 #accounts.opened.opened--half::after {
   box-shadow: inset 0 -80px 20px -20px var(--color-background);
 }
-#accounts.opened.opened--half .accounts__text {
+#accounts.opened.opened--half .accounts-header--reciepent {
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.5s 0.2s, visibility 0s 0s;
 }
 #accounts.opened.opened--half .accounts-grid {
   margin: 100px 0;
@@ -1101,7 +1182,6 @@ pre {
   font-family: inherit;
   text-overflow: ellipsis;
   overflow: hidden;
-  padding-right: calc(var(--end-element-length) + 15px);
 }
 
 .mobileView h1 {

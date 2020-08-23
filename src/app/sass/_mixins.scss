@@ -1,0 +1,40 @@
+@mixin lightScrollbar ($color, $onlyShowOnHover, $additionalTransitions...) {
+  scrollbar-width: thin;
+  transition: color .3s, $additionalTransitions;
+
+  &::-webkit-scrollbar {
+    height: 5px;
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    display: none;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    border-radius: 15px; 
+    box-shadow: inset 0 0 0 10px;
+  }
+
+  @if $onlyShowOnHover {
+    color: transparent;
+    scrollbar-color: transparent transparent;
+    
+    &:hover {
+      scrollbar-color: $color transparent;
+      color: $color;
+    }
+  } @else {
+    scrollbar-color: $color transparent;
+    color: $color;
+  }
+}
+
+@mixin highlightable ($additionalTransitions...) {
+  z-index: 0;
+  transition: z-index 0s .3s, $additionalTransitions;
+
+  &.highlighted {
+    z-index: 10;
+    transition: z-index 0s 0s, $additionalTransitions;
+  }
+}

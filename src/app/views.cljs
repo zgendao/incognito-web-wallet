@@ -2,7 +2,7 @@
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
             [app.api :refer [wallet]]
-            [app.accounts :refer [accounts-container reciepent-address?]]
+            [app.accounts :refer [accounts-container reciepent-address? switch-reciepent-account]]
             [app.header :refer [header]]
             [app.coins :refer [coins-container]]
             [app.actions :refer [actions-container]]
@@ -47,7 +47,7 @@
     {:class [(when (or (= (@state :selected-coin) "?")
                        (reciepent-address? "?")) "active")]
      :on-click (cond (= (@state :selected-coin) "?") #(swap! state assoc :selected-coin nil)
-                     (reciepent-address? "?") #(swap! state assoc-in [:send-data :reciepent-address] nil))}])
+                     (reciepent-address? "?") #(switch-reciepent-account nil))}])
 
 (defn download-from [store link]
   [:a {:href link}

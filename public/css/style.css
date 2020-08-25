@@ -254,12 +254,8 @@ input[type=number] {
   border-right-color: var(--color-secondary);
 }
 
-.tippy-box:not([data-animatefill]):not([data-animation=height]) {
+.tippy-box[data-state=visible]:not([data-animatefill]):not([data-animation=height]) {
   transition-delay: 0.3s;
-}
-
-.tippy-box[data-state=hidden] {
-  transition-delay: 0s;
 }
 
 .tippy-box[data-placement=left-start] > .tippy-arrow {
@@ -304,6 +300,7 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
 .tippy-box[data-animation=height] .input-wrapper::-webkit-scrollbar {
   height: 5px;
   width: 5px;
+  background: transparent;
 }
 .tippy-box[data-animation=height] .input-wrapper::-webkit-scrollbar-track {
   display: none;
@@ -670,12 +667,18 @@ button:disabled {
   left: 0;
   z-index: 1;
   pointer-events: none;
-  transition: right 0.5s, box-shadow 0.5s;
+  transition: right 0.5s, left 0.2s, box-shadow 0.5s;
+}
+#accounts::before {
+  box-shadow: inset 100px 0 60px -60px var(--color-background);
+}
+#accounts[data-scrolled=false]::before {
+  left: -100px;
 }
 #accounts > .circle-btn {
   position: absolute;
   right: 0;
-  top: 53px;
+  top: 52px;
   z-index: 2;
   transition: right 0.5s;
 }
@@ -696,6 +699,7 @@ button:disabled {
 }
 
 .accounts-wrapper {
+  overflow: overlay;
   overflow-x: auto;
   height: 100px;
   scrollbar-width: thin;
@@ -706,6 +710,7 @@ button:disabled {
 .accounts-wrapper::-webkit-scrollbar {
   height: 5px;
   width: 5px;
+  background: transparent;
 }
 .accounts-wrapper::-webkit-scrollbar-track {
   display: none;
@@ -721,6 +726,8 @@ button:disabled {
 }
 
 .accounts-grid {
+  width: fit-content;
+  width: -moz-fit-content;
   display: grid;
   grid-auto-columns: calc((100vw - 40px - 3 * 50px) / 4);
   grid-auto-flow: column;
@@ -818,7 +825,7 @@ button:disabled {
 #accounts.opened.opened--full {
   padding: 80px 0 0 0;
 }
-#accounts.opened.opened--full::after, #accounts.opened.opened--full::before {
+#accounts.opened.opened--full::after {
   right: -200px;
 }
 #accounts.opened.opened--full::before {

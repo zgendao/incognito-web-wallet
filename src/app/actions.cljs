@@ -62,20 +62,21 @@
         confirm-state? (in-confirm-state? :send-data)
         sent-state? (get-in @state [:send-data :sent])]
     [:form.send-wrapper {:class (when confirm-state? "confirm-state")
+                         :auto-complete "off"
                          :on-submit (fn [e]
                                       (.preventDefault e)
                                       (send))} ;backend: send function                                   
       [input :send-data :reciepent-address "To" "text" "Enter address (Incognito or external)"
              [[:> Tippy {:content "Select from your accounts" :animation "shift-away"}
                 [:button {:type "button" :on-click #(do (swap! state assoc-in [:send-data :reciepent-address] "?")
-                                                        (.scrollTo js/window 0 0))}
+                                                        (.scrollTo js/window #js {:top 0 :behavior "smooth"}))}
                   [account-icon]]]]]
       [input :send-data :amount "Amount" "number"
               (if (@state :selected-coin) "0" "Select coin first")
               (cond
                 (= (@state :selected-coin) "?") ["?"]
                 (@state :selected-coin) [[:> Tippy {:content "Set maximum amount" :animation "shift-away"}
-                                          [:button {:type "button" :style {"margin-right" "15px"}
+                                          [:button {:type "button" :style {:margin-right "15px"}
                                                     :on-click #(set-max-amount)} [infinity-icon]]]
                                          (get-in @coins [(@state :selected-coin) "Symbol"])]
                 :else [[:div {:on-click #(swap! state assoc :selected-coin "?") :style {:height "100%" :width "500px"}}]])

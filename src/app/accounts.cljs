@@ -57,6 +57,9 @@
 (defn get-address [key]
   (get-in @accounts [key :keys :incognito]))
 
+(defn get-order-number [account-name]
+  (.indexOf (keys @accounts) account-name))
+
 (defn reciepent-address? [address]
   (= (get-in @state [:send-data :reciepent-address]) address))
 
@@ -75,25 +78,33 @@
                                         :errors {}
                                         :in-confirm-state false}))
 
+(defn scroll-to-account [account]
+  (js/setTimeout
+    (fn []
+      (.scrollTo (.getElementById js/document "accounts-wrapper")
+        #js {:left (- (.-offsetLeft (.getElementById js/document (str "account_" (get-order-number account)))) 100)
+             :behavior "smooth"}))
+    50))
 
 (defn switch-account [to]
   (when (@state :add-account-opened) (close-add-account-panel))
   (when (@state :delete-account-opened) (swap! state assoc :delete-account-opened false))
   (swap! state assoc :selected-account to)
   (swap! state assoc :selected-coin nil)
-  (reset-send-data))
-
-(defn remove-account [key]
-  ;(swap! accounts #(vec (concat (subvec @accounts 0 key) (subvec @accounts (inc key))))))
-  (swap! accounts #(dissoc @accounts key))
-  (-> (wallet) .-masterAccount (.removeAccount key))
-  (create-backup))
+  (reset-send-data)
+  (when to
+    (scroll-to-account to)))
 
 (defn switch-reciepent-account [to]
   (when-not (= to (@state :selected-account))
     (do
-      (swap! state assoc-in [:send-data :reciepent-address] (get-address to))
-      (swap! state assoc-in [:send-data :errors :reciepent-address] nil))))
+      (swap! state assoc-in [:send-data :reciepent-address] to)
+      (swap! state assoc-in [:send-data :errors :reciepent-address] nil)
+      (scroll-to-account (@state :selected-account)))))
+    
+(defn remove-account [key]
+  ;(swap! accounts #(vec (concat (subvec @accounts 0 key) (subvec @accounts (inc key))))))
+  (swap! accounts #(dissoc @accounts key)))
 
 ;temporary
 (defn rand-str [len]
@@ -133,7 +144,7 @@
       ;                                  :amount (rand-int 100)}]})
 
 (defn singleton-buttons-react [key]
-  (let [[source target] (useSingleton #js {:overrides #js ["allowHTML hideOnClick"]})]
+  (let [[source target] (useSingleton #js {:overrides #js ["allowHTML" "hideOnClick" "trigger"]})]
     (reagent/as-element
       [:span
         [:> Tippy {:singleton source
@@ -160,6 +171,7 @@
 
 (defn add-account-tab [import?]
   [:form {:class (when (in-confirm-state? :add-account-data) "confirm-state")
+          :auto-complete "off"
           :on-submit (fn [e] (.preventDefault e)
                              (add-account import?))}
     [input :add-account-data :name "Name" "text" "Name your account"]
@@ -191,24 +203,24 @@
       [tabs-component :add-account-tab
         {"Create new" [add-account-tab false]
          "Import existing" [add-account-tab true]}]]])
-
-(defn get-order-number [account-name]
-  (.indexOf (keys @accounts) account-name))
+         ;"Bulk import" ""}]]])
 
 (defn account-selector [name account]
   (let [self-order (get-order-number name)
         selected-account-order (get-order-number (@state :selected-account))
         balance (get-balance account)]
-    [:div.account-selector {:style {"--default-order" self-order
-                                    "--after-selected-account" (if (< self-order selected-account-order)
-                                                                (inc selected-account-order)
-                                                                selected-account-order)}
-                            :class [(when (= (@state :selected-account) name) "account-selector--active")
-                                    (when (reciepent-address? (get-address name)) "account-selector--reciepent")
-                                    (when (= (@state :delete-account-opened) name) "confirm-state")]}
+    [:div.account-selector
+      {:id (str "account_" self-order)
+       :style {"--default-order" self-order
+               "--after-selected-account" (if (< self-order selected-account-order)
+                                           (inc selected-account-order)
+                                           selected-account-order)}
+       :class [(when (= (@state :selected-account) name) "account-selector--active")
+               (when (reciepent-address? (get-address name)) "account-selector--reciepent")
+               (when (= (@state :delete-account-opened) name) "confirm-state")]}
       [:div {:on-click (when-not (= (@state :delete-account-opened) name)
                           (if (reciepent-address? "?")
-                            #(switch-reciepent-account name)
+                            #(switch-reciepent-account (get-address name))
                             #(switch-account name)))}
         [:div
           [:h6.account-selector__name name]
@@ -233,13 +245,32 @@
             true
             #(swap! state assoc :delete-account-opened false)])]]))
 
+(defn horizontal-scroll []
+  (def container (.getElementById js/document "accounts-wrapper"))
+  (.addEventListener container "wheel"
+    (fn [e]
+      (when (and (@state :selected-account) (not= "?" (get-in @state [:send-data :reciepent-address])))
+        (.preventDefault e)
+        (def containerScrollPosition (.-scrollLeft container))
+        (def newScrollPosition (+ containerScrollPosition (if (neg-int? (.-deltaY e)) -100 100)))
+        (.scrollTo container
+          #js {:top 0
+               :left newScrollPosition})))
+    #js {:passive false})
+  (.addEventListener container "scroll"
+    (fn [e]
+      (if (= (.-scrollLeft container) 0)
+        (set! (.. (.getElementById js/document "accounts") -dataset -scrolled) false)
+        (set! (.. (.getElementById js/document "accounts") -dataset -scrolled) true)))))
+
 (defn accounts-grid []
   (create-class
     {:component-did-mount
       (fn []
         (do
           (def grid (.querySelector js/document ".accounts-grid"))
-          (wrapGrid grid #js {:duration 500})))
+          (wrapGrid grid #js {:duration 500})
+          (horizontal-scroll)))
      :reagent-render
       (fn []
         (into [:div.accounts-grid]
@@ -262,7 +293,8 @@
 
 (defn accounts-container []
   [:div#accounts.container {:class [(when-not (@state :selected-account) "opened opened--full")
-                                    (when (reciepent-address? "?") "opened opened--half highlighted")]}
+                                    (when (reciepent-address? "?") "opened opened--half highlighted")]
+                            :data-scrolled false}
     [:div.accounts-header.accounts-header--manage
       [:h2 "Your accounts"]
       [:> Tippy {:content (reagent/as-element [backup-tooltip]) :interactive true
@@ -271,7 +303,7 @@
         [:> Tippy {:content "Backup all accounts" :placement "left-start" :hideOnClick false :zIndex 1}
           [:button.display-icon [save-icon]]]]]
     [:h2.accounts-header.accounts-header--reciepent "Select the account you want to send to"]
-    [:div.accounts-wrapper
+    [:div#accounts-wrapper.accounts-wrapper
       [accounts-grid]]
     [:> Tippy {:content "Manage accounts" :animation "shift-away"}
       [:button.circle-btn {:on-click (fn [] (switch-account nil))} [edit-icon]]]])

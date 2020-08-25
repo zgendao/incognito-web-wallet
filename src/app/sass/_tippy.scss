@@ -22,11 +22,8 @@
 }
 
 //moveTransition fix
-.tippy-box:not([data-animatefill]):not([data-animation='height']) {
+.tippy-box[data-state='visible']:not([data-animatefill]):not([data-animation='height']) {
   transition-delay: .3s;
-}
-.tippy-box[data-state=hidden] {
-  transition-delay: 0s;
 }
 
 //top-start arrow center

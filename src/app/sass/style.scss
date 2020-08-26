@@ -108,6 +108,10 @@ button:disabled {
   }
 }
 
+svg * {
+  transition: all .3s;
+}
+
 .inline-icon {
   display: flex;
   align-items: center;
@@ -167,10 +171,6 @@ button:disabled {
   svg {
     width: 15px;
     height: auto;
-
-    * {
-      transition: all .3s;
-    }
   }
 }
 

@@ -1,58 +1,14 @@
 (ns app.accounts
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
-            [app.icons :refer [plus-icon copy-icon qr-code-icon edit-icon delete-icon save-icon]]
+            [app.icons :refer [plus-icon copy-icon qr-code-icon edit-icon delete-icon arrow-narrow-right-icon save-icon]]
             [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component copy-to-clipboard]]
             [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state]]
             [app.actions :refer [reset-send-data]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
-            [animate-css-grid :refer [wrapGrid]]
-            ["@tippyjs/react" :default Tippy :refer (useSingleton)]
-            [goog.object :as g]
-            [async-await.core :refer [async await]]))
-
-(defn wallet [] (g/get js/window "wallet"))
-
-(defn init-wallet []
-  (swap! state assoc :accounts (.getAccounts (.-masterAccount (wallet))))
-  (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
-    (swap! accounts assoc (.-name acc) {:keys {:incognito (.-paymentAddressKeySerialized (.-keySet (.-key acc)))
-                                               :public (.-publicKeySerialized (.-keySet (.-key acc)))
-                                               :private (.-privateKeySerialized (.-keySet (.-key acc)))
-                                               :readonly (.-viewingKeySerialized (.-keySet (.-key acc)))
-                                               :validator (.-validatorKey (.-keySet (.-key acc)))}
-                                        :coins
-                                        ;(js->clj (.-privacyTokenIds acc))})
-
-                                              [{:id 0
-                                                 :amount 0
-                                                {:id 1
-                                                 :amount 1}
-                                                {:id 2
-                                                 :amount 2}
-                                                {:id 3
-                                                 :amount 40}
-                                                {:id 4
-                                                 :amount 0}}]})
-
-    (js/console.log (.-privacyTokenIds acc))))
-
-
-(defn create-backup []
-  (swap! local assoc :backupkey (.backup (wallet) (-> (wallet) .-mnemonic)))
-  (swap! state assoc :render (.getTime (js/Date.))))
-;  (init-wallet))
-
-(defn create-account []
-  (async
-   (await (-> (wallet) .-masterAccount (.addAccount (get-in @state [:add-account-data :name]))))
-   (create-backup)))
-
-(defn import-account []
-  (async
-    (await (-> (wallet) .-masterAccount (.importAccount (get-in @state [:add-account-data :name]) (get-in @state [:add-account-data :private-key]))))
-    (create-backup)))
+            ["animate-css-grid" :refer [wrapGrid]]
+            ["@tippyjs/react" :default Tippy :refer (useSingleton)]))
 
 (defn get-address [key]
   (get-in @accounts [key :keys :incognito]))
@@ -87,13 +43,14 @@
     50))
 
 (defn switch-account [to]
-  (when (@state :add-account-opened) (close-add-account-panel))
-  (when (@state :delete-account-opened) (swap! state assoc :delete-account-opened false))
-  (swap! state assoc :selected-account to)
-  (swap! state assoc :selected-coin nil)
-  (reset-send-data)
-  (when to
-    (scroll-to-account to)))
+  (when-not (= to (@state :selected-account))
+    (when (@state :add-account-opened) (close-add-account-panel))
+    (when (@state :delete-account-opened) (swap! state assoc :delete-account-opened false))
+    (swap! state assoc :selected-account to)
+    (swap! state assoc :selected-coin nil)
+    (reset-send-data)
+    (when to
+      (scroll-to-account to))))
 
 (defn switch-reciepent-account [to]
   (when-not (= to (@state :selected-account))
@@ -218,32 +175,37 @@
        :class [(when (= (@state :selected-account) name) "account-selector--active")
                (when (reciepent-address? (get-address name)) "account-selector--reciepent")
                (when (= (@state :delete-account-opened) name) "confirm-state")]}
-      [:div {:on-click (when-not (= (@state :delete-account-opened) name)
-                          (if (reciepent-address? "?")
-                            #(switch-reciepent-account (get-address name))
-                            #(switch-account name)))}
-        [:div
-          [:h6.account-selector__name name]
-          [:div.account-selector__balance
-            [:p (format "%.2f" balance) " USD"]]
-          [:div.account-selector__icon
-            [:> Tippy {:content "Remove account" :animation "shift-away"}
-              [:button.display-icon {:type "button"
-                                      :on-click (fn [e] (.stopPropagation e)
-                                                        (swap! state assoc :delete-account-opened name))}
-                [delete-icon]]]
-            [:div.confirm-background.confirm-background--large]]]
-        (when (= (@state :delete-account-opened) name)
-          [save-private-key-confirm-layer
-            "Are you sure? Don't lose access to your money!"
-            (reagent/as-element
-              [:p "Only remove " [:b name] " if you have your private keys saved in a safe place,
-                    so you can restore it later or import it in another wallet."])
-            (get-in account [:keys :private])
-            "I know what I'm doing"
-            #(remove-account name)
-            true
-            #(swap! state assoc :delete-account-opened false)])]]))
+      [:div
+        (when (reciepent-address? (get-address name))
+          [:button.account-selector--reciepent__arrow.display-icon {:on-click #(switch-reciepent-account nil)}
+            [arrow-narrow-right-icon]])
+        [:div.account-selector__inner
+          {:on-click (when-not (= (@state :delete-account-opened) name)
+                            (if (reciepent-address? "?")
+                              #(switch-reciepent-account (get-address name))
+                              #(switch-account name)))}
+          [:div
+            [:h6.account-selector__name name]
+            [:div.account-selector__balance
+              [:p (format "%.2f" balance) " USD"]]
+            [:div.account-selector__icon
+              [:> Tippy {:content "Remove account" :animation "shift-away"}
+                [:button.display-icon {:type "button"
+                                        :on-click (fn [e] (.stopPropagation e)
+                                                          (swap! state assoc :delete-account-opened name))}
+                  [delete-icon]]]
+              [:div.confirm-background.confirm-background--large]]]
+          (when (= (@state :delete-account-opened) name)
+            [save-private-key-confirm-layer
+              "Are you sure? Don't lose access to your money!"
+              (reagent/as-element
+                [:p "Only remove " [:b name] " if you have your private keys saved in a safe place,
+                      so you can restore it later or import it in another wallet."])
+              (get-in account [:keys :private])
+              "I know what I'm doing"
+              #(remove-account name)
+              true
+              #(swap! state assoc :delete-account-opened false)])]]]))
 
 (defn horizontal-scroll []
   (def container (.getElementById js/document "accounts-wrapper"))
@@ -273,7 +235,8 @@
           (horizontal-scroll)))
      :reagent-render
       (fn []
-        (into [:div.accounts-grid]
+        ;js-selectReciepent class is only used to trigger animate-css-grid (could add any class)
+        (into [:div.accounts-grid {:class (when (reciepent-address? "?") "js-selectReciepent")}]
           [
             (for [[name data] @accounts]
               ^{:key name} [account-selector name data])

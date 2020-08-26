@@ -5,12 +5,13 @@
   overflow: hidden;
 
   > div {
-    //height: calc(3 * 117px + 2 * 50px);
-    //width: calc(2 * 200px + 50px);
     height: 100%;
     width: 100%;
-    //border-width: 0px;
+  }
+  .account-selector__inner {
     cursor: default;
+    height: 100%;
+    width: 100%;
 
     &:hover {
       opacity: unset;

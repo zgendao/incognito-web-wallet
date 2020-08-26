@@ -2,7 +2,7 @@
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
             [app.accounts :refer [get-balance]]
-            [app.icons :refer [plus-icon qr-code-icon down-arrow-icon]]
+            [app.icons :refer [plus-icon qr-code-icon arrow-down-icon]]
             [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
@@ -42,7 +42,7 @@
                          so it'll use that account for staking and withdrawing earnings." target]]]]
         [:> Tippy {:content (if (@state :keys-opened) "Hide" "Show keys") :singleton target}
           [:button.circle-btn {:on-click #(swap! state assoc :keys-opened (not (@state :keys-opened)))}
-            [down-arrow-icon]]]])))
+            [arrow-down-icon]]]])))
 
 (defn header []
   [:<>

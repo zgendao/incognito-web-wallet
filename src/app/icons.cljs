@@ -14,11 +14,14 @@
 (defn account-icon [color]
   [:> SVG {:uniquifyIDs true :src "/public/images/icons/account.svg" :style {"--icon-color" "black"}}])
 
-(defn down-arrow-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/down-arrow.svg" :style {"--icon-color" "black"}}])
+(defn arrow-down-icon [color]
+  [:> SVG {:uniquifyIDs true :src "/public/images/icons/arrow-down.svg" :style {"--icon-color" "black"}}])
 
-(defn right-arrow-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/right-arrow.svg" :style {"--icon-color" "black"}}])
+(defn arrow-right-icon [color]
+  [:> SVG {:uniquifyIDs true :src "/public/images/icons/arrow-right.svg" :style {"--icon-color" "black"}}])
+
+(defn arrow-narrow-right-icon [color]
+  [:> SVG {:uniquifyIDs true :src "/public/images/icons/arrow-narrow-right.svg" :style {"--icon-color" "black"}}])
 
 (defn edit-icon [color]
   [:> SVG {:uniquifyIDs true :src "/public/images/icons/edit.svg" :style {"--icon-color" "black"}}])

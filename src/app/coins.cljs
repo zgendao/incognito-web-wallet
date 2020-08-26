@@ -1,7 +1,7 @@
 (ns app.coins
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
-            [app.icons :refer [right-arrow-icon plus-icon]]
+            [app.icons :refer [arrow-right-icon plus-icon]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
             ["@tippyjs/react" :default Tippy]))
@@ -28,7 +28,7 @@
               [:p "$" priceInUSD]
               [:p "$" (format "%.2f" (* amount priceInUSD))]]]]]
       [:button.circle-btn {:on-click #(switch-coin nil)}
-        [right-arrow-icon]]]))
+        [arrow-right-icon]]]))
 
 (defn coins-container []
   (into [:div.coins-container {:class [(when (= (@state :selected-coin) "?") "highlighted")]}]

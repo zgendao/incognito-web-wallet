@@ -77,44 +77,56 @@
 .account-selector {
   position: relative;
   order: var(--default-order);
+  animation: fadeIn .3s ease-in 0s 1 normal forwards;
+}
+.account-selector__inner {
+  position: relative;
+  background-color: var(--color-background-secondary);
+  padding: 15px;
+  border-radius: 20px;
+  border: 5px solid transparent;
+  overflow: hidden;
+  cursor: pointer;
+  transition: padding .5s, height .0s .5s, width 0s .5s, border-color .2s;
 
-  > div {
-    position: relative;
-    background-color: var(--color-background-secondary);
-    padding: 15px;
-    border-radius: 20px;
-    border: 5px solid transparent;
-    cursor: pointer;
-    overflow: hidden;
-    transition: padding .5s, height .0s .5s, width 0s .5s, border-color .2s;
+  &:hover {
+    opacity: 0.8;
 
-    &:hover {
-      opacity: 0.8;
-
-      .account-selector__icon svg {
-        opacity: 1;
-      }
+    .account-selector__icon svg {
+      opacity: 1;
     }
   }
 }
-.account-selector--active > div {
+.account-selector--active .account-selector__inner {
   border: 5px solid var(--color-primary);
 }
 .account-selector--reciepent {
   order: var(--after-selected-account);
   
-  > div {
+  .account-selector__inner {
     border: 5px dashed var(--color-primary);
   }
+}
+.account-selector--reciepent__arrow {
+  opacity: 0;
+  position: absolute;
+  left: -43px;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: fadeIn .3s ease-in .5s 1 normal forwards;
 
-  &:before {
-    content: "->";
-    opacity: 0;
-    position: absolute;
-    left: -35px;
-    top: 50%;
-    transform: translateY(-50%);
-    animation: fadeIn .3s ease-in .5s 1 normal forwards;
+  //svg animation
+  &:hover svg {
+    path:first-child {
+      transform: translateX(5px);
+      opacity: 0;
+    }
+    path:nth-child(2) {
+      transform: translate(-15px, -10px) scale(1.5);
+    }
+    path:nth-child(3) {
+      transform: translate(-15px, -3px) scale(1.5);
+    }
   }
 }
 
@@ -189,7 +201,7 @@
       grid-auto-rows: minmax(100px, auto);
     }
 
-    .account-selector > div {
+    .account-selector .account-selector__inner {
       padding: 25px 20px;
     }
     

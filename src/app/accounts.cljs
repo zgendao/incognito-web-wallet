@@ -49,8 +49,16 @@
     (swap! state assoc :selected-account to)
     (swap! state assoc :selected-coin nil)
     (reset-send-data)
-    (when to
-      (scroll-to-account to))))
+    (def el (.getElementById js/document "accounts-grid"))
+    (if to
+      (do (scroll-to-account to)
+          (js/setTimeout
+            #(.setProperty (.-style el) "width" (str (.-offsetWidth el) "px"))
+            500))
+      (js/setTimeout
+        #(.removeProperty (.-style el) "width")
+        500))))
+      
 
 (defn switch-reciepent-account [to]
   (when-not (= to (@state :selected-account))
@@ -225,13 +233,13 @@
     {:component-did-mount
       (fn []
         (do
-          (def grid (.querySelector js/document ".accounts-grid"))
+          (def grid (.getElementById js/document "accounts-grid"))
           (wrapGrid grid #js {:duration 500})
           (horizontal-scroll)))
      :reagent-render
       (fn []
         ;js-selectReciepent class is only used to trigger animate-css-grid (could add any class)
-        (into [:div.accounts-grid {:class (when (reciepent-address? "?") "js-selectReciepent")}]
+        (into [:div#accounts-grid.accounts-grid {:class (when (reciepent-address? "?") "js-selectReciepent")}]
           [
             (for [[name data] @accounts]
               ^{:key name} [account-selector name data])
@@ -260,7 +268,8 @@
                  :allowHTML true :trigger "click" :animation "height"}
         [:> Tippy {:content "Backup all accounts" :placement "left-start" :hideOnClick false :zIndex 1}
           [:button.display-icon [save-icon]]]]]
-    [:h2.accounts-header.accounts-header--reciepent "Select the account you want to send to"]
+    [:div.accounts-header.accounts-header--reciepent
+      [:h2 "Select the account you want to send to"]]
     [:div#accounts-wrapper.accounts-wrapper
       [accounts-grid]]
     [:> Tippy {:content "Manage accounts" :animation "shift-away"}

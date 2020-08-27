@@ -294,6 +294,7 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   margin-top: 20px;
   scrollbar-width: thin;
   transition: color 0.3s;
+  overflow: overlay;
   scrollbar-color: rgba(53, 53, 53, 0.3) transparent;
   color: rgba(53, 53, 53, 0.3);
 }
@@ -359,6 +360,27 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   outline: none;
 }
 
+html, body {
+  scrollbar-width: thin;
+  transition: color 0.3s;
+  overflow: overlay;
+  scrollbar-color: var(--color-text-default-soft) transparent;
+  color: var(--color-text-default-soft);
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+  background: transparent;
+}
+html::-webkit-scrollbar-track, body::-webkit-scrollbar-track {
+  display: none;
+}
+html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  border-radius: 15px;
+  box-shadow: inset 0 0 0 10px;
+}
+
 body {
   margin: 0;
   font-family: "SF Text";
@@ -371,6 +393,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 0 20px;
+  color: var(--color-text-default);
 }
 
 nav div {
@@ -524,7 +547,6 @@ svg * {
 .add-account-wrapper {
   opacity: 0;
   visibility: hidden;
-  width: 100px;
   position: relative;
   display: flex;
   align-items: flex-start;
@@ -534,7 +556,7 @@ svg * {
   background-color: var(--color-background);
   overflow: hidden;
   cursor: pointer;
-  transition: background-color 0.5s, border 5s, opacity 0.3s 0s, visibility 0s 0.3s, width 0.3s;
+  transition: background-color 0.5s, border 5s, opacity 0.3s 0s, visibility 0s 0.3s;
 }
 
 .add-account {
@@ -658,30 +680,44 @@ svg * {
   z-index: 10;
   transition: z-index 0s 0s, 0.5s padding;
 }
-#accounts::after, #accounts::before {
+#accounts::after {
   content: "";
   position: absolute;
-  box-shadow: inset -160px 0 60px -60px var(--color-background);
   top: 0;
   bottom: 0;
   right: 0;
   left: 0;
   z-index: 1;
   pointer-events: none;
-  transition: right 0.5s, left 0.2s, box-shadow 0.5s;
+  opacity: 1;
+  transition: transform 0.5s, opacity 0s 0.5s;
+  will-change: transform;
+  box-shadow: inset -160px 0 60px -60px var(--color-background);
 }
 #accounts::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+  transition: transform 0.5s, opacity 0s 0.5s;
+  will-change: transform;
   box-shadow: inset 100px 0 60px -60px var(--color-background);
 }
 #accounts[data-scrolled=false]::before {
-  left: -100px;
+  transform: translateX(-100px);
 }
 #accounts > .circle-btn {
   position: absolute;
   right: 0;
   top: 52px;
   z-index: 2;
-  transition: right 0.5s;
+  transition: transform 0.5s;
+  will-change: transform;
 }
 
 .accounts-header {
@@ -695,16 +731,33 @@ svg * {
   z-index: 3;
   transition: opacity 0.2s 0s, visibility 0s 0.3s;
 }
-.accounts-header h2 {
+.accounts-header * {
   margin: 0;
+  z-index: 2;
+}
+.accounts-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+  transition: transform 0.5s, opacity 0s 0.5s;
+  will-change: transform;
+  bottom: unset;
+  height: 100px;
+  box-shadow: inset 0 100px 20px -20px var(--color-background);
 }
 
 .accounts-wrapper {
-  overflow: overlay;
   overflow-x: auto;
   height: 100px;
   scrollbar-width: thin;
   transition: color 0.3s, height 0.5s, margin 0.5s, color 0.3s;
+  overflow: overlay;
   color: transparent;
   scrollbar-color: transparent transparent;
 }
@@ -725,17 +778,29 @@ svg * {
   scrollbar-color: var(--color-background-secondary) transparent;
   color: var(--color-background-secondary);
 }
+.accounts-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.5s, opacity 0s 0.5s;
+  will-change: transform;
+  box-shadow: inset 0 -80px 20px -20px var(--color-background);
+}
 
 .accounts-grid {
-  width: fit-content;
-  width: -moz-fit-content;
-  display: grid;
+  display: inline-grid;
   grid-auto-columns: calc((100vw - 40px - 3 * 50px) / 4);
   grid-auto-flow: column;
   margin: 0;
   gap: 50px;
   color: var(--color-text-default);
-  transition: margin 0.5s;
+  transition: margin 0.5s, width 0s;
 }
 @media screen and (min-width: 1240px) {
   .accounts-grid {
@@ -757,7 +822,7 @@ svg * {
   border: 5px solid transparent;
   overflow: hidden;
   cursor: pointer;
-  transition: padding 0.5s, height 0s 0.5s, width 0s 0.5s, border-color 0.2s;
+  transition: padding 0.5s, border-color 0.2s;
 }
 .account-selector__inner:hover {
   opacity: 0.8;
@@ -803,7 +868,7 @@ svg * {
 .account-selector__balance {
   height: 0;
   overflow: hidden;
-  transition: all 0.5s;
+  transition: height 0.5s;
 }
 .account-selector__balance p {
   margin: 10px 0 0 0;
@@ -820,12 +885,20 @@ svg * {
   transition: opacity 0.2s;
 }
 
+#accounts.opened::before {
+  transform: translateX(-100px);
+}
+#accounts.opened::after {
+  transform: translateX(200px);
+}
 #accounts.opened .circle-btn {
-  right: -50px;
+  transform: translateX(50px);
 }
 #accounts.opened .accounts-grid {
+  width: 100% !important;
   grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
   grid-auto-flow: unset;
+  transition: margin 0.5s, width 0.5s;
 }
 @media screen and (min-width: 1240px) {
   #accounts.opened .accounts-grid {
@@ -837,12 +910,6 @@ svg * {
 }
 #accounts.opened.opened--full {
   padding: 80px 0 0 0;
-}
-#accounts.opened.opened--full::after {
-  right: -200px;
-}
-#accounts.opened.opened--full::before {
-  box-shadow: inset 0 170px 20px -20px var(--color-background);
 }
 #accounts.opened.opened--full .accounts-wrapper {
   height: calc(100vh - 150px);
@@ -857,6 +924,7 @@ svg * {
 #accounts.opened.opened--full .accounts-grid {
   margin: 100px 0;
   grid-auto-rows: minmax(100px, auto);
+  transition: margin 0.5s, width 0.5s;
 }
 #accounts.opened.opened--full .account-selector .account-selector__inner {
   padding: 25px 20px;
@@ -868,17 +936,16 @@ svg * {
   visibility: visible;
 }
 #accounts.opened.opened--full .add-account-wrapper {
-  width: 100%;
   min-height: 120px;
   opacity: 1;
   visibility: visible;
   transition: background-color 0.5s, border 0.5s, opacity 0.3s 0.5s, visibility 0s 0.4s;
 }
-#accounts.opened.opened--half::before {
-  box-shadow: inset 0 140px 20px -20px var(--color-background);
+#accounts.opened.opened--half .accounts-wrapper {
+  height: calc(30vh + 70px);
 }
-#accounts.opened.opened--half::after {
-  box-shadow: inset 0 -80px 20px -20px var(--color-background);
+#accounts.opened.opened--half .accounts-wrapper::after {
+  opacity: 1;
 }
 #accounts.opened.opened--half .accounts-header--reciepent {
   opacity: 1;
@@ -886,9 +953,6 @@ svg * {
 }
 #accounts.opened.opened--half .accounts-grid {
   margin: 100px 0;
-}
-#accounts.opened.opened--half .accounts-wrapper {
-  height: calc(30vh + 70px);
 }
 
 @keyframes fadeIn {
@@ -984,12 +1048,18 @@ svg * {
 .header__keys {
   justify-content: flex-end;
 }
+.header__keys .circle-btn {
+  z-index: 3;
+}
 
 .keys-wrapper {
   position: relative;
   height: 46px;
   width: 100%;
   margin-right: 20px;
+  z-index: 2;
+  transform: translate(40px, -2px);
+  transition: transform 0.2s ease-in-out;
 }
 
 .keys-modal {
@@ -999,21 +1069,39 @@ svg * {
   background-color: var(--color-background);
   border-radius: 20px;
   z-index: 2;
-  transition: padding 0.3s, box-shadow 0.3s;
-}
-.keys-modal > div:not(:first-child) {
-  height: 0;
+  padding: 20px 40px;
+  animation-name: vertical-collapse;
+  transition: padding 0.2s;
   overflow: hidden;
-  transition: height 0.3s;
+}
+.keys-modal > div {
+  animation-name: vertical-collapseInverse;
+}
+.keys-modal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 20px;
+  opacity: 0;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
+  transition: opacity 0.2s;
 }
 
-.header__keys.opened .keys-modal {
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
-  padding: 20px 40px;
-  z-index: 5;
+.header__keys.opened .keys-wrapper {
+  transform: translate(0px, 0px);
 }
-.header__keys.opened .keys-modal > div:not(:first-child) {
-  height: calc(3 * (1.3em + 20px));
+.header__keys.opened .keys-modal {
+  z-index: 5;
+  animation-name: vertical-expand;
+}
+.header__keys.opened .keys-modal > div {
+  animation-name: vertical-expandInverse;
+}
+.header__keys.opened .keys-modal::before {
+  opacity: 1;
 }
 .header__keys.opened .circle-btn svg line:first-child {
   transform: translateX(21px);
@@ -1040,6 +1128,248 @@ svg * {
   max-width: 190px;
 }
 
+.vertical-expand, .vertical-expandInverse {
+  transform-origin: left top;
+  animation-fill-mode: both;
+}
+
+.vertical-expand {
+  will-change: transform;
+  animation-duration: 200ms;
+  animation-timing-function: step-end;
+}
+
+.vertical-expandInverse {
+  will-change: transform;
+  contain: content;
+  animation-duration: 200ms;
+  animation-timing-function: step-end;
+}
+
+@keyframes vertical-expand {
+  0% {
+    transform: scaleY(0.2);
+  }
+  5.88235% {
+    transform: scaleY(0.20537);
+  }
+  11.76471% {
+    transform: scaleY(0.22199);
+  }
+  17.64706% {
+    transform: scaleY(0.2505);
+  }
+  23.52941% {
+    transform: scaleY(0.29124);
+  }
+  29.41176% {
+    transform: scaleY(0.34401);
+  }
+  35.29412% {
+    transform: scaleY(0.40781);
+  }
+  41.17647% {
+    transform: scaleY(0.48067);
+  }
+  47.05882% {
+    transform: scaleY(0.55952);
+  }
+  52.94118% {
+    transform: scaleY(0.64048);
+  }
+  58.82353% {
+    transform: scaleY(0.71933);
+  }
+  64.70588% {
+    transform: scaleY(0.79219);
+  }
+  70.58824% {
+    transform: scaleY(0.85599);
+  }
+  76.47059% {
+    transform: scaleY(0.90876);
+  }
+  82.35294% {
+    transform: scaleY(0.9495);
+  }
+  88.23529% {
+    transform: scaleY(0.97801);
+  }
+  94.11765% {
+    transform: scaleY(0.99463);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes vertical-expandInverse {
+  0% {
+    transform: scaleY(5);
+  }
+  5.88235% {
+    transform: scaleY(4.86926);
+  }
+  11.76471% {
+    transform: scaleY(4.50471);
+  }
+  17.64706% {
+    transform: scaleY(3.99202);
+  }
+  23.52941% {
+    transform: scaleY(3.43359);
+  }
+  29.41176% {
+    transform: scaleY(2.90689);
+  }
+  35.29412% {
+    transform: scaleY(2.45212);
+  }
+  41.17647% {
+    transform: scaleY(2.08043);
+  }
+  47.05882% {
+    transform: scaleY(1.78725);
+  }
+  52.94118% {
+    transform: scaleY(1.56133);
+  }
+  58.82353% {
+    transform: scaleY(1.39018);
+  }
+  64.70588% {
+    transform: scaleY(1.26232);
+  }
+  70.58824% {
+    transform: scaleY(1.16824);
+  }
+  76.47059% {
+    transform: scaleY(1.1004);
+  }
+  82.35294% {
+    transform: scaleY(1.05319);
+  }
+  88.23529% {
+    transform: scaleY(1.02248);
+  }
+  94.11765% {
+    transform: scaleY(1.0054);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes vertical-collapse {
+  0% {
+    transform: scaleY(1);
+  }
+  5.88235% {
+    transform: scaleY(0.99463);
+  }
+  11.76471% {
+    transform: scaleY(0.97801);
+  }
+  17.64706% {
+    transform: scaleY(0.9495);
+  }
+  23.52941% {
+    transform: scaleY(0.90876);
+  }
+  29.41176% {
+    transform: scaleY(0.85599);
+  }
+  35.29412% {
+    transform: scaleY(0.79219);
+  }
+  41.17647% {
+    transform: scaleY(0.71933);
+  }
+  47.05882% {
+    transform: scaleY(0.64048);
+  }
+  52.94118% {
+    transform: scaleY(0.55952);
+  }
+  58.82353% {
+    transform: scaleY(0.48067);
+  }
+  64.70588% {
+    transform: scaleY(0.40781);
+  }
+  70.58824% {
+    transform: scaleY(0.34401);
+  }
+  76.47059% {
+    transform: scaleY(0.29124);
+  }
+  82.35294% {
+    transform: scaleY(0.2505);
+  }
+  88.23529% {
+    transform: scaleY(0.22199);
+  }
+  94.11765% {
+    transform: scaleY(0.20537);
+  }
+  100% {
+    transform: scaleY(0.2);
+  }
+}
+@keyframes vertical-collapseInverse {
+  0% {
+    transform: scaleY(1);
+  }
+  5.88235% {
+    transform: scaleY(1.0054);
+  }
+  11.76471% {
+    transform: scaleY(1.02248);
+  }
+  17.64706% {
+    transform: scaleY(1.05319);
+  }
+  23.52941% {
+    transform: scaleY(1.1004);
+  }
+  29.41176% {
+    transform: scaleY(1.16824);
+  }
+  35.29412% {
+    transform: scaleY(1.26232);
+  }
+  41.17647% {
+    transform: scaleY(1.39018);
+  }
+  47.05882% {
+    transform: scaleY(1.56133);
+  }
+  52.94118% {
+    transform: scaleY(1.78725);
+  }
+  58.82353% {
+    transform: scaleY(2.08043);
+  }
+  64.70588% {
+    transform: scaleY(2.45212);
+  }
+  70.58824% {
+    transform: scaleY(2.90689);
+  }
+  76.47059% {
+    transform: scaleY(3.43359);
+  }
+  82.35294% {
+    transform: scaleY(3.99202);
+  }
+  88.23529% {
+    transform: scaleY(4.50471);
+  }
+  94.11765% {
+    transform: scaleY(4.86926);
+  }
+  100% {
+    transform: scaleY(5);
+  }
+}
 .coins-container {
   flex-direction: column;
   border-radius: 20px;

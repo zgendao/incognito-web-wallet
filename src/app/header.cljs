@@ -27,10 +27,10 @@
                    :delay #js [0 100]
                    :moveTransition "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0s"}]
         [:div.keys-wrapper
-          [:div.keys-modal
-            [key-elem "Incognito address:" :incognito
-                      "Use it to recieve any cryptocurrency from another Incognito address." target]
-            [:div
+          [:div.keys-modal.vertical-expand
+            [:div.vertical-expandInverse
+              [key-elem "Incognito address:" :incognito
+                        "Use it to recieve any cryptocurrency from another Incognito address." target]
               [key-elem "Public key:" :public
                         "Used for authentication and can be shared with third-party services." target]
               [key-elem "Private key:" :private

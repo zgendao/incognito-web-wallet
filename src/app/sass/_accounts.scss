@@ -7,23 +7,17 @@
   overflow: hidden;
   @include highlightable(.5s padding);
 
-  &::after, &::before {
-    content: "";
-    position: absolute;
+  //left and right fade layers
+  &::after {
+    @include pseudo(false);
     box-shadow: inset -160px 0 60px -60px var(--color-background);
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    z-index: 1;
-    pointer-events: none;
-    transition: right .5s, left .2s, box-shadow .5s;
   }
   &::before {
+    @include pseudo(false);
     box-shadow: inset 100px 0 60px -60px var(--color-background);
   }
   &[data-scrolled=false]::before {
-    left: -100px;
+    transform: translateX(-100px);
   }
 
   > .circle-btn {
@@ -31,7 +25,8 @@
     right: 0;
     top: 52px;
     z-index: 2;
-    transition: right .5s;
+    transition: transform .5s;
+    will-change: transform;
   }
 }
 
@@ -46,28 +41,40 @@
   z-index: 3;
   transition: opacity .2s 0s, visibility 0s .3s;
 
-  h2 {
+  * {
     margin: 0;
+    z-index: 2;
+  }
+
+  //top fade layer under header
+  &::before {
+    @include pseudo(false);
+    bottom: unset;
+    height: 100px;
+    box-shadow: inset 0 100px 20px -20px var(--color-background);
   }
 }
 
 .accounts-wrapper {
-  overflow: overlay;
   overflow-x: auto;
   height: 100px;
   @include lightScrollbar(var(--color-background-secondary), true, height .5s, margin .5s, color .3s);
+  
+  //bottom fade layer in reciepent selection view
+  &::after {
+    @include pseudo(true);
+    box-shadow: inset 0 -80px 20px -20px var(--color-background);
+  }
 }
 
 .accounts-grid {
-  width: fit-content;
-  width: -moz-fit-content;
-  display: grid;
+  display: inline-grid;
   grid-auto-columns: calc((100vw - 40px - 3 * 50px) / 4);
   grid-auto-flow: column;
   margin: 0;
   gap: 50px;
   color: var(--color-text-default);
-  transition: margin .5s;
+  transition: margin .5s, width 0s;
 
   @media screen and (min-width: 1240px) {
     grid-auto-columns: 200px;
@@ -87,7 +94,7 @@
   border: 5px solid transparent;
   overflow: hidden;
   cursor: pointer;
-  transition: padding .5s, height .0s .5s, width 0s .5s, border-color .2s;
+  transition: padding .5s, border-color .2s;
 
   &:hover {
     opacity: 0.8;
@@ -137,7 +144,7 @@
 .account-selector__balance {
   height: 0;
   overflow: hidden;
-  transition: all .5s;
+  transition: height .5s;
   
   p {
     margin: 10px 0 0 0;
@@ -156,14 +163,22 @@
   }
 }
 
-#accounts.opened {
-  .circle-btn {
-    right: -50px;
+#accounts.opened {  
+  &::before {
+    transform: translateX(-100px);
   }
-  
+  &::after {
+    transform: translateX(200px);
+  }
+  .circle-btn {
+    transform: translateX(50px);
+  }
+
   .accounts-grid {
+    width: 100% !important;
     grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
     grid-auto-flow: unset;
+    transition: margin .5s, width .5s;
 
     @media screen and (min-width: 1240px) {
       grid-template-columns: repeat(5, 200px);
@@ -176,13 +191,6 @@
 
   &.opened--full {
     padding: 80px 0 0 0;
-
-    &::after {
-      right: -200px;
-    }  
-    &::before {
-      box-shadow: inset 0 170px 20px -20px var(--color-background);
-    }
 
     .accounts-wrapper {
       height: calc(100vh - 150px);
@@ -199,6 +207,7 @@
     .accounts-grid {
       margin: 100px 0;
       grid-auto-rows: minmax(100px, auto);
+      transition: margin .5s, width .5s;
     }
 
     .account-selector .account-selector__inner {
@@ -214,7 +223,6 @@
     }
 
     .add-account-wrapper {
-      width: 100%;
       //when first in new row
       min-height: 120px;
       opacity: 1;
@@ -224,14 +232,14 @@
   }
 
   &.opened--half {
-    &::before {
-      box-shadow: inset 0 140px 20px -20px var(--color-background);
+    .accounts-wrapper {
+      height: calc(30vh + 70px);
+
+      &::after {
+        opacity: 1;
+      }
     }
-    
-    &::after {
-      box-shadow: inset 0 -80px 20px -20px var(--color-background);
-    }
-  
+
     .accounts-header--reciepent {
       opacity: 1;
       visibility: visible;
@@ -239,10 +247,6 @@
 
     .accounts-grid {
       margin: 100px 0;
-    }
-
-    .accounts-wrapper {
-      height: calc(30vh + 70px);
     }
   }
 }

@@ -1,6 +1,7 @@
 @mixin lightScrollbar ($color, $onlyShowOnHover, $additionalTransitions...) {
   scrollbar-width: thin;
   transition: color .3s, $additionalTransitions;
+  overflow: overlay;
 
   &::-webkit-scrollbar {
     height: 5px;
@@ -38,4 +39,22 @@
     z-index: 10;
     transition: z-index 0s 0s, $additionalTransitions;
   }
+}
+
+@mixin pseudo ($animateOpacity) {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+  @if $animateOpacity {
+    opacity: 0;
+  } @else {
+    opacity: 1;
+  }
+  transition: transform .5s, opacity 0s .5s;
+  will-change: transform;
 }

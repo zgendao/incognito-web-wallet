@@ -1,5 +1,9 @@
 .header__keys {
   justify-content: flex-end;
+
+  .circle-btn {
+    z-index: 3;
+  }
 }
 
 .keys-wrapper {
@@ -7,6 +11,9 @@
   height: 46px;
   width: 100%;
   margin-right: 20px;
+  z-index: 2;
+  transform: translate(40px, -2px);
+  transition: transform .2s ease-in-out;
 }
 
 .keys-modal {
@@ -16,23 +23,43 @@
   background-color: var(--color-background);
   border-radius: 20px;
   z-index: 2;
-  transition: padding .3s, box-shadow .3s;
+  padding: 20px 40px;
+  animation-name: vertical-collapse;
+  transition: padding .2s;
+  overflow: hidden;
 
-  > div:not(:first-child) {
-    height: 0;
-    overflow: hidden;
-    transition: height .3s;
+  > div {
+    animation-name: vertical-collapseInverse;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border-radius: 20px;
+    opacity: 0;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
+    transition: opacity .2s;
   }
 }
 
 .header__keys.opened {
+  .keys-wrapper {
+    transform: translate(0px, 0px);
+  }
   .keys-modal {
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
-    padding: 20px 40px;
     z-index: 5;
-  
-    > div:not(:first-child) {
-      height: calc(3 * (1.3em + 20px));
+    animation-name: vertical-expand;
+
+    > div {
+      animation-name: vertical-expandInverse;
+    }
+
+    &::before {
+      opacity: 1;
     }
   }
   
@@ -65,5 +92,250 @@
       color: var(--color-primary);
       max-width: 190px;
     }
+  }
+}
+
+.vertical-expand, .vertical-expandInverse {
+  transform-origin: left top;
+  animation-fill-mode: both;
+}
+
+.vertical-expand {
+  will-change: transform;
+  animation-duration: 200ms;
+  animation-timing-function: step-end;
+}
+
+.vertical-expandInverse {
+  will-change: transform;
+  contain: content;
+  animation-duration: 200ms;
+  animation-timing-function: step-end;
+}
+
+@keyframes vertical-expand {
+  0% {
+    transform: scaleY(0.2);
+  }
+  5.88235% {
+    transform: scaleY(0.20537);
+  }
+  11.76471% {
+    transform: scaleY(0.22199);
+  }
+  17.64706% {
+    transform: scaleY(0.2505);
+  }
+  23.52941% {
+    transform: scaleY(0.29124);
+  }
+  29.41176% {
+    transform: scaleY(0.34401);
+  }
+  35.29412% {
+    transform: scaleY(0.40781);
+  }
+  41.17647% {
+    transform: scaleY(0.48067);
+  }
+  47.05882% {
+    transform: scaleY(0.55952);
+  }
+  52.94118% {
+    transform: scaleY(0.64048);
+  }
+  58.82353% {
+    transform: scaleY(0.71933);
+  }
+  64.70588% {
+    transform: scaleY(0.79219);
+  }
+  70.58824% {
+    transform: scaleY(0.85599);
+  }
+  76.47059% {
+    transform: scaleY(0.90876);
+  }
+  82.35294% {
+    transform: scaleY(0.9495);
+  }
+  88.23529% {
+    transform: scaleY(0.97801);
+  }
+  94.11765% {
+    transform: scaleY(0.99463);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes vertical-expandInverse {
+  0% {
+    transform: scaleY(5);
+  }
+  5.88235% {
+    transform: scaleY(4.86926);
+  }
+  11.76471% {
+    transform: scaleY(4.50471);
+  }
+  17.64706% {
+    transform: scaleY(3.99202);
+  }
+  23.52941% {
+    transform: scaleY(3.43359);
+  }
+  29.41176% {
+    transform: scaleY(2.90689);
+  }
+  35.29412% {
+    transform: scaleY(2.45212);
+  }
+  41.17647% {
+    transform: scaleY(2.08043);
+  }
+  47.05882% {
+    transform: scaleY(1.78725);
+  }
+  52.94118% {
+    transform: scaleY(1.56133);
+  }
+  58.82353% {
+    transform: scaleY(1.39018);
+  }
+  64.70588% {
+    transform: scaleY(1.26232);
+  }
+  70.58824% {
+    transform: scaleY(1.16824);
+  }
+  76.47059% {
+    transform: scaleY(1.1004);
+  }
+  82.35294% {
+    transform: scaleY(1.05319);
+  }
+  88.23529% {
+    transform: scaleY(1.02248);
+  }
+  94.11765% {
+    transform: scaleY(1.0054);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes vertical-collapse {
+  0% {
+    transform: scaleY(1);
+  }
+  5.88235% {
+    transform: scaleY(0.99463);
+  }
+  11.76471% {
+    transform: scaleY(0.97801);
+  }
+  17.64706% {
+    transform: scaleY(0.9495);
+  }
+  23.52941% {
+    transform: scaleY(0.90876);
+  }
+  29.41176% {
+    transform: scaleY(0.85599);
+  }
+  35.29412% {
+    transform: scaleY(0.79219);
+  }
+  41.17647% {
+    transform: scaleY(0.71933);
+  }
+  47.05882% {
+    transform: scaleY(0.64048);
+  }
+  52.94118% {
+    transform: scaleY(0.55952);
+  }
+  58.82353% {
+    transform: scaleY(0.48067);
+  }
+  64.70588% {
+    transform: scaleY(0.40781);
+  }
+  70.58824% {
+    transform: scaleY(0.34401);
+  }
+  76.47059% {
+    transform: scaleY(0.29124);
+  }
+  82.35294% {
+    transform: scaleY(0.2505);
+  }
+  88.23529% {
+    transform: scaleY(0.22199);
+  }
+  94.11765% {
+    transform: scaleY(0.20537);
+  }
+  100% {
+    transform: scaleY(0.2);
+  }
+}
+
+@keyframes vertical-collapseInverse {
+  0% {
+    transform: scaleY(1);
+  }
+  5.88235% {
+    transform: scaleY(1.0054);
+  }
+  11.76471% {
+    transform: scaleY(1.02248);
+  }
+  17.64706% {
+    transform: scaleY(1.05319);
+  }
+  23.52941% {
+    transform: scaleY(1.1004);
+  }
+  29.41176% {
+    transform: scaleY(1.16824);
+  }
+  35.29412% {
+    transform: scaleY(1.26232);
+  }
+  41.17647% {
+    transform: scaleY(1.39018);
+  }
+  47.05882% {
+    transform: scaleY(1.56133);
+  }
+  52.94118% {
+    transform: scaleY(1.78725);
+  }
+  58.82353% {
+    transform: scaleY(2.08043);
+  }
+  64.70588% {
+    transform: scaleY(2.45212);
+  }
+  70.58824% {
+    transform: scaleY(2.90689);
+  }
+  76.47059% {
+    transform: scaleY(3.43359);
+  }
+  82.35294% {
+    transform: scaleY(3.99202);
+  }
+  88.23529% {
+    transform: scaleY(4.50471);
+  }
+  94.11765% {
+    transform: scaleY(4.86926);
+  }
+  100% {
+    transform: scaleY(5);
   }
 }

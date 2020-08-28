@@ -42,17 +42,35 @@ div[data-tippy-root]:nth-last-of-type(2) {
   background-color: transparent;
 }
 
+.tippy-box[data-animation='height'],
+.tippy-box[data-animation='height'] > .tippy-content,
+.tippy-box[data-animation='height'] > .tippy-content > div 
+.tippy-box[data-animation='height'] > .tippy-content .tippy-content-wrapper {
+  transform-origin: left top;
+  animation-fill-mode: both;
+  animation-duration: .2s;
+}
+
 .tippy-box[data-animation='height'] {
+  animation-name: vertical-collapse;
   opacity: 0;
+  overflow: hidden;
 
   > .tippy-content {
     display: flex;
-    max-height: 0;
     padding: 20px;
-    overflow: hidden;
+    max-height: 400px;
+    animation-name: vertical-collapse-inverse;
     transition-property: transform, visibility, opacity, max-height;
 
     > div {
+      display: flex;
+      overflow: hidden;
+      animation-name: vertical-collapse;
+    }
+
+    .tippy-content-wrapper {
+      animation-name: vertical-collapse-inverse;
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -86,12 +104,42 @@ div[data-tippy-root]:nth-last-of-type(2) {
   }
   .btn {
     box-shadow: 0px 5px 6px 2px #0000002b;
+
+    &::after {
+      content: "✓ Copied";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: inherit;
+      border-radius: inherit;
+      background-color: inherit;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s, visibility 0s .2s;
+    }
+
+    &[data-copied]::after {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .2s, visibility 0s 0s;
+    }
   }
 }
 .tippy-box[data-animation='height'][data-state='visible'] {
+  animation-name: vertical-expand;
   opacity: 1;
   
   > .tippy-content {
-    max-height: 400px;
+    animation-name: vertical-expand-inverse;
+
+    > div {
+      animation-name: vertical-expand;
+    }
+
+    .tippy-content-wrapper {
+      animation-name: vertical-expand-inverse;
+    }
   }
 }

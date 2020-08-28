@@ -76,34 +76,35 @@
   (apply str (take len (repeatedly #(char (+ (rand 26) 65))))))
 
 (defn add-account [import?]
-  (if-not (in-confirm-state? :add-account-data)
-    (do
-      (swap! state assoc-in [:add-account-data :errors] {})
-      
-      (when (clojure.string/blank? (get-in @state [:add-account-data :name]))
-        (show-error :add-account-data :name "Please enter a name for your account"))
-      (when (contains? (set (keys @accounts)) (get-in @state [:add-account-data :name]))
-        (show-error :add-account-data :name "You already have an account with this name. Please choose another one!"))
-      (when import?
-        (when (clojure.string/blank? (get-in @state [:add-account-data :private-key]))
-          (show-error :add-account-data :private-key "Please enter the private key of the account you want to import")))
-      
-      (when (no-errors? :add-account-data) 
-        (do
-          ,,, ;backend: generate or import
-          (to-confirm-state :add-account-data))))
-    (do
-      (swap! accounts assoc (get-in @state [:add-account-data :name])
-                            {:keys {:incognito (rand-str 100)
-                                    :public (rand-str 100)
-                                    :private (rand-str 100)
-                                    :readonly (rand-str 100)
-                                    :validator (rand-str 100)}
-                             :coins [{:id 0
-                                       :amount 0}
-                                     {:id (+ 1 (rand-int 5))
-                                       :amount (rand-int 100)}]})
-      (close-add-account-panel))))
+  (let [new-account-name (get-in @state [:add-account-data :name])]
+    (if-not (in-confirm-state? :add-account-data)
+      (do
+        (swap! state assoc-in [:add-account-data :errors] {})
+        
+        (when (clojure.string/blank? new-account-name)
+          (show-error :add-account-data :name "Please enter a name for your account"))
+        (when (contains? (set (keys @accounts)) new-account-name)
+          (show-error :add-account-data :name "You already have an account with this name. Please choose another one!"))
+        (when import?
+          (when (clojure.string/blank? (get-in @state [:add-account-data :private-key]))
+            (show-error :add-account-data :private-key "Please enter the private key of the account you want to import")))
+        
+        (when (no-errors? :add-account-data) 
+          (do
+            ,,, ;backend: generate or import
+            (to-confirm-state :add-account-data))))
+      (do
+        (swap! accounts assoc new-account-name
+                              {:keys {:incognito (rand-str 100)
+                                      :public (rand-str 100)
+                                      :private (rand-str 100)
+                                      :readonly (rand-str 100)
+                                      :validator (rand-str 100)}
+                               :coins [{:id 0
+                                        :amount 0}
+                                       {:id (+ 1 (rand-int 5))
+                                        :amount (rand-int 100)}]})
+        (close-add-account-panel)))))
 
 (defn singleton-buttons-react [key]
   (let [[source target] (useSingleton #js {:overrides #js ["allowHTML" "hideOnClick" "trigger"]})]
@@ -248,14 +249,14 @@
 (defn backup-tooltip []
   (let [content (reduce str (for [[name data] @accounts]
                               (str "AccountName: " name "\nPrivateKey: " (get-in data [:keys :private]) "\n\n")))]
-    [:<>
+    [:div.tippy-content-wrapper
       [:p "You can restore all saved accounts by the data below. Make sure to store it in a safe place!"]
       [:div.input-wrapper
         [:pre content]]
       [:div.btn-wrapper
-        [:> Tippy {:content "Copied" :trigger "click"}
-          [:button.btn.inline-icon {:on-click #(copy-to-clipboard content)}
-            [copy-icon] "Copy to clipboard"]]]]))
+        [:button#backup-copy.btn.inline-icon {:on-click #(do (copy-to-clipboard content)
+                                                             (-> % .-target (.setAttribute "data-copied" true)))}
+          [copy-icon] "Copy to clipboard"]]]))
 
 (defn accounts-container []
   [:div#accounts.container {:class [(when-not (@state :selected-account) "opened opened--full")
@@ -265,7 +266,8 @@
       [:h2 "Your accounts"]
       [:> Tippy {:content (reagent/as-element [backup-tooltip]) :interactive true
                  :maxWidth 525 :placement "left-start" :arrow true :appendTo #(.getElementById js/document "app")
-                 :allowHTML true :trigger "click" :animation "height"}
+                 :allowHTML true :trigger "click" :animation "height"
+                 :onHide #(.removeAttribute (.getElementById js/document "backup-copy") "data-copied")}
         [:> Tippy {:content "Backup all accounts" :placement "left-start" :hideOnClick false :zIndex 1}
           [:button.display-icon [save-icon]]]]]
     [:div.accounts-header.accounts-header--reciepent

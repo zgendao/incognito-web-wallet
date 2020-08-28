@@ -71,10 +71,10 @@
   display: inline-grid;
   grid-auto-columns: calc((100vw - 40px - 3 * 50px) / 4);
   grid-auto-flow: column;
-  margin: 0;
+  transform: translateY(0);
   gap: 50px;
   color: var(--color-text-default);
-  transition: margin .5s, width 0s;
+  transition: transform .5s, width 0s;
 
   @media screen and (min-width: 1240px) {
     grid-auto-columns: 200px;
@@ -109,6 +109,7 @@
 }
 .account-selector--reciepent {
   order: var(--after-selected-account);
+  z-index: 1;
   
   .account-selector__inner {
     border: 5px dashed var(--color-primary);
@@ -143,8 +144,9 @@
 
 .account-selector__balance {
   height: 0;
+  opacity: 0;
   overflow: hidden;
-  transition: height .5s;
+  transition: height .5s, opacity .5s;
   
   p {
     margin: 10px 0 0 0;
@@ -176,9 +178,10 @@
 
   .accounts-grid {
     width: 100% !important;
+    transform: translateY(100px);
     grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
     grid-auto-flow: unset;
-    transition: margin .5s, width .5s;
+    transition: transform .5s, width .5s;
 
     @media screen and (min-width: 1240px) {
       grid-template-columns: repeat(5, 200px);
@@ -205,9 +208,7 @@
     }
     
     .accounts-grid {
-      margin: 100px 0;
       grid-auto-rows: minmax(100px, auto);
-      transition: margin .5s, width .5s;
     }
 
     .account-selector .account-selector__inner {
@@ -216,6 +217,7 @@
     
     .account-selector__balance {
       height: 36px;
+      opacity: 1;
     }
 
     .account-selector__icon {
@@ -243,10 +245,6 @@
     .accounts-header--reciepent {
       opacity: 1;
       visibility: visible;
-    }
-
-    .accounts-grid {
-      margin: 100px 0;
     }
   }
 }

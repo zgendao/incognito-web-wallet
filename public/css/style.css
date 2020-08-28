@@ -1,7 +1,483 @@
+@charset "UTF-8";
 @import url("../../node_modules/tippy.js/dist/tippy.css");
 @import url("../../node_modules/tippy.js/animations/shift-away.css");
 @import url("../../node_modules/tippy.js/dist/backdrop.css");
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;700;900&display=swap");
+.vertical-expand, .vertical-expand-inverse {
+  transform-origin: left top;
+  animation-fill-mode: both;
+  will-change: transform;
+  animation-duration: 0.2s;
+  animation-delay: 0s;
+  animation-timing-function: step-end;
+}
+
+.vertical-expand {
+  animation-name: vertical-collapse;
+  overflow: hidden;
+}
+
+.vertical-expand-inverse {
+  animation-name: vertical-collapse-inverse;
+}
+
+.vertical-expand.notFull {
+  animation-name: vertical-collapse-notFull;
+  overflow: hidden;
+}
+
+.vertical-expand-inverse.notFull {
+  animation-name: vertical-collapse-notFull-inverse;
+}
+
+@keyframes vertical-expand {
+  0% {
+    transform: scaleY(0);
+  }
+  5.88235% {
+    transform: scaleY(0.00671);
+  }
+  11.76471% {
+    transform: scaleY(0.02748);
+  }
+  17.64706% {
+    transform: scaleY(0.06313);
+  }
+  23.52941% {
+    transform: scaleY(0.11405);
+  }
+  29.41176% {
+    transform: scaleY(0.18001);
+  }
+  35.29412% {
+    transform: scaleY(0.25977);
+  }
+  41.17647% {
+    transform: scaleY(0.35084);
+  }
+  47.05882% {
+    transform: scaleY(0.4494);
+  }
+  52.94118% {
+    transform: scaleY(0.5506);
+  }
+  58.82353% {
+    transform: scaleY(0.64916);
+  }
+  64.70588% {
+    transform: scaleY(0.74023);
+  }
+  70.58824% {
+    transform: scaleY(0.81999);
+  }
+  76.47059% {
+    transform: scaleY(0.88595);
+  }
+  82.35294% {
+    transform: scaleY(0.93687);
+  }
+  88.23529% {
+    transform: scaleY(0.97252);
+  }
+  94.11765% {
+    transform: scaleY(0.99329);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes vertical-expand-inverse {
+  0% {
+    transform: scaleY(1000);
+  }
+  5.88235% {
+    transform: scaleY(149.0313);
+  }
+  11.76471% {
+    transform: scaleY(36.3901);
+  }
+  17.64706% {
+    transform: scaleY(15.84033);
+  }
+  23.52941% {
+    transform: scaleY(8.76808);
+  }
+  29.41176% {
+    transform: scaleY(5.55525);
+  }
+  35.29412% {
+    transform: scaleY(3.84956);
+  }
+  41.17647% {
+    transform: scaleY(2.8503);
+  }
+  47.05882% {
+    transform: scaleY(2.22519);
+  }
+  52.94118% {
+    transform: scaleY(1.8162);
+  }
+  58.82353% {
+    transform: scaleY(1.54045);
+  }
+  64.70588% {
+    transform: scaleY(1.35093);
+  }
+  70.58824% {
+    transform: scaleY(1.21953);
+  }
+  76.47059% {
+    transform: scaleY(1.12873);
+  }
+  82.35294% {
+    transform: scaleY(1.06738);
+  }
+  88.23529% {
+    transform: scaleY(1.02826);
+  }
+  94.11765% {
+    transform: scaleY(1.00676);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes vertical-collapse {
+  0% {
+    transform: scaleY(1);
+  }
+  5.88235% {
+    transform: scaleY(0.99329);
+  }
+  11.76471% {
+    transform: scaleY(0.97252);
+  }
+  17.64706% {
+    transform: scaleY(0.93687);
+  }
+  23.52941% {
+    transform: scaleY(0.88595);
+  }
+  29.41176% {
+    transform: scaleY(0.81999);
+  }
+  35.29412% {
+    transform: scaleY(0.74023);
+  }
+  41.17647% {
+    transform: scaleY(0.64916);
+  }
+  47.05882% {
+    transform: scaleY(0.5506);
+  }
+  52.94118% {
+    transform: scaleY(0.4494);
+  }
+  58.82353% {
+    transform: scaleY(0.35084);
+  }
+  64.70588% {
+    transform: scaleY(0.25977);
+  }
+  70.58824% {
+    transform: scaleY(0.18001);
+  }
+  76.47059% {
+    transform: scaleY(0.11405);
+  }
+  82.35294% {
+    transform: scaleY(0.06313);
+  }
+  88.23529% {
+    transform: scaleY(0.02748);
+  }
+  94.11765% {
+    transform: scaleY(0.00671);
+  }
+  100% {
+    transform: scaleY(0);
+  }
+}
+@keyframes vertical-collapse-inverse {
+  0% {
+    transform: scaleY(1);
+  }
+  5.88235% {
+    transform: scaleY(1.00676);
+  }
+  11.76471% {
+    transform: scaleY(1.02826);
+  }
+  17.64706% {
+    transform: scaleY(1.06738);
+  }
+  23.52941% {
+    transform: scaleY(1.12873);
+  }
+  29.41176% {
+    transform: scaleY(1.21953);
+  }
+  35.29412% {
+    transform: scaleY(1.35093);
+  }
+  41.17647% {
+    transform: scaleY(1.54045);
+  }
+  47.05882% {
+    transform: scaleY(1.8162);
+  }
+  52.94118% {
+    transform: scaleY(2.22519);
+  }
+  58.82353% {
+    transform: scaleY(2.8503);
+  }
+  64.70588% {
+    transform: scaleY(3.84956);
+  }
+  70.58824% {
+    transform: scaleY(5.55525);
+  }
+  76.47059% {
+    transform: scaleY(8.76808);
+  }
+  82.35294% {
+    transform: scaleY(15.84033);
+  }
+  88.23529% {
+    transform: scaleY(36.3901);
+  }
+  94.11765% {
+    transform: scaleY(149.0313);
+  }
+  100% {
+    transform: scaleY(1000);
+  }
+}
+@keyframes vertical-expand-notFull {
+  0% {
+    transform: scaleY(0.2);
+  }
+  5.88235% {
+    transform: scaleY(0.20537);
+  }
+  11.76471% {
+    transform: scaleY(0.22199);
+  }
+  17.64706% {
+    transform: scaleY(0.2505);
+  }
+  23.52941% {
+    transform: scaleY(0.29124);
+  }
+  29.41176% {
+    transform: scaleY(0.34401);
+  }
+  35.29412% {
+    transform: scaleY(0.40781);
+  }
+  41.17647% {
+    transform: scaleY(0.48067);
+  }
+  47.05882% {
+    transform: scaleY(0.55952);
+  }
+  52.94118% {
+    transform: scaleY(0.64048);
+  }
+  58.82353% {
+    transform: scaleY(0.71933);
+  }
+  64.70588% {
+    transform: scaleY(0.79219);
+  }
+  70.58824% {
+    transform: scaleY(0.85599);
+  }
+  76.47059% {
+    transform: scaleY(0.90876);
+  }
+  82.35294% {
+    transform: scaleY(0.9495);
+  }
+  88.23529% {
+    transform: scaleY(0.97801);
+  }
+  94.11765% {
+    transform: scaleY(0.99463);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes vertical-expand-notFull-inverse {
+  0% {
+    transform: scaleY(5);
+  }
+  5.88235% {
+    transform: scaleY(4.86926);
+  }
+  11.76471% {
+    transform: scaleY(4.50471);
+  }
+  17.64706% {
+    transform: scaleY(3.99202);
+  }
+  23.52941% {
+    transform: scaleY(3.43359);
+  }
+  29.41176% {
+    transform: scaleY(2.90689);
+  }
+  35.29412% {
+    transform: scaleY(2.45212);
+  }
+  41.17647% {
+    transform: scaleY(2.08043);
+  }
+  47.05882% {
+    transform: scaleY(1.78725);
+  }
+  52.94118% {
+    transform: scaleY(1.56133);
+  }
+  58.82353% {
+    transform: scaleY(1.39018);
+  }
+  64.70588% {
+    transform: scaleY(1.26232);
+  }
+  70.58824% {
+    transform: scaleY(1.16824);
+  }
+  76.47059% {
+    transform: scaleY(1.1004);
+  }
+  82.35294% {
+    transform: scaleY(1.05319);
+  }
+  88.23529% {
+    transform: scaleY(1.02248);
+  }
+  94.11765% {
+    transform: scaleY(1.0054);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+@keyframes vertical-collapse-notFull {
+  0% {
+    transform: scaleY(1);
+  }
+  5.88235% {
+    transform: scaleY(0.99463);
+  }
+  11.76471% {
+    transform: scaleY(0.97801);
+  }
+  17.64706% {
+    transform: scaleY(0.9495);
+  }
+  23.52941% {
+    transform: scaleY(0.90876);
+  }
+  29.41176% {
+    transform: scaleY(0.85599);
+  }
+  35.29412% {
+    transform: scaleY(0.79219);
+  }
+  41.17647% {
+    transform: scaleY(0.71933);
+  }
+  47.05882% {
+    transform: scaleY(0.64048);
+  }
+  52.94118% {
+    transform: scaleY(0.55952);
+  }
+  58.82353% {
+    transform: scaleY(0.48067);
+  }
+  64.70588% {
+    transform: scaleY(0.40781);
+  }
+  70.58824% {
+    transform: scaleY(0.34401);
+  }
+  76.47059% {
+    transform: scaleY(0.29124);
+  }
+  82.35294% {
+    transform: scaleY(0.2505);
+  }
+  88.23529% {
+    transform: scaleY(0.22199);
+  }
+  94.11765% {
+    transform: scaleY(0.20537);
+  }
+  100% {
+    transform: scaleY(0.2);
+  }
+}
+@keyframes vertical-collapse-notFull-inverse {
+  0% {
+    transform: scaleY(1);
+  }
+  5.88235% {
+    transform: scaleY(1.0054);
+  }
+  11.76471% {
+    transform: scaleY(1.02248);
+  }
+  17.64706% {
+    transform: scaleY(1.05319);
+  }
+  23.52941% {
+    transform: scaleY(1.1004);
+  }
+  29.41176% {
+    transform: scaleY(1.16824);
+  }
+  35.29412% {
+    transform: scaleY(1.26232);
+  }
+  41.17647% {
+    transform: scaleY(1.39018);
+  }
+  47.05882% {
+    transform: scaleY(1.56133);
+  }
+  52.94118% {
+    transform: scaleY(1.78725);
+  }
+  58.82353% {
+    transform: scaleY(2.08043);
+  }
+  64.70588% {
+    transform: scaleY(2.45212);
+  }
+  70.58824% {
+    transform: scaleY(2.90689);
+  }
+  76.47059% {
+    transform: scaleY(3.43359);
+  }
+  82.35294% {
+    transform: scaleY(3.99202);
+  }
+  88.23529% {
+    transform: scaleY(4.50471);
+  }
+  94.11765% {
+    transform: scaleY(4.86926);
+  }
+  100% {
+    transform: scaleY(5);
+  }
+}
 #app {
   min-height: 100vh;
 }
@@ -270,17 +746,33 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   background-color: transparent;
 }
 
+.tippy-box[data-animation=height],
+.tippy-box[data-animation=height] > .tippy-content,
+.tippy-box[data-animation=height] > .tippy-content > div .tippy-box[data-animation=height] > .tippy-content .tippy-content-wrapper {
+  transform-origin: left top;
+  animation-fill-mode: both;
+  animation-duration: 0.2s;
+}
+
 .tippy-box[data-animation=height] {
+  animation-name: vertical-collapse;
   opacity: 0;
+  overflow: hidden;
 }
 .tippy-box[data-animation=height] > .tippy-content {
   display: flex;
-  max-height: 0;
   padding: 20px;
-  overflow: hidden;
+  max-height: 400px;
+  animation-name: vertical-collapse-inverse;
   transition-property: transform, visibility, opacity, max-height;
 }
 .tippy-box[data-animation=height] > .tippy-content > div {
+  display: flex;
+  overflow: hidden;
+  animation-name: vertical-collapse;
+}
+.tippy-box[data-animation=height] > .tippy-content .tippy-content-wrapper {
+  animation-name: vertical-collapse-inverse;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -327,12 +819,38 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
 .tippy-box[data-animation=height] .btn {
   box-shadow: 0px 5px 6px 2px #0000002b;
 }
+.tippy-box[data-animation=height] .btn::after {
+  content: "✓ Copied";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: inherit;
+  border-radius: inherit;
+  background-color: inherit;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0s 0.2s;
+}
+.tippy-box[data-animation=height] .btn[data-copied]::after {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s, visibility 0s 0s;
+}
 
 .tippy-box[data-animation=height][data-state=visible] {
+  animation-name: vertical-expand;
   opacity: 1;
 }
 .tippy-box[data-animation=height][data-state=visible] > .tippy-content {
-  max-height: 400px;
+  animation-name: vertical-expand-inverse;
+}
+.tippy-box[data-animation=height][data-state=visible] > .tippy-content > div {
+  animation-name: vertical-expand;
+}
+.tippy-box[data-animation=height][data-state=visible] > .tippy-content .tippy-content-wrapper {
+  animation-name: vertical-expand-inverse;
 }
 
 @font-face {
@@ -797,10 +1315,10 @@ svg * {
   display: inline-grid;
   grid-auto-columns: calc((100vw - 40px - 3 * 50px) / 4);
   grid-auto-flow: column;
-  margin: 0;
+  transform: translateY(0);
   gap: 50px;
   color: var(--color-text-default);
-  transition: margin 0.5s, width 0s;
+  transition: transform 0.5s, width 0s;
 }
 @media screen and (min-width: 1240px) {
   .accounts-grid {
@@ -837,6 +1355,7 @@ svg * {
 
 .account-selector--reciepent {
   order: var(--after-selected-account);
+  z-index: 1;
 }
 .account-selector--reciepent .account-selector__inner {
   border: 5px dashed var(--color-primary);
@@ -867,8 +1386,9 @@ svg * {
 
 .account-selector__balance {
   height: 0;
+  opacity: 0;
   overflow: hidden;
-  transition: height 0.5s;
+  transition: height 0.5s, opacity 0.5s;
 }
 .account-selector__balance p {
   margin: 10px 0 0 0;
@@ -896,9 +1416,10 @@ svg * {
 }
 #accounts.opened .accounts-grid {
   width: 100% !important;
+  transform: translateY(100px);
   grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
   grid-auto-flow: unset;
-  transition: margin 0.5s, width 0.5s;
+  transition: transform 0.5s, width 0.5s;
 }
 @media screen and (min-width: 1240px) {
   #accounts.opened .accounts-grid {
@@ -922,15 +1443,14 @@ svg * {
   visibility: visible;
 }
 #accounts.opened.opened--full .accounts-grid {
-  margin: 100px 0;
   grid-auto-rows: minmax(100px, auto);
-  transition: margin 0.5s, width 0.5s;
 }
 #accounts.opened.opened--full .account-selector .account-selector__inner {
   padding: 25px 20px;
 }
 #accounts.opened.opened--full .account-selector__balance {
   height: 36px;
+  opacity: 1;
 }
 #accounts.opened.opened--full .account-selector__icon {
   visibility: visible;
@@ -950,9 +1470,6 @@ svg * {
 #accounts.opened.opened--half .accounts-header--reciepent {
   opacity: 1;
   visibility: visible;
-}
-#accounts.opened.opened--half .accounts-grid {
-  margin: 100px 0;
 }
 
 @keyframes fadeIn {
@@ -1057,9 +1574,9 @@ svg * {
   height: 46px;
   width: 100%;
   margin-right: 20px;
-  z-index: 2;
+  z-index: 0;
   transform: translate(40px, -2px);
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, z-index 0s 0.2s;
 }
 
 .keys-modal {
@@ -1070,12 +1587,8 @@ svg * {
   border-radius: 20px;
   z-index: 2;
   padding: 20px 40px;
-  animation-name: vertical-collapse;
   transition: padding 0.2s;
-  overflow: hidden;
-}
-.keys-modal > div {
-  animation-name: vertical-collapseInverse;
+  overflow: visible !important;
 }
 .keys-modal::before {
   content: "";
@@ -1088,26 +1601,6 @@ svg * {
   opacity: 0;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
   transition: opacity 0.2s;
-}
-
-.header__keys.opened .keys-wrapper {
-  transform: translate(0px, 0px);
-}
-.header__keys.opened .keys-modal {
-  z-index: 5;
-  animation-name: vertical-expand;
-}
-.header__keys.opened .keys-modal > div {
-  animation-name: vertical-expandInverse;
-}
-.header__keys.opened .keys-modal::before {
-  opacity: 1;
-}
-.header__keys.opened .circle-btn svg line:first-child {
-  transform: translateX(21px);
-}
-.header__keys.opened .circle-btn svg line:last-child {
-  transform: translateX(-21px);
 }
 
 .key-elem {
@@ -1128,248 +1621,38 @@ svg * {
   max-width: 190px;
 }
 
-.vertical-expand, .vertical-expandInverse {
-  transform-origin: left top;
-  animation-fill-mode: both;
+.keys-inner .key-elem {
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
-.vertical-expand {
-  will-change: transform;
-  animation-duration: 200ms;
-  animation-timing-function: step-end;
+.header__keys.opened .keys-wrapper {
+  z-index: 2;
+  transform: translate(0px, 0px);
+  transition: transform 0.2s ease-in-out, z-index 0s 0s;
+}
+.header__keys.opened .keys-modal {
+  z-index: 5;
+}
+.header__keys.opened .keys-modal::before {
+  opacity: 1;
+}
+.header__keys.opened .keys-inner .key-elem {
+  opacity: 1;
+}
+.header__keys.opened .vertical-expand {
+  animation-name: vertical-expand-notFull;
+}
+.header__keys.opened .vertical-expand-inverse {
+  animation-name: vertical-expand-notFull-inverse;
+}
+.header__keys.opened .circle-btn svg line:first-child {
+  transform: translateX(21px);
+}
+.header__keys.opened .circle-btn svg line:last-child {
+  transform: translateX(-21px);
 }
 
-.vertical-expandInverse {
-  will-change: transform;
-  contain: content;
-  animation-duration: 200ms;
-  animation-timing-function: step-end;
-}
-
-@keyframes vertical-expand {
-  0% {
-    transform: scaleY(0.2);
-  }
-  5.88235% {
-    transform: scaleY(0.20537);
-  }
-  11.76471% {
-    transform: scaleY(0.22199);
-  }
-  17.64706% {
-    transform: scaleY(0.2505);
-  }
-  23.52941% {
-    transform: scaleY(0.29124);
-  }
-  29.41176% {
-    transform: scaleY(0.34401);
-  }
-  35.29412% {
-    transform: scaleY(0.40781);
-  }
-  41.17647% {
-    transform: scaleY(0.48067);
-  }
-  47.05882% {
-    transform: scaleY(0.55952);
-  }
-  52.94118% {
-    transform: scaleY(0.64048);
-  }
-  58.82353% {
-    transform: scaleY(0.71933);
-  }
-  64.70588% {
-    transform: scaleY(0.79219);
-  }
-  70.58824% {
-    transform: scaleY(0.85599);
-  }
-  76.47059% {
-    transform: scaleY(0.90876);
-  }
-  82.35294% {
-    transform: scaleY(0.9495);
-  }
-  88.23529% {
-    transform: scaleY(0.97801);
-  }
-  94.11765% {
-    transform: scaleY(0.99463);
-  }
-  100% {
-    transform: scaleY(1);
-  }
-}
-@keyframes vertical-expandInverse {
-  0% {
-    transform: scaleY(5);
-  }
-  5.88235% {
-    transform: scaleY(4.86926);
-  }
-  11.76471% {
-    transform: scaleY(4.50471);
-  }
-  17.64706% {
-    transform: scaleY(3.99202);
-  }
-  23.52941% {
-    transform: scaleY(3.43359);
-  }
-  29.41176% {
-    transform: scaleY(2.90689);
-  }
-  35.29412% {
-    transform: scaleY(2.45212);
-  }
-  41.17647% {
-    transform: scaleY(2.08043);
-  }
-  47.05882% {
-    transform: scaleY(1.78725);
-  }
-  52.94118% {
-    transform: scaleY(1.56133);
-  }
-  58.82353% {
-    transform: scaleY(1.39018);
-  }
-  64.70588% {
-    transform: scaleY(1.26232);
-  }
-  70.58824% {
-    transform: scaleY(1.16824);
-  }
-  76.47059% {
-    transform: scaleY(1.1004);
-  }
-  82.35294% {
-    transform: scaleY(1.05319);
-  }
-  88.23529% {
-    transform: scaleY(1.02248);
-  }
-  94.11765% {
-    transform: scaleY(1.0054);
-  }
-  100% {
-    transform: scaleY(1);
-  }
-}
-@keyframes vertical-collapse {
-  0% {
-    transform: scaleY(1);
-  }
-  5.88235% {
-    transform: scaleY(0.99463);
-  }
-  11.76471% {
-    transform: scaleY(0.97801);
-  }
-  17.64706% {
-    transform: scaleY(0.9495);
-  }
-  23.52941% {
-    transform: scaleY(0.90876);
-  }
-  29.41176% {
-    transform: scaleY(0.85599);
-  }
-  35.29412% {
-    transform: scaleY(0.79219);
-  }
-  41.17647% {
-    transform: scaleY(0.71933);
-  }
-  47.05882% {
-    transform: scaleY(0.64048);
-  }
-  52.94118% {
-    transform: scaleY(0.55952);
-  }
-  58.82353% {
-    transform: scaleY(0.48067);
-  }
-  64.70588% {
-    transform: scaleY(0.40781);
-  }
-  70.58824% {
-    transform: scaleY(0.34401);
-  }
-  76.47059% {
-    transform: scaleY(0.29124);
-  }
-  82.35294% {
-    transform: scaleY(0.2505);
-  }
-  88.23529% {
-    transform: scaleY(0.22199);
-  }
-  94.11765% {
-    transform: scaleY(0.20537);
-  }
-  100% {
-    transform: scaleY(0.2);
-  }
-}
-@keyframes vertical-collapseInverse {
-  0% {
-    transform: scaleY(1);
-  }
-  5.88235% {
-    transform: scaleY(1.0054);
-  }
-  11.76471% {
-    transform: scaleY(1.02248);
-  }
-  17.64706% {
-    transform: scaleY(1.05319);
-  }
-  23.52941% {
-    transform: scaleY(1.1004);
-  }
-  29.41176% {
-    transform: scaleY(1.16824);
-  }
-  35.29412% {
-    transform: scaleY(1.26232);
-  }
-  41.17647% {
-    transform: scaleY(1.39018);
-  }
-  47.05882% {
-    transform: scaleY(1.56133);
-  }
-  52.94118% {
-    transform: scaleY(1.78725);
-  }
-  58.82353% {
-    transform: scaleY(2.08043);
-  }
-  64.70588% {
-    transform: scaleY(2.45212);
-  }
-  70.58824% {
-    transform: scaleY(2.90689);
-  }
-  76.47059% {
-    transform: scaleY(3.43359);
-  }
-  82.35294% {
-    transform: scaleY(3.99202);
-  }
-  88.23529% {
-    transform: scaleY(4.50471);
-  }
-  94.11765% {
-    transform: scaleY(4.86926);
-  }
-  100% {
-    transform: scaleY(5);
-  }
-}
 .coins-container {
   flex-direction: column;
   border-radius: 20px;
@@ -1486,10 +1769,8 @@ svg * {
   right: 0;
   color: var(--color-text-inverse);
   padding: 25px;
-  visibility: hidden;
-  opacity: 0;
   z-index: 3;
-  transition: opacity 0.3s 0s, visibility 0s 0.3s;
+  animation: fadeIn 0.3s ease-in 0s 1 normal forwards;
 }
 .confirm-layer p {
   text-align: justify;
@@ -1497,35 +1778,31 @@ svg * {
 
 .confirm-background {
   position: absolute;
-  height: 0;
-  width: 0;
+  height: 500px;
+  width: 500px;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0);
   background-color: var(--color-secondary);
   border-radius: 750px;
-  transition: height 0.5s, width 0.5s;
+  transition: transform 0.5s;
+}
+.confirm-background.confirm-background--medium {
+  height: 1000px;
+  width: 1000px;
+}
+.confirm-background.confirm-background--large {
+  height: 1500px;
+  width: 1500px;
 }
 
 .confirm-background--primary {
   background-color: var(--color-primary);
 }
 
-.confirm-state .confirm-layer {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.3s 0s, visibility 0s 0s;
-}
 .confirm-state .confirm-background {
   z-index: 2;
-}
-.confirm-state .confirm-background.confirm-background--medium {
-  height: 1000px;
-  width: 1000px;
-}
-.confirm-state .confirm-background.confirm-background--large {
-  height: 1500px;
-  width: 1500px;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 pre {

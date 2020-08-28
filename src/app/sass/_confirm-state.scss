@@ -29,10 +29,8 @@
   right: 0;
   color: var(--color-text-inverse);
   padding: 25px;
-  visibility: hidden;
-  opacity: 0;
   z-index: 3;
-  transition: opacity .3s 0s, visibility 0s .3s;
+  animation: fadeIn .3s ease-in 0s 1 normal forwards;
 
   p {
     text-align: justify;
@@ -41,37 +39,32 @@
 
 .confirm-background {
   position: absolute;
-  height: 0;
-  width: 0;
+  height: 500px;
+  width: 500px;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0);
   background-color: var(--color-secondary);
   border-radius: 750px;
-  transition: height .5s, width .5s;
+  transition: transform .5s;
+
+  &.confirm-background--medium {
+    height: 1000px;
+    width: 1000px;
+  }
+  &.confirm-background--large {
+    height: 1500px;
+    width: 1500px;
+  }
 }
 .confirm-background--primary {
   background-color: var(--color-primary);
 }
 
 .confirm-state {
-  .confirm-layer {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity .3s 0s, visibility 0s 0s;
-  }
-
   .confirm-background {
     z-index: 2;
-    
-    &.confirm-background--medium {
-      height: 1000px;
-      width: 1000px;
-    }
-    &.confirm-background--large {
-      height: 1500px;
-      width: 1500px;
-    }
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

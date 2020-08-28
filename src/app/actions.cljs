@@ -16,40 +16,50 @@
                                   :in-confirm-state false
                                   :sent false}))
 
+(defn get-amount [coin-id]
+  (get
+    (first
+      (filter (fn [{:keys [id amount]}] (= id coin-id))
+        (get-in @accounts [(@state :selected-account) :coins])))
+    :amount))
+
 (defn send []
-  (if-not (in-confirm-state? :send-data)
-    (do
-      (swap! state assoc-in [:send-data :errors] {})
-      
-      (when (clojure.string/blank? (get-in @state [:send-data :reciepent-address]))
-        (show-error :send-data :reciepent-address "Please enter the address you want to send to"))
-      (when (clojure.string/blank? (get-in @state [:send-data :amount]))
-        (show-error :send-data :amount "Please set the amount"))
+  (let [reciepent-address (get-in @state [:send-data :reciepent-address])
+        amount (get-in @state [:send-data :amount])]
+    (if-not (in-confirm-state? :send-data)
+      (do
+        (swap! state assoc-in [:send-data :errors] {})
         
-      (when (no-errors? :send-data) 
-        (to-confirm-state :send-data)))
-    (if-not (= true (get-in @state [:send-data :sent]))
-      (do
-        ;backend: send
-        (swap! state assoc-in [:send-data :sent] true))
-      (do
-        (close-confirm-state :send-data)
-        (reset-send-data)))))
+        (when (clojure.string/blank? reciepent-address)
+          (show-error :send-data :reciepent-address "Please enter the address you want to send to"))
+        (if (clojure.string/blank? amount)
+          (show-error :send-data :amount "Please set the amount")
+          (if (= (int amount) 0)
+            (show-error :send-data :amount "The amount must be more than 0")
+            (when (> 0.0000001 (get-amount 0))
+              (show-error :send-data :amount "Insufficient PRV balance to cover transaction fee (0.0000001 PRV)"))))
+          
+        (when (no-errors? :send-data) 
+          (to-confirm-state :send-data)))
+      (if-not (= true (get-in @state [:send-data :sent]))
+        (do
+          ;backend: send
+          (swap! state assoc-in [:send-data :sent] true))
+        (do
+          (close-confirm-state :send-data)
+          (reset-send-data))))))
 
 (defn incognito-address? [address]
   (if (and address (not= address "?"))
     (and (str/starts-with? address "12") (= 103 (count address)))
     true))
 
-(defn get-max-amount []
-  (get
-    (first
-      (filter (fn [{:keys [id amount]}] (= id (@state :selected-coin)))
-        (get-in @accounts [(@state :selected-account) :coins])))
-    :amount))
-
 (defn set-max-amount []
-  (swap! state assoc-in [:send-data :amount] (get-max-amount))
+  (def amount (get-amount (@state :selected-coin)))
+  (if (and (= (@state :selected-coin) 0) (> amount 0.0000001))
+    (def max-amount (- amount 0.0000001))
+    (def max-amount amount))
+  (swap! state assoc-in [:send-data :amount] max-amount)
   (swap! state assoc-in [:send-data :errors :amount] nil))
 
 (defn send-data-elem [title content after class]
@@ -80,7 +90,7 @@
                                                     :on-click #(set-max-amount)} [infinity-icon]]]
                                          (get-in @coins [(@state :selected-coin) "Symbol"])]
                 :else [[:div {:on-click #(swap! state assoc :selected-coin "?") :style {:height "100%" :width "500px"}}]])
-              "" (get-max-amount)]
+              "" (get-amount (@state :selected-coin))]
       [input :send-data :note "Memo" "text" "Add note (optional)" "" (if (or (not incognito?) confirm-state?) "animate-height out" "animate-height in")]
       [:div.btn-wrapper
         [:div

@@ -13,6 +13,7 @@
 }
 .vertical-expand-inverse {
   animation-name: vertical-collapse-inverse;
+  contain: content;
 }
 
 .vertical-expand.notFull {

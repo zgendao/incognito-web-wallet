@@ -3,9 +3,10 @@
 
 #accounts {
   position: relative;
-  padding: 40px 0;
+  height: 140px;
+  padding: 40px 0 0 0;
   overflow: hidden;
-  @include highlightable(.5s padding);
+  @include highlightable(height .5s, transform .5s);
 
   //left and right fade layers
   &::after {
@@ -56,15 +57,19 @@
 }
 
 .accounts-wrapper {
-  overflow-x: auto;
-  height: 100px;
-  @include lightScrollbar(var(--color-background-secondary), true, height .5s, margin .5s, color .3s);
-  
+  position: relative;
+  height: 100%;
+
   //bottom fade layer in reciepent selection view
   &::after {
     @include pseudo(true);
-    box-shadow: inset 0 -80px 20px -20px var(--color-background);
+    box-shadow: inset 0 -60px 20px -20px var(--color-background);
   }
+}
+.accounts-wrapper-inner {
+  height: 100%;
+  overflow: auto;
+  @include lightScrollbar(var(--color-background-secondary), true, color .3s);
 }
 
 .accounts-grid {
@@ -165,7 +170,7 @@
   }
 }
 
-#accounts.opened {  
+#accounts.opened {
   &::before {
     transform: translateX(-100px);
   }
@@ -181,6 +186,7 @@
     transform: translateY(100px);
     grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
     grid-auto-flow: unset;
+    padding-bottom: 100px;
     transition: transform .5s, width .5s;
 
     @media screen and (min-width: 1240px) {
@@ -193,18 +199,18 @@
   }
 
   &.opened--full {
-    padding: 80px 0 0 0;
-
-    .accounts-wrapper {
-      height: calc(100vh - 150px);
-      &::-webkit-scrollbar:vertical {
-        display: none;
-      }
-    }
+    height: calc(100vh - 110px);
+    transform: translateY(40px);
+    transition: height 0s, transform .5s;
 
     .accounts-header--manage {
       opacity: 1;
       visibility: visible;
+    }
+    
+    .accounts-wrapper-inner:hover {
+      scrollbar-color: transparent transparent;
+      color: transparent;
     }
     
     .accounts-grid {
@@ -231,20 +237,30 @@
       visibility: visible;
       transition: background-color .5s, border .5s, opacity .3s .5s, visibility 0s .4s;
     }
+
+    + #main > div {
+      opacity: 0;
+      height: 0;
+      overflow: hidden;
+      transform: translateY(calc(100vh - 290px));
+      transition: transform .5s, height 0s .4s, opacity .4s 0s;
+    }
   }
 
   &.opened--half {
-    .accounts-wrapper {
-      height: calc(30vh + 70px);
+    height: 370px;
 
-      &::after {
-        opacity: 1;
-      }
+    .accounts-wrapper::after {
+      opacity: 1;
     }
 
     .accounts-header--reciepent {
       opacity: 1;
       visibility: visible;
+    }
+
+    + #main > div {
+      transform: translateY(220px);
     }
   }
 }

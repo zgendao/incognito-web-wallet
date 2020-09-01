@@ -17,12 +17,35 @@
 :root {
   --color-background: #ffffff;
   --color-background-secondary: #ECECEC;
+  --color-background-tertiary: #ECECEC;
   --color-primary: #5994F0;
   --color-secondary: #33373A;
   --color-text-default: #000000;
   --color-text-default-soft: #7A7A7A;
   --color-text-inverse: #ffffff;
   --color-text-inverse-soft: #ffffffb6;
+}
+
+@mixin dark-vars () {
+  --color-background: #18191A;
+  --color-background-secondary: #242526;
+  --color-background-tertiary: #3A3B3C;
+  --color-primary: #5994F0;
+  --color-secondary: #33373A;
+  --color-text-default: #ffffff;
+  --color-text-default-soft: #858585;
+  --color-text-inverse: #ffffff;
+  --color-text-inverse-soft: #ffffffb6;
+}
+
+body.dark {
+  @include dark-vars();
+}
+
+@media (prefers-color-scheme: dark) {
+  body.auto {
+    @include dark-vars();
+  }
 }
 
 * {
@@ -44,29 +67,8 @@ body {
 }
 
 #app {
-  position: relative;
-  display: flex;
-  flex-direction: column;
   padding: 0 20px;
   color: var(--color-text-default);
-}
-
-nav div {
-  display: flex;
-  justify-content: space-between;
-
-  p {
-    font-family: 'SF Display';
-    color: var(--color-text-default-soft);
-    font-variation-settings: 'wght' 500;
-    line-height: 30px;
-    margin: 0 10px;
-  }
-
-  .navbar__brand p {
-    font-size: 22px;
-    color: var(--color-text-default);
-  }
 }
 
 .container {
@@ -160,7 +162,7 @@ svg * {
   background-color: var(--color-primary);
 }
 .btn--inverse {
-  background-color: var(--color-text-inverse);
+  background-color: var(--color-background);
   color: var(--color-text-default);
 }
 
@@ -170,7 +172,7 @@ svg * {
   justify-content: center;
   height: 35px;
   width: 35px;
-  background-color: var(--color-background-secondary);
+  background-color: var(--color-background-tertiary);
   border: 0;
   border-radius: 30px;
 
@@ -184,47 +186,76 @@ svg * {
   color: var(--color-text-inverse-soft);
 }
 
-.clickCatcher {
-  position: absolute;
-  top: 0;
-  left: 0;
-  //have to specify for transition-delay to work
-  height: 0;
-  width: 0;
-  background-color: var(--color-background);
-  opacity: 0;
-  z-index: 5;
-  transition: height 0s .3s, width 0s .3s, opacity .3s 0s;
+nav div {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'SF Display';
+  font-variation-settings: 'wght' 500;
+  line-height: 30px;
+}
+.navbar__brand p {
+  font-size: 22px;
+  color: var(--color-text-default);
+  margin: 0 15px;
+}
+.navbar__content {
+  width: 70px;
+  color: var(--color-text-default-soft);
+}
 
-  &.active {
-    height: 100%;
-    width: 100%;
-    opacity: 0.7;
-    transition: height 0s 0s, width 0s 0s, opacity .3s 0s;
+.tooltip--padding {
+  padding: 15px 20px;
+}
+
+.theme-selector img {
+  border: 5px solid transparent;
+  border-radius: 20px;
+}
+.theme-selector--active img {
+  border: 5px solid var(--color-primary);
+}
+
+#about {
+  img {
+    margin-right: 25px;
+  }
+
+  > div {
+    display: block;
+    font-family: 'SF Text';
+    font-size: 16px;
+    color: var(--color-text-default-inverse);
+  }
+
+  p {
+    margin: 5px;
+    font-variation-settings: "wght" 400;
+
+    a {
+      font-variation-settings: "wght" 600;
+    }
   }
 }
 
-@import "accounts";
-
 #main {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 50px 60px;
-  //have to specify height for transition-delay to work
-  height: 100%;
-  padding: 0;
-  transition: height 0s 0s, opacity .6s 0s;
+  position: absolute;
+  top: 250px;
+  left: 0;
+  right: 0;
 
   > div {
-    display: flex;
-    align-items: center;
-  }
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px 60px;
+    //have to specify height for transition-delay to work
+    height: 100%;
+    padding: 0;
+    transition: transform .5s, height 0s 0s, opacity .6s 0s;
 
-  &.hidden {
-    opacity: 0;
-    height: 0;
-    overflow: hidden;
-    transition: height 0s .4s, opacity .4s 0s;
+    > div {
+      display: flex;
+      align-items: center;
+    }
   }
 }
 
@@ -279,26 +310,27 @@ svg * {
   }
 }
 
-#about {
-  display: flex;
-  justify-content: center;
-  margin: auto;
-  margin-bottom: 0;
-  padding-top: 40px;
+.clickCatcher {
+  position: fixed;
+  top: 0;
+  left: 0;
+  //have to specify for transition-delay to work
+  height: 0;
+  width: 0;
+  background-color: var(--color-background);
+  opacity: 0;
+  z-index: 5;
+  transition: height 0s .3s, width 0s .3s, opacity .3s 0s;
 
-  p {
-    color: var(--color-text-default-soft);
-    margin: 5px 10px;
-    font-size: 12px;
-    font-variation-settings: "wght" 500;
-
-    a {
-      color: var(--color-text-default);
-      font-variation-settings: "wght" 600;
-    }
+  &.active {
+    height: 100%;
+    width: 100%;
+    opacity: 0.7;
+    transition: height 0s 0s, width 0s 0s, opacity .3s 0s;
   }
 }
 
+@import "accounts";
 @import "keys";
 @import "coins";
 @import "confirm-state";

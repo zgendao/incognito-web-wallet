@@ -6,25 +6,61 @@
             [app.header :refer [header]]
             [app.coins :refer [coins-container]]
             [app.actions :refer [actions-container]]
-            [app.icons :refer [loader]]
+            [app.icons :refer [loader bulb-icon info-icon]]
             [goog.string :as gstring :refer [format]]
-            [goog.string.format]))
+            [goog.string.format]
+            ["@tippyjs/react" :default Tippy :refer (useSingleton)]
+            ["tippy.js" :refer (animateFill)]))
 
-(defn navbar [showExchangeRate?]
+(defn theme-switcher [theme desc]
+  [:button.theme-selector
+    {:class (when (= theme (@state :theme)) "theme-selector--active")
+     :on-click #(do (swap! state assoc :theme theme)
+                    (set! (.. js/document -body -className) theme))}
+    [:img {:src (str "/public/images/themes/" theme ".png") :width "180px"}]
+    [:p desc]])
+
+(defn themes []
+  [:div#themes.tooltip--padding
+    [theme-switcher "light" "Light"]
+    [theme-switcher "dark" "Dark"]
+    [theme-switcher "auto" "Browser setting"]])
+
+(defn about []
+  [:div#about.tooltip--padding
+    [:img {:src "/public/images/zgen-logo.svg" :width "80px"}]
+    [:div
+      [:p "Made by " [:a {:href "https://zgen.hu" :target "_blank"} "ZGEN DAO"] ", the bureaucracy-free online guild."]
+      [:p "Send your feature requests to: " [:a {:href "mailto:contact@zgen.hu" :target "_blank"} "crypto@zgen.hu"]]
+      [:p "Source: " [:a {:href "https://github.com/zgendao/incognito-web-wallet" :target "_blank"} "zgendao/incognito-web-wallet"]]]])
+
+(defn navbar-tooltip [title content icon target]
+  [:> Tippy {:content title :singleton target}
+    [:> Tippy {:content (reagent/as-element [content]) :allowHTML true :interactive true
+               :maxWidth 700 :trigger "click" :animateFill true :plugins #js [animateFill]
+               :onShow (fn [instance] (.setProps instance #js {:trigger "mouseenter"}))
+               :onUntrigger (fn [instance] (.setProps instance #js {:trigger "click"}))}
+      [:button.display-icon
+        [icon]]]])
+
+(defn navbar-content [key]
+  (let [[source target] (useSingleton)]
+    (reagent/as-element
+      [:div.navbar__content
+        [:> Tippy {:singleton source
+                   :hideOnClick false
+                   :zIndex 0
+                   :moveTransition "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0s"}]
+        [navbar-tooltip "Themes" themes bulb-icon target]
+        [navbar-tooltip "About" about info-icon target]])))
+
+(defn navbar []
   [:nav
    [:div.container
     [:div.navbar__brand
       [:img {:src "./public/images/logo.png" :width "30px" :height "30px"}]
       [:p "Incognito Web Wallet"]]
-    (when showExchangeRate?
-      [:div
-        [:p (format "%.2f" (:prv-price @state)) " USD"]])]])
-
-(defn about []
-  [:div#about.container
-    [:p "Made by " [:a {:href "https://zgen.hu" :target "_blank"} "ZGEN DAO"] ", the bureaucracy-free online guild."]
-    [:p "Send your feature requests to: " [:a {:href "mailto:contact@zgen.hu" :target "_blank"} "crypto@zgen.hu"]]
-    [:p "Source: " [:a {:href "https://github.com/zgendao/incognito-web-wallet" :target "_blank"} "zgendao/incognito-web-wallet"]]])
+    [:> navbar-content]]])
 
 (defn main []
   (create-class
@@ -37,10 +73,11 @@
       (fn []
         (let [account (first (js->clj (:accounts @state)))]
           (when account
-            [:div#main.container {:class [(when-not (@state :selected-account) "hidden")]}
-              [header]
-              [coins-container]
-              [actions-container]])))}))
+            [:div#main
+              [:div.container
+                [header]
+                [coins-container]
+                [actions-container]]])))}))
 
 (defn back-layer []
   [:div#backLayer.clickCatcher
@@ -66,15 +103,19 @@
         [download-from "directapk" "https://github.com/incognitochain/incognito-wallet/releases/download/v3.7.2/3.7.2.apk"]]]])
 
 (defn app []
-  (if (>= js/window.screen.width 1024)
-    (if (:wasm-loaded @state)
-      [:<>
-        [navbar true]
-        [accounts-container]
-        [main]
-        (when (@state :selected-account) [about])
-        [back-layer]]
-      [:<>
-        [navbar]
-        [loader]])
-    [mobile-view]))
+  (create-class
+    {:component-did-mount
+      #(set! (.. js/document -body -className) (@state :theme))
+     :reagent-render
+      (fn []
+        (if (>= js/window.screen.width 1024)
+          (if (:wasm-loaded @state)
+            [:<>
+              [navbar]
+              [accounts-container]
+              [main]
+              [back-layer]]
+            [:<>
+              [navbar]
+              [loader]])
+          [mobile-view]))}))

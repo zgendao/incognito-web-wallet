@@ -37,7 +37,7 @@
 (defn scroll-to-account [account]
   (js/setTimeout
     (fn []
-      (.scrollTo (.getElementById js/document "accounts-wrapper")
+      (.scrollTo (.getElementById js/document "accounts-wrapper-inner")
         #js {:left (- (.-offsetLeft (.getElementById js/document (str "account_" (get-order-number account)))) 100)
              :behavior "smooth"}))
     50))
@@ -63,7 +63,7 @@
 (defn switch-reciepent-account [to]
   (when-not (= to (@state :selected-account))
     (do
-      (swap! state assoc-in [:send-data :reciepent-address] to)
+      (swap! state assoc-in [:send-data :reciepent-address] (get-address to))
       (swap! state assoc-in [:send-data :errors :reciepent-address] nil)
       (scroll-to-account (@state :selected-account)))))
     
@@ -160,7 +160,7 @@
                              :class (when (@state :add-account-opened) "opened")}
     [:div.add-account
       [:h4.inline-icon.add-account__title
-        [plus-icon] "Add account"]
+        [plus-icon "var(--color-text-default-soft)"] "Add account"]
       [tabs-component :add-account-tab
         {"Create new" [add-account-tab false]
          "Import existing" [add-account-tab true]}]]])
@@ -185,9 +185,9 @@
             [arrow-narrow-right-icon]])
         [:div.account-selector__inner
           {:on-click (when-not (= (@state :delete-account-opened) name)
-                            (if (reciepent-address? "?")
-                              #(switch-reciepent-account (get-address name))
-                              #(switch-account name)))}
+                      (if (reciepent-address? "?")
+                        #(switch-reciepent-account name)
+                        #(switch-account name)))}
           [:div
             [:h6.account-selector__name name]
             [:div.account-selector__balance
@@ -212,7 +212,7 @@
               #(swap! state assoc :delete-account-opened false)])]]]))
 
 (defn horizontal-scroll []
-  (def container (.getElementById js/document "accounts-wrapper"))
+  (def container (.getElementById js/document "accounts-wrapper-inner"))
   (.addEventListener container "wheel"
     (fn [e]
       (when (and (@state :selected-account) (not= "?" (get-in @state [:send-data :reciepent-address])))
@@ -273,6 +273,7 @@
     [:div.accounts-header.accounts-header--reciepent
       [:h2 "Select the account you want to send to"]]
     [:div#accounts-wrapper.accounts-wrapper
-      [accounts-grid]]
+      [:div#accounts-wrapper-inner.accounts-wrapper-inner
+        [accounts-grid]]]
     [:> Tippy {:content "Manage accounts" :animation "shift-away"}
       [:button.circle-btn {:on-click (fn [] (switch-account nil))} [edit-icon]]]])

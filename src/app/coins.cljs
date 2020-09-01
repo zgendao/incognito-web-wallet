@@ -39,7 +39,7 @@
       [:div.coin-wrapper.disabled {:style {:width "auto" :align-self "flex-start"}}
         [:div.coin
           [:div.coin__img.display-icon
-            [plus-icon "black"]]
+            [plus-icon]]
           [:div.coin__content
             [:div.coin__content__main
               [:h6 "Add coin"]]]]]]]))

@@ -6,6 +6,7 @@
 
 (defonce state (atom {:prv-price 0
                       :wasm-loaded false
+                      :theme "auto"
                       :keys-opened false
                       :selected-account nil
                       :selected-coin nil

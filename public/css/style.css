@@ -19,6 +19,7 @@
 
 .vertical-expand-inverse {
   animation-name: vertical-collapse-inverse;
+  contain: content;
 }
 
 .vertical-expand.notFull {
@@ -667,6 +668,7 @@ label {
 
 input {
   width: 100%;
+  color: var(--color-text-default);
   border: none;
   background-color: var(--color-background);
   padding: 0.9em 1.2em;
@@ -785,8 +787,8 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   background-color: var(--color-background);
   margin-top: 20px;
   scrollbar-width: thin;
-  transition: color 0.3s;
   overflow: overlay;
+  transition: color 0.3s, scrollbar-color 0.3s;
   scrollbar-color: rgba(53, 53, 53, 0.3) transparent;
   color: rgba(53, 53, 53, 0.3);
 }
@@ -864,6 +866,7 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
 :root {
   --color-background: #ffffff;
   --color-background-secondary: #ECECEC;
+  --color-background-tertiary: #ECECEC;
   --color-primary: #5994F0;
   --color-secondary: #33373A;
   --color-text-default: #000000;
@@ -872,6 +875,31 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   --color-text-inverse-soft: #ffffffb6;
 }
 
+body.dark {
+  --color-background: #18191A;
+  --color-background-secondary: #242526;
+  --color-background-tertiary: #3A3B3C;
+  --color-primary: #5994F0;
+  --color-secondary: #33373A;
+  --color-text-default: #ffffff;
+  --color-text-default-soft: #858585;
+  --color-text-inverse: #ffffff;
+  --color-text-inverse-soft: #ffffffb6;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.auto {
+    --color-background: #18191A;
+    --color-background-secondary: #242526;
+    --color-background-tertiary: #3A3B3C;
+    --color-primary: #5994F0;
+    --color-secondary: #33373A;
+    --color-text-default: #ffffff;
+    --color-text-default-soft: #858585;
+    --color-text-inverse: #ffffff;
+    --color-text-inverse-soft: #ffffffb6;
+  }
+}
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -880,8 +908,8 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
 
 html, body {
   scrollbar-width: thin;
-  transition: color 0.3s;
   overflow: overlay;
+  transition: color 0.3s, scrollbar-color 0.3s;
   scrollbar-color: var(--color-text-default-soft) transparent;
   color: var(--color-text-default-soft);
 }
@@ -907,26 +935,7 @@ body {
 }
 
 #app {
-  position: relative;
-  display: flex;
-  flex-direction: column;
   padding: 0 20px;
-  color: var(--color-text-default);
-}
-
-nav div {
-  display: flex;
-  justify-content: space-between;
-}
-nav div p {
-  font-family: "SF Display";
-  color: var(--color-text-default-soft);
-  font-variation-settings: "wght" 500;
-  line-height: 30px;
-  margin: 0 10px;
-}
-nav div .navbar__brand p {
-  font-size: 22px;
   color: var(--color-text-default);
 }
 
@@ -1021,7 +1030,7 @@ svg * {
 }
 
 .btn--inverse {
-  background-color: var(--color-text-inverse);
+  background-color: var(--color-background);
   color: var(--color-text-default);
 }
 
@@ -1031,7 +1040,7 @@ svg * {
   justify-content: center;
   height: 35px;
   width: 35px;
-  background-color: var(--color-background-secondary);
+  background-color: var(--color-background-tertiary);
   border: 0;
   border-radius: 30px;
 }
@@ -1044,8 +1053,121 @@ svg * {
   color: var(--color-text-inverse-soft);
 }
 
-.clickCatcher {
+nav div {
+  display: flex;
+  justify-content: space-between;
+  font-family: "SF Display";
+  font-variation-settings: "wght" 500;
+  line-height: 30px;
+}
+
+.navbar__brand p {
+  font-size: 22px;
+  color: var(--color-text-default);
+  margin: 0 15px;
+}
+
+.navbar__content {
+  width: 70px;
+  color: var(--color-text-default-soft);
+}
+
+.tooltip--padding {
+  padding: 15px 20px;
+}
+
+.theme-selector img {
+  border: 5px solid transparent;
+  border-radius: 20px;
+}
+
+.theme-selector--active img {
+  border: 5px solid var(--color-primary);
+}
+
+#about img {
+  margin-right: 25px;
+}
+#about > div {
+  display: block;
+  font-family: "SF Text";
+  font-size: 16px;
+  color: var(--color-text-default-inverse);
+}
+#about p {
+  margin: 5px;
+  font-variation-settings: "wght" 400;
+}
+#about p a {
+  font-variation-settings: "wght" 600;
+}
+
+#main {
   position: absolute;
+  top: 250px;
+  left: 0;
+  right: 0;
+}
+#main > div {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 50px 60px;
+  height: 100%;
+  padding: 0;
+  transition: transform 0.5s, height 0s 0s, opacity 0.6s 0s;
+}
+#main > div > div {
+  display: flex;
+  align-items: center;
+}
+
+.header__amount, .header__keys {
+  font-family: "SF Display";
+  font-size: 20px;
+}
+
+.header__amount {
+  justify-content: space-between;
+}
+.header__amount h1 {
+  margin: 0.2em 0;
+}
+
+.cut-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions-container .tabs-wrapper {
+  align-self: flex-start;
+  width: 100%;
+  padding: 20px 35px;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-background-secondary);
+  border-radius: 20px;
+}
+.actions-container .btn-wrapper {
+  margin-bottom: 20px;
+}
+.actions-container .confirm-layer {
+  padding: 20px 35px;
+}
+
+.send-confirm-data {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-auto-rows: auto;
+  gap: 15px 20px;
+  margin: 20px 0 40px 0;
+}
+.send-confirm-data p:nth-child(even) {
+  font-variation-settings: "wght" 600;
+}
+
+.clickCatcher {
+  position: fixed;
   top: 0;
   left: 0;
   height: 0;
@@ -1189,14 +1311,15 @@ svg * {
 }
 #accounts {
   position: relative;
-  padding: 40px 0;
+  height: 140px;
+  padding: 40px 0 0 0;
   overflow: hidden;
   z-index: 0;
-  transition: z-index 0s 0.3s, 0.5s padding;
+  transition: z-index 0s 0.3s, height 0.5s, transform 0.5s;
 }
 #accounts.highlighted {
   z-index: 10;
-  transition: z-index 0s 0s, 0.5s padding;
+  transition: z-index 0s 0s, height 0.5s, transform 0.5s;
 }
 #accounts::after {
   content: "";
@@ -1208,7 +1331,7 @@ svg * {
   z-index: 1;
   pointer-events: none;
   opacity: 1;
-  transition: transform 0.5s, opacity 0s 0.5s;
+  transition: transform 0.5s, opacity 0.5s;
   will-change: transform;
   box-shadow: inset -160px 0 60px -60px var(--color-background);
 }
@@ -1222,7 +1345,7 @@ svg * {
   z-index: 1;
   pointer-events: none;
   opacity: 1;
-  transition: transform 0.5s, opacity 0s 0.5s;
+  transition: transform 0.5s, opacity 0.5s;
   will-change: transform;
   box-shadow: inset 100px 0 60px -60px var(--color-background);
 }
@@ -1263,7 +1386,7 @@ svg * {
   z-index: 1;
   pointer-events: none;
   opacity: 1;
-  transition: transform 0.5s, opacity 0s 0.5s;
+  transition: transform 0.5s, opacity 0.5s;
   will-change: transform;
   bottom: unset;
   height: 100px;
@@ -1271,30 +1394,8 @@ svg * {
 }
 
 .accounts-wrapper {
-  overflow-x: auto;
-  height: 100px;
-  scrollbar-width: thin;
-  transition: color 0.3s, height 0.5s, margin 0.5s, color 0.3s;
-  overflow: overlay;
-  color: transparent;
-  scrollbar-color: transparent transparent;
-}
-.accounts-wrapper::-webkit-scrollbar {
-  height: 5px;
-  width: 5px;
-  background: transparent;
-}
-.accounts-wrapper::-webkit-scrollbar-track {
-  display: none;
-}
-.accounts-wrapper::-webkit-scrollbar-thumb {
-  background-clip: padding-box;
-  border-radius: 15px;
-  box-shadow: inset 0 0 0 10px;
-}
-.accounts-wrapper:hover {
-  scrollbar-color: var(--color-background-secondary) transparent;
-  color: var(--color-background-secondary);
+  position: relative;
+  height: 100%;
 }
 .accounts-wrapper::after {
   content: "";
@@ -1306,9 +1407,36 @@ svg * {
   z-index: 1;
   pointer-events: none;
   opacity: 0;
-  transition: transform 0.5s, opacity 0s 0.5s;
+  transition: transform 0.5s, opacity 0.5s;
   will-change: transform;
-  box-shadow: inset 0 -80px 20px -20px var(--color-background);
+  box-shadow: inset 0 -60px 20px -20px var(--color-background);
+}
+
+.accounts-wrapper-inner {
+  height: 100%;
+  overflow: auto;
+  scrollbar-width: thin;
+  overflow: overlay;
+  transition: color 0.3s, scrollbar-color 0.3s, color 0.3s;
+  color: transparent;
+  scrollbar-color: transparent transparent;
+}
+.accounts-wrapper-inner::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+  background: transparent;
+}
+.accounts-wrapper-inner::-webkit-scrollbar-track {
+  display: none;
+}
+.accounts-wrapper-inner::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  border-radius: 15px;
+  box-shadow: inset 0 0 0 10px;
+}
+.accounts-wrapper-inner:hover {
+  scrollbar-color: var(--color-background-secondary) transparent;
+  color: var(--color-background-secondary);
 }
 
 .accounts-grid {
@@ -1419,6 +1547,7 @@ svg * {
   transform: translateY(100px);
   grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
   grid-auto-flow: unset;
+  padding-bottom: 100px;
   transition: transform 0.5s, width 0.5s;
 }
 @media screen and (min-width: 1240px) {
@@ -1430,17 +1559,17 @@ svg * {
   transition: opacity 0.5s 0.2s, visibility 0s 0s;
 }
 #accounts.opened.opened--full {
-  padding: 80px 0 0 0;
-}
-#accounts.opened.opened--full .accounts-wrapper {
-  height: calc(100vh - 150px);
-}
-#accounts.opened.opened--full .accounts-wrapper::-webkit-scrollbar:vertical {
-  display: none;
+  height: calc(100vh - 110px);
+  transform: translateY(40px);
+  transition: height 0s, transform 0.5s;
 }
 #accounts.opened.opened--full .accounts-header--manage {
   opacity: 1;
   visibility: visible;
+}
+#accounts.opened.opened--full .accounts-wrapper-inner:hover {
+  scrollbar-color: transparent transparent;
+  color: transparent;
 }
 #accounts.opened.opened--full .accounts-grid {
   grid-auto-rows: minmax(100px, auto);
@@ -1461,8 +1590,15 @@ svg * {
   visibility: visible;
   transition: background-color 0.5s, border 0.5s, opacity 0.3s 0.5s, visibility 0s 0.4s;
 }
-#accounts.opened.opened--half .accounts-wrapper {
-  height: calc(30vh + 70px);
+#accounts.opened.opened--full + #main > div {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transform: translateY(calc(100vh - 290px));
+  transition: transform 0.5s, height 0s 0.4s, opacity 0.4s 0s;
+}
+#accounts.opened.opened--half {
+  height: 370px;
 }
 #accounts.opened.opened--half .accounts-wrapper::after {
   opacity: 1;
@@ -1470,6 +1606,9 @@ svg * {
 #accounts.opened.opened--half .accounts-header--reciepent {
   opacity: 1;
   visibility: visible;
+}
+#accounts.opened.opened--half + #main > div {
+  transform: translateY(220px);
 }
 
 @keyframes fadeIn {
@@ -1480,88 +1619,6 @@ svg * {
     opacity: 1;
   }
 }
-#main {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 50px 60px;
-  height: 100%;
-  padding: 0;
-  transition: height 0s 0s, opacity 0.6s 0s;
-}
-#main > div {
-  display: flex;
-  align-items: center;
-}
-#main.hidden {
-  opacity: 0;
-  height: 0;
-  overflow: hidden;
-  transition: height 0s 0.4s, opacity 0.4s 0s;
-}
-
-.header__amount, .header__keys {
-  font-family: "SF Display";
-  font-size: 20px;
-}
-
-.header__amount {
-  justify-content: space-between;
-}
-.header__amount h1 {
-  margin: 0.2em 0;
-}
-
-.cut-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.actions-container .tabs-wrapper {
-  align-self: flex-start;
-  width: 100%;
-  padding: 20px 35px;
-  position: relative;
-  overflow: hidden;
-  background-color: var(--color-background-secondary);
-  border-radius: 20px;
-}
-.actions-container .btn-wrapper {
-  margin-bottom: 20px;
-}
-.actions-container .confirm-layer {
-  padding: 20px 35px;
-}
-
-.send-confirm-data {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-auto-rows: auto;
-  gap: 15px 20px;
-  margin: 20px 0 40px 0;
-}
-.send-confirm-data p:nth-child(even) {
-  font-variation-settings: "wght" 600;
-}
-
-#about {
-  display: flex;
-  justify-content: center;
-  margin: auto;
-  margin-bottom: 0;
-  padding-top: 40px;
-}
-#about p {
-  color: var(--color-text-default-soft);
-  margin: 5px 10px;
-  font-size: 12px;
-  font-variation-settings: "wght" 500;
-}
-#about p a {
-  color: var(--color-text-default);
-  font-variation-settings: "wght" 600;
-}
-
 .header__keys {
   justify-content: flex-end;
 }
@@ -1806,7 +1863,7 @@ svg * {
 }
 
 pre {
-  background-color: var(--color-text-inverse);
+  background-color: var(--color-background);
   color: var(--color-text-default);
   padding: 0.7em 1em;
   border-radius: 20px;

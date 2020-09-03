@@ -687,7 +687,7 @@ input::placeholder {
 }
 
 .input__error {
-  color: #ff6f00;
+  color: var(--color-alert);
   max-height: 0;
   opacity: 0;
   transition: height 0.3s, opacity 0.3s, margin 0.3s;
@@ -711,25 +711,27 @@ input[type=number] {
 }
 
 .tippy-box {
-  background-color: var(--color-secondary);
+  background-color: #3A3B3C;
   border-radius: 10px;
   padding: 2px 3px;
+  font-family: "SF Text";
+  font-variation-settings: "wght" 400;
 }
 
 .tippy-box[data-placement^=top] > .tippy-arrow::before {
-  border-top-color: var(--color-secondary);
+  border-top-color: #3A3B3C;
 }
 
 .tippy-box[data-placement^=bottom] > .tippy-arrow::before {
-  border-bottom-color: var(--color-secondary);
+  border-bottom-color: #3A3B3C;
 }
 
 .tippy-box[data-placement^=left] > .tippy-arrow::before {
-  border-left-color: var(--color-secondary);
+  border-left-color: #3A3B3C;
 }
 
 .tippy-box[data-placement^=right] > .tippy-arrow::before {
-  border-right-color: var(--color-secondary);
+  border-right-color: #3A3B3C;
 }
 
 .tippy-box[data-state=visible]:not([data-animatefill]):not([data-animation=height]) {
@@ -742,6 +744,9 @@ input[type=number] {
 
 div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   opacity: 0;
+}
+div[data-tippy-root]:nth-last-of-type(2) .tippy-box[data-state=hidden] {
+  background-color: transparent;
 }
 
 .tippy-box[data-theme=skeleton] {
@@ -873,6 +878,7 @@ div[data-tippy-root]:nth-last-of-type(2) .tippy-content {
   --color-text-default-soft: #7A7A7A;
   --color-text-inverse: #ffffff;
   --color-text-inverse-soft: #ffffffb6;
+  --color-alert: #ff6f00;
 }
 
 body.dark {
@@ -885,6 +891,7 @@ body.dark {
   --color-text-default-soft: #858585;
   --color-text-inverse: #ffffff;
   --color-text-inverse-soft: #ffffffb6;
+  --color-alert: #ff8223;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -898,6 +905,7 @@ body.dark {
     --color-text-default-soft: #858585;
     --color-text-inverse: #ffffff;
     --color-text-inverse-soft: #ffffffb6;
+    --color-alert: #ff8223;
   }
 }
 * {
@@ -995,6 +1003,7 @@ svg * {
 .inline-icon svg {
   height: 1em;
   margin-right: 12px;
+  flex-shrink: 0;
 }
 
 .btn.inline-icon svg {
@@ -1053,12 +1062,15 @@ svg * {
   color: var(--color-text-inverse-soft);
 }
 
-nav div {
+nav > div,
+nav > div > div,
+.tooltip--padding {
   display: flex;
   justify-content: space-between;
   font-family: "SF Display";
   font-variation-settings: "wght" 500;
   line-height: 30px;
+  z-index: 2;
 }
 
 .navbar__brand p {
@@ -1068,7 +1080,7 @@ nav div {
 }
 
 .navbar__content {
-  width: 70px;
+  width: 75px;
   color: var(--color-text-default-soft);
 }
 
@@ -1079,10 +1091,11 @@ nav div {
 .theme-selector img {
   border: 5px solid transparent;
   border-radius: 20px;
+  transition: border-color 0.2s;
 }
 
 .theme-selector--active img {
-  border: 5px solid var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 #about img {
@@ -1105,8 +1118,8 @@ nav div {
 #main {
   position: absolute;
   top: 250px;
-  left: 0;
-  right: 0;
+  left: 20px;
+  right: 20px;
 }
 #main > div {
   display: grid;
@@ -1114,7 +1127,8 @@ nav div {
   gap: 50px 60px;
   height: 100%;
   padding: 0;
-  transition: transform 0.5s, height 0s 0s, opacity 0.6s 0s;
+  padding-bottom: 30px;
+  transition: transform 0.4s, height 0s 0s, opacity 0.6s 0s;
 }
 #main > div > div {
   display: flex;
@@ -1196,7 +1210,7 @@ nav div {
   background-color: var(--color-background);
   overflow: hidden;
   cursor: pointer;
-  transition: background-color 0.5s, border 5s, opacity 0.3s 0s, visibility 0s 0.3s;
+  transition: background-color 0.4s, border 5s, opacity 0.3s 0s, visibility 0s 0.3s;
 }
 
 .add-account {
@@ -1204,7 +1218,7 @@ nav div {
   flex-shrink: 0;
   height: 0;
   transform-origin: top left;
-  transition: padding 0.5s;
+  transition: padding 0.4s;
 }
 
 .add-account .add-account__title {
@@ -1220,13 +1234,13 @@ nav div {
   --icon-color: var(--color-text-default-soft);
   font-variation-settings: "wght" 600;
   margin: 0;
-  transition: top 0.5s;
+  transition: top 0.4s;
 }
 
 .add-account .tabs-wrapper {
   padding: 20px 25px;
   margin-top: 50%;
-  transition: margin 0.5s;
+  transition: margin 0.4s;
 }
 
 .add-account .tabs-wrapper .tab {
@@ -1315,11 +1329,11 @@ nav div {
   padding: 40px 0 0 0;
   overflow: hidden;
   z-index: 0;
-  transition: z-index 0s 0.3s, height 0.5s, transform 0.5s;
+  transition: z-index 0s 0.3s, height 0.4s, transform 0.4s;
 }
 #accounts.highlighted {
   z-index: 10;
-  transition: z-index 0s 0s, height 0.5s, transform 0.5s;
+  transition: z-index 0s 0s, height 0.4s, transform 0.4s;
 }
 #accounts::after {
   content: "";
@@ -1331,7 +1345,7 @@ nav div {
   z-index: 1;
   pointer-events: none;
   opacity: 1;
-  transition: transform 0.5s, opacity 0.5s;
+  transition: transform 0.4s, opacity 0.4s;
   will-change: transform;
   box-shadow: inset -160px 0 60px -60px var(--color-background);
 }
@@ -1345,7 +1359,7 @@ nav div {
   z-index: 1;
   pointer-events: none;
   opacity: 1;
-  transition: transform 0.5s, opacity 0.5s;
+  transition: transform 0.4s, opacity 0.4s;
   will-change: transform;
   box-shadow: inset 100px 0 60px -60px var(--color-background);
 }
@@ -1357,7 +1371,7 @@ nav div {
   right: 0;
   top: 52px;
   z-index: 2;
-  transition: transform 0.5s;
+  transition: transform 0.4s;
   will-change: transform;
 }
 
@@ -1372,7 +1386,7 @@ nav div {
   z-index: 3;
   transition: opacity 0.2s 0s, visibility 0s 0.3s;
 }
-.accounts-header * {
+.accounts-header > * {
   margin: 0;
   z-index: 2;
 }
@@ -1386,7 +1400,7 @@ nav div {
   z-index: 1;
   pointer-events: none;
   opacity: 1;
-  transition: transform 0.5s, opacity 0.5s;
+  transition: transform 0.4s, opacity 0.4s;
   will-change: transform;
   bottom: unset;
   height: 100px;
@@ -1407,7 +1421,7 @@ nav div {
   z-index: 1;
   pointer-events: none;
   opacity: 0;
-  transition: transform 0.5s, opacity 0.5s;
+  transition: transform 0.4s, opacity 0.4s;
   will-change: transform;
   box-shadow: inset 0 -60px 20px -20px var(--color-background);
 }
@@ -1446,7 +1460,7 @@ nav div {
   transform: translateY(0);
   gap: 50px;
   color: var(--color-text-default);
-  transition: transform 0.5s, width 0s;
+  transition: transform 0.4s, width 0s;
 }
 @media screen and (min-width: 1240px) {
   .accounts-grid {
@@ -1468,7 +1482,7 @@ nav div {
   border: 5px solid transparent;
   overflow: hidden;
   cursor: pointer;
-  transition: padding 0.5s, border-color 0.2s;
+  transition: padding 0.4s, border-color 0.2s;
 }
 .account-selector__inner:hover {
   opacity: 0.8;
@@ -1495,7 +1509,7 @@ nav div {
   left: -43px;
   top: 50%;
   transform: translateY(-50%);
-  animation: fadeIn 0.3s ease-in 0.5s 1 normal forwards;
+  animation: fadeIn 0.3s ease-in 0.4s 1 normal forwards;
 }
 .account-selector--reciepent__arrow:hover svg path:first-child {
   transform: translateX(5px);
@@ -1516,7 +1530,7 @@ nav div {
   height: 0;
   opacity: 0;
   overflow: hidden;
-  transition: height 0.5s, opacity 0.5s;
+  transition: height 0.4s, opacity 0.4s;
 }
 .account-selector__balance p {
   margin: 10px 0 0 0;
@@ -1542,26 +1556,32 @@ nav div {
 #accounts.opened .circle-btn {
   transform: translateX(50px);
 }
+#accounts.opened .accounts-header {
+  transition: opacity 0.4s 0.2s, visibility 0s 0s;
+}
+#accounts.opened .accounts-wrapper-inner {
+  scrollbar-width: none;
+}
+#accounts.opened .accounts-wrapper-inner::-webkit-scrollbar {
+  display: none;
+}
 #accounts.opened .accounts-grid {
   width: 100% !important;
   transform: translateY(100px);
   grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
   grid-auto-flow: unset;
   padding-bottom: 100px;
-  transition: transform 0.5s, width 0.5s;
+  transition: transform 0.4s, width 0.4s;
 }
 @media screen and (min-width: 1240px) {
   #accounts.opened .accounts-grid {
     grid-template-columns: repeat(5, 200px);
   }
 }
-#accounts.opened .accounts-header {
-  transition: opacity 0.5s 0.2s, visibility 0s 0s;
-}
 #accounts.opened.opened--full {
   height: calc(100vh - 110px);
   transform: translateY(40px);
-  transition: height 0s, transform 0.5s;
+  transition: height 0s, transform 0.4s;
 }
 #accounts.opened.opened--full .accounts-header--manage {
   opacity: 1;
@@ -1588,14 +1608,15 @@ nav div {
   min-height: 120px;
   opacity: 1;
   visibility: visible;
-  transition: background-color 0.5s, border 0.5s, opacity 0.3s 0.5s, visibility 0s 0.4s;
+  transition: background-color 0.4s, border 0.4s, opacity 0.3s 0.4s, visibility 0s 0.4s;
 }
 #accounts.opened.opened--full + #main > div {
   opacity: 0;
   height: 0;
+  padding-bottom: 0;
   overflow: hidden;
   transform: translateY(calc(100vh - 290px));
-  transition: transform 0.5s, height 0s 0.4s, opacity 0.4s 0s;
+  transition: transform 0.4s, height 0s 0.4s, opacity 0.4s 0s;
 }
 #accounts.opened.opened--half {
   height: 370px;
@@ -1632,8 +1653,9 @@ nav div {
   width: 100%;
   margin-right: 20px;
   z-index: 0;
-  transform: translate(40px, -2px);
+  transform: translate(40px, -4px);
   transition: transform 0.2s ease-in-out, z-index 0s 0.2s;
+  will-change: transform, z-index;
 }
 
 .keys-modal {
@@ -1842,11 +1864,11 @@ nav div {
   transform: translate(-50%, -50%) scale(0);
   background-color: var(--color-secondary);
   border-radius: 750px;
-  transition: transform 0.5s;
+  transition: transform 0.4s;
 }
 .confirm-background.confirm-background--medium {
-  height: 1000px;
-  width: 1000px;
+  height: 1155px;
+  width: 1155px;
 }
 .confirm-background.confirm-background--large {
   height: 1500px;
@@ -1872,11 +1894,9 @@ pre {
   overflow: hidden;
 }
 
-.mobileView h1 {
-  color: var(--color-secondary);
-}
 .mobileView p {
   text-align: justify;
+  padding-top: 20px;
 }
 .mobileView div {
   margin-top: 60px;

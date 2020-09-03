@@ -23,7 +23,7 @@
   background-color: var(--color-background);
   overflow: hidden;
   cursor: pointer;
-  transition: background-color .5s, border 5s, opacity .3s 0s, visibility 0s .3s;
+  transition: background-color .4s, border 5s, opacity .3s 0s, visibility 0s .3s;
 }
 
 .add-account {
@@ -31,7 +31,7 @@
   flex-shrink: 0;
   height: 0;
   transform-origin: top left;
-  transition: padding .5s;
+  transition: padding .4s;
 
   .add-account__title {
     position: absolute;
@@ -46,13 +46,13 @@
     --icon-color: var(--color-text-default-soft);
     font-variation-settings: "wght" 600;
     margin: 0;
-    transition: top .5s;
+    transition: top .4s;
   }
   
   .tabs-wrapper {
     padding: 20px 25px;
     margin-top: 50%;
-    transition: margin .5s;
+    transition: margin .4s;
 
     .tab {
       animation: none;

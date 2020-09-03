@@ -6,7 +6,7 @@
   height: 140px;
   padding: 40px 0 0 0;
   overflow: hidden;
-  @include highlightable(height .5s, transform .5s);
+  @include highlightable(height .4s, transform .4s);
 
   //left and right fade layers
   &::after {
@@ -26,7 +26,7 @@
     right: 0;
     top: 52px;
     z-index: 2;
-    transition: transform .5s;
+    transition: transform .4s;
     will-change: transform;
   }
 }
@@ -42,7 +42,7 @@
   z-index: 3;
   transition: opacity .2s 0s, visibility 0s .3s;
 
-  * {
+  > * {
     margin: 0;
     z-index: 2;
   }
@@ -79,7 +79,7 @@
   transform: translateY(0);
   gap: 50px;
   color: var(--color-text-default);
-  transition: transform .5s, width 0s;
+  transition: transform .4s, width 0s;
 
   @media screen and (min-width: 1240px) {
     grid-auto-columns: 200px;
@@ -99,7 +99,7 @@
   border: 5px solid transparent;
   overflow: hidden;
   cursor: pointer;
-  transition: padding .5s, border-color .2s;
+  transition: padding .4s, border-color .2s;
 
   &:hover {
     opacity: 0.8;
@@ -126,7 +126,7 @@
   left: -43px;
   top: 50%;
   transform: translateY(-50%);
-  animation: fadeIn .3s ease-in .5s 1 normal forwards;
+  animation: fadeIn .3s ease-in .4s 1 normal forwards;
 
   //svg animation
   &:hover svg {
@@ -151,7 +151,7 @@
   height: 0;
   opacity: 0;
   overflow: hidden;
-  transition: height .5s, opacity .5s;
+  transition: height .4s, opacity .4s;
   
   p {
     margin: 10px 0 0 0;
@@ -180,6 +180,18 @@
   .circle-btn {
     transform: translateX(50px);
   }
+  
+  .accounts-header {
+    transition: opacity .4s .2s, visibility 0s 0s;
+  }
+
+  .accounts-wrapper-inner {
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 
   .accounts-grid {
     width: 100% !important;
@@ -187,21 +199,17 @@
     grid-template-columns: repeat(4, calc((100vw - 40px - 3 * 50px) / 4));
     grid-auto-flow: unset;
     padding-bottom: 100px;
-    transition: transform .5s, width .5s;
+    transition: transform .4s, width .4s;
 
     @media screen and (min-width: 1240px) {
       grid-template-columns: repeat(5, 200px);
     }
   }
 
-  .accounts-header {
-    transition: opacity .5s .2s, visibility 0s 0s;
-  }
-
   &.opened--full {
     height: calc(100vh - 110px);
     transform: translateY(40px);
-    transition: height 0s, transform .5s;
+    transition: height 0s, transform .4s;
 
     .accounts-header--manage {
       opacity: 1;
@@ -235,15 +243,16 @@
       min-height: 120px;
       opacity: 1;
       visibility: visible;
-      transition: background-color .5s, border .5s, opacity .3s .5s, visibility 0s .4s;
+      transition: background-color .4s, border .4s, opacity .3s .4s, visibility 0s .4s;
     }
 
     + #main > div {
       opacity: 0;
       height: 0;
+      padding-bottom: 0;
       overflow: hidden;
       transform: translateY(calc(100vh - 290px));
-      transition: transform .5s, height 0s .4s, opacity .4s 0s;
+      transition: transform .4s, height 0s .4s, opacity .4s 0s;
     }
   }
 

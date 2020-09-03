@@ -44,6 +44,9 @@
 (defn bulb-icon [color]
   [:> SVG {:uniquifyIDs true :src "/public/images/icons/bulb.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
+(defn alert-icon [color]
+  [:> SVG {:uniquifyIDs true :src "/public/images/icons/alert.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+
 (defn loader []
   [:span.loadingScreen
     [:svg {:viewBox "0 0 100 100" :xmlns "http://www.w3.org/2000/svg" :stroke "var(--color-text-default)"}

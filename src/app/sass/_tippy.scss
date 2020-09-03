@@ -4,21 +4,23 @@
 @import url('../../node_modules/tippy.js/dist/backdrop.css');
 
 .tippy-box {
-  background-color: var(--color-secondary);
+  background-color: #3A3B3C;
   border-radius: 10px;
-  padding: 2px 3px
+  padding: 2px 3px;
+  font-family: 'SF Text';
+  font-variation-settings: 'wght' 400;
 }
 .tippy-box[data-placement^='top'] > .tippy-arrow::before {
-  border-top-color: var(--color-secondary);
+  border-top-color: #3A3B3C;
 }
 .tippy-box[data-placement^='bottom'] > .tippy-arrow::before {
-  border-bottom-color: var(--color-secondary);
+  border-bottom-color: #3A3B3C;
 }
 .tippy-box[data-placement^='left'] > .tippy-arrow::before {
-  border-left-color: var(--color-secondary);
+  border-left-color: #3A3B3C;
 }
 .tippy-box[data-placement^='right'] > .tippy-arrow::before {
-  border-right-color: var(--color-secondary);
+  border-right-color: #3A3B3C;
 }
 
 //moveTransition fix
@@ -35,6 +37,9 @@
 div[data-tippy-root]:nth-last-of-type(2) {
   .tippy-content {
     opacity: 0;
+  }
+  .tippy-box[data-state='hidden'] {
+    background-color: transparent;
   }
 }
 

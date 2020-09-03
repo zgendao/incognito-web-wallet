@@ -71,7 +71,7 @@ input {
 }
 
 .input__error {
-  color: #ff6f00;
+  color: var(--color-alert);
   max-height: 0;
   opacity: 0;
   transition: height .3s, opacity .3s, margin .3s;

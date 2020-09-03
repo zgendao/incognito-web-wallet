@@ -34,14 +34,19 @@
       [:p "Send your feature requests to: " [:a {:href "mailto:contact@zgen.hu" :target "_blank"} "crypto@zgen.hu"]]
       [:p "Source: " [:a {:href "https://github.com/zgendao/incognito-web-wallet" :target "_blank"} "zgendao/incognito-web-wallet"]]]])
 
-(defn navbar-tooltip [title content icon target]
-  [:> Tippy {:content title :singleton target}
-    [:> Tippy {:content (reagent/as-element [content]) :allowHTML true :interactive true
-               :maxWidth 700 :trigger "click" :animateFill true :plugins #js [animateFill]
-               :onShow (fn [instance] (.setProps instance #js {:trigger "mouseenter"}))
-               :onUntrigger (fn [instance] (.setProps instance #js {:trigger "click"}))}
-      [:button.display-icon
-        [icon]]]])
+(defn navbar-tooltip [title content icon instance-to-hide target]
+  (let [singleton-instance (@state :navbar-tippy-instance)]
+    [:> Tippy {:content title :singleton target}
+      [:> Tippy {:content (reagent/as-element [content]) :allowHTML true :interactive true :interactiveBorder 50 
+                 :maxWidth 700 :trigger "click" :animateFill true :plugins #js [animateFill]
+                 :onCreate (fn [instance] (swap! state assoc (str "navbar-tippy-" title) instance))
+                 :onShow (fn [instance] (.setProps instance #js {:trigger "mouseenter"})
+                                        (.setProps singleton-instance #js {:trigger "click"}))
+                 :onHide (fn [instance] (.setProps instance #js {:trigger "click"})
+                                        (.hide singleton-instance)
+                                        (.setProps singleton-instance #js {:trigger "mouseenter"}))}
+        [:button.display-icon {:onMouseEnter (fn [] (.hide (@state instance-to-hide)))}
+          [icon]]]]))
 
 (defn navbar-content [key]
   (let [[source target] (useSingleton)]
@@ -49,18 +54,22 @@
       [:div.navbar__content
         [:> Tippy {:singleton source
                    :hideOnClick false
+                   :interactive true
                    :zIndex 0
-                   :moveTransition "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0s"}]
-        [navbar-tooltip "Themes" themes bulb-icon target]
-        [navbar-tooltip "About" about info-icon target]])))
+                   :animation "shift-away"
+                   :moveTransition "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0s"
+                   :onCreate (fn [instance] (swap! state assoc :navbar-tippy-instance instance))}]
+        [navbar-tooltip "Theme" themes bulb-icon "navbar-tippy-About" target]
+        [navbar-tooltip "About" about info-icon "navbar-tippy-Theme" target]])))
 
-(defn navbar []
+(defn navbar [show-content?]
   [:nav
    [:div.container
     [:div.navbar__brand
       [:img {:src "./public/images/logo.png" :width "30px" :height "30px"}]
       [:p "Incognito Web Wallet"]]
-    [:> navbar-content]]])
+    (when show-content?
+      [:> navbar-content])]])
 
 (defn main []
   (create-class
@@ -93,7 +102,7 @@
     
 (defn mobile-view []
   [:<>
-    [navbar]
+    [navbar false]
     [:div.container.mobileView
       [:h1 "Looks like you're on mobile. Use the app instead!"]
       [:p "Web Wallet was designed for tablets, laptops and desktops,
@@ -112,11 +121,11 @@
         (if (>= js/window.screen.width 1024)
           (if (:wasm-loaded @state)
             [:<>
-              [navbar]
+              [navbar true]
               [accounts-container]
               [main]
               [back-layer]]
             [:<>
-              [navbar]
+              [navbar false]
               [loader]])
           [mobile-view]))}))

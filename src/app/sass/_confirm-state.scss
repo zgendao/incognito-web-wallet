@@ -46,11 +46,11 @@
   transform: translate(-50%, -50%) scale(0);
   background-color: var(--color-secondary);
   border-radius: 750px;
-  transition: transform .5s;
+  transition: transform .4s;
 
   &.confirm-background--medium {
-    height: 1000px;
-    width: 1000px;
+    height: 1155px;
+    width: 1155px;
   }
   &.confirm-background--large {
     height: 1500px;

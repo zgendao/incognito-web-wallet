@@ -1,6 +1,7 @@
 (ns app.tabs
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state]]
+            [app.icons :refer [alert-icon]]
             ["@tippyjs/react" :default Tippy]))
 
 (defn tab-selector [component-state name disabled?]
@@ -30,24 +31,27 @@
   (if (string? el) (count el) 2.5))
 
 (defn input [form name label type placeholder end-elements class max]
-  [:div.input-group {:class class}
-    [:label {:for name} label]
-    [:div.input-wrapper
-      [:input {:id name :name name :type type :placeholder placeholder
-               :class (when end-elements "withEndElement")
-               :style {"--end-element-length" (str (reduce +
-                                                    (map (fn [el] (get-end-element-length el))
-                                                      end-elements))
-                                                "em")}
-               :value (get-in @state [form name])
-               :max max
-               :on-change (fn [e] (swap! state assoc-in [form name] (-> e .-target .-value))
-                                  (swap! state assoc-in [form :errors name] nil))}]
-      (when end-elements
-        (into [:span]
-          (for [el end-elements]
-            el)))]
-    [:p.input__error {:class (when (get-in @state [form :errors name]) "show")} (get-in @state [form :errors name])]])
+  (let [error (get-in @state [form :errors name])]
+    [:div.input-group {:class class}
+      [:label {:for name} label]
+      [:div.input-wrapper
+        [:input {:id name :name name :type type :placeholder placeholder
+                  :class (when end-elements "withEndElement")
+                  :style {"--end-element-length" (str (reduce +
+                                                        (map (fn [el] (get-end-element-length el))
+                                                          end-elements))
+                                                    "em")}
+                  :value (get-in @state [form name])
+                  :max max
+                  :on-change (fn [e] (swap! state assoc-in [form name] (-> e .-target .-value)
+                                      (swap! state assoc-in [form :errors name] nil)))}]
+        (when end-elements
+          (into [:span]
+            (for [el end-elements]
+              el)))]
+      [:p.input__error.inline-icon {:class (when error "show")}
+        (when error
+          [:<> [alert-icon "var(--color-alert)"] error])]]))
 
 (defn show-error [form name error-message]
   (swap! state assoc-in [form :errors name] error-message))

@@ -34,7 +34,7 @@
           (show-error :send-data :reciepent-address "Please enter the address you want to send to"))
         (if (clojure.string/blank? amount)
           (show-error :send-data :amount "Please set the amount")
-          (if (= (int amount) 0)
+          (if (= (double amount) 0)
             (show-error :send-data :amount "The amount must be more than 0")
             (when (> 0.0000001 (get-amount 0))
               (show-error :send-data :amount "Insufficient PRV balance to cover transaction fee (0.0000001 PRV)"))))

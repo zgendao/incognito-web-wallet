@@ -17,13 +17,13 @@
 
 (defn init-incognito []
   (async
-   (let []
-     (await (incognito-js/goServices.implementGoMethodUseWasm))
-     (swap! state assoc :wasm-loaded true))
-   (if (:backupkey @local)
-       (.then
+    (let []
+      (await (incognito-js/goServices.implementGoMethodUseWasm))
+      (swap! state assoc :wasm-loaded true))
+    (if (:backupkey @local)
+      (.then
         (incognito-js/WalletInstance.restore (:backupkey @local) (:pw @local))
         #(g/set js/window "wallet" %))
-       (.then
-         (.init (incognito-js/WalletInstance.) (str (.getTime (js/Date.))) "default-wallet")
-         #(do (g/set js/window "wallet" %) (swap! local assoc :backupkey (.backup % (-> % .-mnemonic)) :pw (-> % .-mnemonic)))))))
+      (.then
+        (.init (incognito-js/WalletInstance.) (str (.getTime (js/Date.))) "default-wallet")
+        #(do (g/set js/window "wallet" %) (swap! local assoc :backupkey (.backup % (-> % .-mnemonic)) :pw (-> % .-mnemonic)))))))

@@ -1,6 +1,7 @@
 (ns app.actions
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
+            [app.wallet :refer [wallet]]
             [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state close-confirm-state]]
             [app.icons :refer [account-icon infinity-icon check-icon]]
             [clojure.string :as str]
@@ -23,6 +24,14 @@
         (get-in @accounts [(@state :selected-account) :coins])))
     :amount))
 
+(defn send-prv [account]
+  (.then
+    (-> account .-nativeToken (.transfer #js [{:paymentAddressStr (get-in @state [:send-data :reciepent-address])
+                                               :amount (get-in @state [:send-data :amount])
+                                               :message (get-in @state [:send-data :note])}]
+                                400))
+    (fn [his] (js/console.log his))))
+
 (defn send []
   (let [reciepent-address (get-in @state [:send-data :reciepent-address])
         amount (get-in @state [:send-data :amount])]
@@ -43,7 +52,9 @@
           (to-confirm-state :send-data)))
       (if-not (= true (get-in @state [:send-data :sent]))
         (do
-          ;backend: send
+          (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
+            (if (= (get-in @accounts [(@state :selected-account) :name]) (.-name acc))
+              (send-prv acc)))
           (swap! state assoc-in [:send-data :sent] true))
         (do
           (close-confirm-state :send-data)
@@ -75,7 +86,7 @@
                          :auto-complete "off"
                          :on-submit (fn [e]
                                       (.preventDefault e)
-                                      (send))} ;backend: send function                                   
+                                      (send))} ;backend: send function
       [input :send-data :reciepent-address "To" "text" "Enter address (Incognito or external)"
              [[:> Tippy {:content "Select from your accounts" :animation "shift-away"}
                 [:button {:type "button" :on-click #(do (swap! state assoc-in [:send-data :reciepent-address] "?")
@@ -127,4 +138,4 @@
   [:div.actions-container
     [tabs-component :actions-tab
       {"Transaction history" :disabled
-        "Send" [send-form]}]])
+       "Send" [send-form]}]])

@@ -1,7 +1,8 @@
 (ns app.views
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            [app.storage :refer [state accounts coins]]
-            [app.api :refer [wallet]]
+            [app.storage :refer [state accounts coins local]]
+            ;[app.api :refer [wallet]]
+            [app.wallet :refer [wallet init-wallet]]
             [app.accounts :refer [accounts-container reciepent-address? switch-reciepent-account]]
             [app.header :refer [header]]
             [app.coins :refer [coins-container]]
@@ -75,9 +76,8 @@
   (create-class
     {:component-did-mount
       (fn []
-        (.then
-          (.init wallet "my-passphrase" "TEST-WALLET")
-          #(swap! state assoc :accounts (.getAccounts (.-masterAccount wallet)))))
+        (init-wallet)
+        (js/console.log (wallet)))
      :reagent-render
       (fn []
         (let [account (first (js->clj (:accounts @state)))]

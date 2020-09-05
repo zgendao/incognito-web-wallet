@@ -1,14 +1,27 @@
 (ns app.accounts
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            [app.storage :refer [state accounts coins]]
+            [app.storage :refer [state accounts coins local]]
+            [app.wallet :refer [wallet init-wallet create-backup]]
             [app.icons :refer [plus-icon copy-icon qr-code-icon edit-icon delete-icon arrow-narrow-right-icon save-icon]]
             [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component copy-to-clipboard]]
             [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state]]
             [app.actions :refer [reset-send-data]]
+            [goog.object :as g]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
+            [async-await.core :refer [async await]]
             ["animate-css-grid" :refer [wrapGrid]]
             ["@tippyjs/react" :default Tippy :refer (useSingleton)]))
+
+(defn create-account []
+  (async
+   (await (-> (wallet) .-masterAccount (.addAccount (get-in @state [:add-account-data :name]))))
+   (create-backup)))
+
+(defn import-account []
+  (async
+    (await (-> (wallet) .-masterAccount (.importAccount (get-in @state [:add-account-data :name]) (get-in @state [:add-account-data :private-key]))))
+    (create-backup)))
 
 (defn get-address [account-index]
   (get-in @accounts [account-index :keys :incognito]))
@@ -64,7 +77,9 @@
     
 (defn remove-account [account-index]
   (swap! state assoc :delete-account-opened false)
-  (swap! accounts #(vec (concat (subvec @accounts 0 account-index) (subvec @accounts (inc account-index))))))
+  (swap! accounts #(vec (concat (subvec @accounts 0 account-index) (subvec @accounts (inc account-index)))))
+  (-> (wallet) .-masterAccount (.removeAccount (get-in @accounts [account-index :name])))
+  (create-backup))
 
 ;temporary
 (defn rand-str [len]
@@ -81,25 +96,18 @@
         (when (contains? (set (map :name @accounts)) new-account-name)
           (show-error :add-account-data :name "You already have an account with this name. Please choose another one!"))
         (when import?
-          (when (clojure.string/blank? (get-in @state [:add-account-data :private-key]))
-            (show-error :add-account-data :private-key "Please enter the private key of the account you want to import")))
-        
+          (do
+            (when (clojure.string/blank? (get-in @state [:add-account-data :private-key]))
+              (show-error :add-account-data :private-key "Please enter the private key of the account you want to import"))
+            (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
+              (when (= (.-privateKeySerialized (.-keySet (.-key acc))) (get-in @state [:add-account-data :private-key]))
+                (show-error :add-account-data :private-key "This account has been already added")))))
+    
         (when (no-errors? :add-account-data) 
           (do
-            ,,, ;backend: generate or import
+            (if import? (import-account) (create-account))
             (to-confirm-state :add-account-data))))
-      (do
-        (swap! accounts conj  {:name new-account-name
-                               :keys {:incognito (rand-str 100)
-                                      :public (rand-str 100)
-                                      :private (rand-str 100)
-                                      :readonly (rand-str 100)
-                                      :validator (rand-str 100)}
-                               :coins [{:id 0
-                                        :amount 0}
-                                       {:id (+ 1 (rand-int 5))
-                                        :amount (rand-int 100)}]})
-        (close-add-account-panel)))))
+      (close-add-account-panel))))
 
 (defn singleton-buttons-react [key]
   (let [[source target] (useSingleton #js {:overrides #js ["allowHTML" "hideOnClick" "trigger"]})]
@@ -145,8 +153,9 @@
         "Make sure you won't lose access!"
         [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
              The only way you can restore them is by their private key, so always save them in a safe place."]
-        "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
-        "I'm safe"])])
+        (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))
+        "I'm safe"
+        #(init-wallet)])])
         
 (defn add-account-panel []
   [:div.add-account-wrapper {:style {:order 100}

@@ -61,7 +61,7 @@
       (swap! state assoc-in [:send-data :reciepent-address] (get-address account-index))
       (swap! state assoc-in [:send-data :errors :reciepent-address] nil)
       (scroll-to-account (@state :selected-account)))))
-    
+
 (defn remove-account [account-index]
   (swap! state assoc :delete-account-opened false)
   (swap! accounts #(vec (concat (subvec @accounts 0 account-index) (subvec @accounts (inc account-index))))))
@@ -75,7 +75,7 @@
     (if-not (in-confirm-state? :add-account-data)
       (do
         (swap! state assoc-in [:add-account-data :errors] {})
-        
+
         (when (clojure.string/blank? new-account-name)
           (show-error :add-account-data :name "Please enter a name for your account"))
         (when (contains? (set (map :name @accounts)) new-account-name)
@@ -83,8 +83,8 @@
         (when import?
           (when (clojure.string/blank? (get-in @state [:add-account-data :private-key]))
             (show-error :add-account-data :private-key "Please enter the private key of the account you want to import")))
-        
-        (when (no-errors? :add-account-data) 
+
+        (when (no-errors? :add-account-data)
           (do
             ,,, ;backend: generate or import
             (to-confirm-state :add-account-data))))
@@ -140,15 +140,15 @@
       [:div
         [:button.btn {:type "submit"} (if import? "Import" "Create") " account"]
         [:div.confirm-background.confirm-background--medium]]]
-    (when (in-confirm-state? :add-account-data)
-      [save-private-key-confirm-layer
-        "Make sure you won't lose access!"
-        [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
-             The only way you can restore them is by their private key, so always save them in a safe place."]
-;        "privkey"
-        (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))
-        "I'm safe"
-        #(init-wallet)])])
+    (when (in-confirm-state? :add-account-data))])
+;       [save-private-key-confirm-layer
+;         "Make sure you won't lose access!"
+;         [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
+;              The only way you can restore them is by their private key, so always save them in a safe place."]
+; ;        "privkey"
+;         (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))
+;         "I'm safe"
+;         #(init-wallet)])])
 
 (defn add-account-panel []
   [:div.add-account-wrapper {:style {:order 100}
@@ -268,7 +268,7 @@
                  :onShow (fn [] (.setProps hover-instance #js {:trigger "click"}))
                  :onHide (fn [] (.hide hover-instance)
                                 (.setProps hover-instance #js {:trigger "mouseenter"})
-                                (.removeAttribute (.getElementById js/document "backup-copy") "data-copied"))}      
+                                (.removeAttribute (.getElementById js/document "backup-copy") "data-copied"))}
         [:button.display-icon [save-icon]]]]))
 
 (defn accounts-container []

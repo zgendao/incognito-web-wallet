@@ -140,15 +140,13 @@
       [:div
         [:button.btn {:type "submit"} (if import? "Import" "Create") " account"]
         [:div.confirm-background.confirm-background--medium]]]
-    (when (in-confirm-state? :add-account-data))])
-;       [save-private-key-confirm-layer
-;         "Make sure you won't lose access!"
-;         [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
-;              The only way you can restore them is by their private key, so always save them in a safe place."]
-; ;        "privkey"
-;         (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))
-;         "I'm safe"
-;         #(init-wallet)])])
+    (when (in-confirm-state? :add-account-data)
+       [save-private-key-confirm-layer
+         "Make sure you won't lose access!"
+         [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
+              The only way you can restore them is by their private key, so always save them in a safe place."]
+         "12RxhL3XRDLkqL9pc3Z3sCn2E9y6Sg9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
+         "I'm safe"])])
 
 (defn add-account-panel []
   [:div.add-account-wrapper {:style {:order 100}

@@ -72,17 +72,11 @@
       [:> navbar-content])]])
 
 (defn main []
-  (create-class
-    {
-     :reagent-render
-      (fn []
-        (let [account (first (js->clj (:accounts @state)))]
-          (when account
-            [:div#main
-              [:div.container
-                [header]
-                [coins-container]
-                [actions-container]]])))}))
+  [:div#main
+    [:div.container
+      [header]
+      [coins-container]
+      [actions-container]]])
 
 (defn back-layer []
   [:div#backLayer.clickCatcher

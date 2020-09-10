@@ -1,7 +1,7 @@
 (ns app.views
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins]]
-            [app.api :refer [wallet]]
+            ;[app.api :refer [wallet]]
             [app.accounts :refer [accounts-container reciepent-address? switch-reciepent-account]]
             [app.header :refer [header]]
             [app.coins :refer [coins-container]]
@@ -37,7 +37,7 @@
 (defn navbar-tooltip [title content icon instance-to-hide target]
   (let [singleton-instance (@state :navbar-tippy-instance)]
     [:> Tippy {:content title :singleton target}
-      [:> Tippy {:content (reagent/as-element [content]) :allowHTML true :interactive true :interactiveBorder 50 
+      [:> Tippy {:content (reagent/as-element [content]) :allowHTML true :interactive true :interactiveBorder 50
                  :maxWidth 700 :trigger "click" :animateFill true :plugins #js [animateFill]
                  :onCreate (fn [instance] (swap! state assoc (str "navbar-tippy-" title) instance))
                  :onShow (fn [instance] (.setProps instance #js {:trigger "mouseenter"})
@@ -73,12 +73,7 @@
 
 (defn main []
   (create-class
-    {:component-did-mount
-      (fn []
-        (init-wallet)
-        (js/console.log (wallet)))
-;        (js/console.log (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))))
-        ;  (js/console.log (.-name acc))))
+    {
      :reagent-render
       (fn []
         (let [account (first (js->clj (:accounts @state)))]
@@ -99,7 +94,7 @@
 (defn download-from [store link]
   [:a {:href link}
     [:img {:src (str "./public/images/appStoreLogos/" store ".png")}]])
-    
+
 (defn mobile-view []
   [:<>
     [navbar false]

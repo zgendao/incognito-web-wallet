@@ -1,183 +1,131 @@
 (ns app.views
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            ["qrcode" :as qrcode]
-            [app.state :refer [state local]]
-            ["incognito-js" :as incognito-js]
-            [async-await.core :refer [async await]]))
+            [app.storage :refer [state accounts coins]]
+            [app.api :refer [wallet]]
+            [app.accounts :refer [accounts-container reciepent-address? switch-reciepent-account]]
+            [app.header :refer [header]]
+            [app.coins :refer [coins-container]]
+            [app.actions :refer [actions-container]]
+            [app.icons :refer [loader bulb-icon info-icon]]
+            [goog.string :as gstring :refer [format]]
+            [goog.string.format]
+            ["@tippyjs/react" :default Tippy :refer (useSingleton)]
+            ["tippy.js" :refer (animateFill)]))
 
-(defn qr-code [text]
+(defn theme-switcher [theme desc]
+  [:button.theme-selector
+    {:class (when (= theme (@state :theme)) "theme-selector--active")
+     :on-click #(do (swap! state assoc :theme theme)
+                    (set! (.. js/document -body -className) theme))}
+    [:img {:src (str "/public/images/themes/" theme ".png") :width "180px"}]
+    [:p desc]])
+
+(defn themes []
+  [:div#themes.tooltip--padding
+    [theme-switcher "light" "Light"]
+    [theme-switcher "dark" "Dark"]
+    [theme-switcher "auto" "Browser setting"]])
+
+(defn about []
+  [:div#about.tooltip--padding
+    [:img {:src "/public/images/zgen-logo.svg" :width "80px"}]
+    [:div
+      [:p "Made by " [:a {:href "https://zgen.hu" :target "_blank"} "ZGEN DAO"] ", the bureaucracy-free online guild."]
+      [:p "Send your feature requests to: " [:a {:href "mailto:contact@zgen.hu" :target "_blank"} "crypto@zgen.hu"]]
+      [:p "Source: " [:a {:href "https://github.com/zgendao/incognito-web-wallet" :target "_blank"} "zgendao/incognito-web-wallet"]]]])
+
+(defn navbar-tooltip [title content icon instance-to-hide target]
+  (let [singleton-instance (@state :navbar-tippy-instance)]
+    [:> Tippy {:content title :singleton target}
+      [:> Tippy {:content (reagent/as-element [content]) :allowHTML true :interactive true :interactiveBorder 50
+                 :maxWidth 700 :trigger "click" :animateFill true :plugins #js [animateFill]
+                 :onCreate (fn [instance] (swap! state assoc (str "navbar-tippy-" title) instance))
+                 :onShow (fn [instance] (.setProps instance #js {:trigger "mouseenter"})
+                                        (.setProps singleton-instance #js {:trigger "click"}))
+                 :onHide (fn [instance] (.setProps instance #js {:trigger "click"})
+                                        (.hide singleton-instance)
+                                        (.setProps singleton-instance #js {:trigger "mouseenter"}))}
+        [:button.display-icon {:onMouseEnter (fn [] (.hide (@state instance-to-hide)))}
+          [icon]]]]))
+
+(defn navbar-content [key]
+  (let [[source target] (useSingleton)]
+    (reagent/as-element
+      [:div.navbar__content
+        [:> Tippy {:singleton source
+                   :hideOnClick false
+                   :interactive true
+                   :zIndex 0
+                   :animation "shift-away"
+                   :moveTransition "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0s"
+                   :onCreate (fn [instance] (swap! state assoc :navbar-tippy-instance instance))}]
+        [navbar-tooltip "Theme" themes bulb-icon "navbar-tippy-About" target]
+        [navbar-tooltip "About" about info-icon "navbar-tippy-Theme" target]])))
+
+(defn navbar [show-content?]
+  [:nav
+   [:div.container
+    [:div.navbar__brand
+      [:img {:src "./public/images/logo.png" :width "30px" :height "30px"}]
+      [:p "Incognito Web Wallet"]]
+    (when show-content?
+      [:> navbar-content])]])
+
+(defn main []
   (create-class
-   {:component-did-mount
-    (fn [element]
-      (qrcode/toCanvas
-       (dom-node element)
-       text))
-    :reagent-render
-    (fn []
-      [:canvas#canvas])}))
+    {:component-did-mount
+      (fn []
+        (init-wallet)
+        (js/console.log (wallet)))
+;        (js/console.log (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))))
+        ;  (js/console.log (.-name acc))))
+     :reagent-render
+      (fn []
+        (let [account (first (js->clj (:accounts @state)))]
+          (when account
+            [:div#main
+              [:div.container
+                [header]
+                [coins-container]
+                [actions-container]]])))}))
 
-(defn create-backup [wallet]
-  (swap! local assoc :backupkey (.backup wallet (-> wallet .-mnemonic)))
-  (swap! state assoc :render (.getTime (js/Date.))))
+(defn back-layer []
+  [:div#backLayer.clickCatcher
+    {:class [(when (or (= (@state :selected-coin) "?")
+                       (reciepent-address? "?")) "active")]
+     :on-click (cond (= (@state :selected-coin) "?") #(swap! state assoc :selected-coin nil)
+                     (reciepent-address? "?") #(switch-reciepent-account nil))}])
 
-(defn get-balance [account]
-  (.then
-   (-> account .-nativeToken (.getAvaiableBalance))
-   #(swap! state assoc-in [:balances (-> account .-name)] (/ % 1000000000))))
+(defn download-from [store link]
+  [:a {:href link}
+    [:img {:src (str "./public/images/appStoreLogos/" store ".png")}]])
 
-(defn follow-token [wallet account token-id]
-  (-> account (.followTokenById token-id))
-  (create-backup wallet))
+(defn mobile-view []
+  [:<>
+    [navbar false]
+    [:div.container.mobileView
+      [:h1 "Looks like you're on mobile. Use the app instead!"]
+      [:p "Web Wallet was designed for tablets, laptops and desktops,
+          and currently isn't available on mobile devices."]
+      [:div
+        [download-from "appstore" "https://apps.apple.com/us/app/incognito-crypto-wallet/id1475631606?ls=1"]
+        [download-from "googleplay" "https://play.google.com/store/apps/details?id=com.incognito.wallet"]
+        [download-from "directapk" "https://github.com/incognitochain/incognito-wallet/releases/download/v3.7.2/3.7.2.apk"]]]])
 
-(defn unfollow-token [wallet account token-id]
-  (-> account (.unfollowTokenById token-id))
-  (create-backup wallet))
-
-(defn get-following-tokens [token-ids]
-  (filter (fn [token] (some #(= % (:TokenID token)) token-ids)) (@state :ptokens)))
-
-(defn get-ptoken [account token-id symbol]
-  (async
-   (let [token (await (-> account (.getFollowingPrivacyToken token-id)))
-         balance (await (-> token (.getAvaiableBalance)))]
-     (when (> balance 0)
-       (swap! state assoc-in [:ptokens-balance token-id] {:symbol symbol :balance (first (-> balance .-words))})))))
-
-(defn get-ptokens-balance [account]
-  (for [token (@state :ptokens)]
-    (do (println token) ;NEM FUT EZ A CIKLUS WHY
-        (get-ptoken account (:TokenID token) (:Symbol token)))))
-
-(defn get-history [account] ;NEMJÓMMÉG
-  (.then
-   (incognito-js/historyServices.getTxHistoryByPublicKey (-> account .-key .-keySet .-publicKeySerialized) nil)
-   #(js/console.log %)))
-
-(defn add-account [wallet name]
-  (async
-   (await (-> wallet .-masterAccount (.addAccount name)))
-   (create-backup wallet)))
-
-(defn remove-account [wallet name]
-  (-> wallet .-masterAccount (.removeAccount name))
-  (create-backup wallet))
-
-(defn import-account [wallet name privkey]
-  (-> wallet .-masterAccount (.importAccount name privkey))
-  (create-backup wallet))
-
-(defn get-accounts [wallet]
-  (-> wallet .-masterAccount .getAccounts))
-
-(defn send-prv [account amount to]
-  (.then
-   (-> account .-nativeToken (.transfer (clj->js [{:paymentAddressStr to :amount amount :message ""}]) 10))
-   (fn [his] (js/console.log his))))
-
-(defn account [wallet acc]
-  (reagent/create-class
-   {:component-did-mount (fn [] (do (get-balance acc) (get-ptokens-balance acc)))
-    :reagent-render
-    (fn []
-      (let [payment (-> acc .-key .-keySet .-paymentAddressKeySerialized)
-            private (-> acc .-key .-keySet .-paymentAddressKeySerialized)
-            validator (-> acc .-key .-keySet .-viewingKeySerialized)
-            name (-> acc .-name)
-            send-amount-key (keyword (str name "-send-amount"))
-            send-to-key (keyword (str name "-send-to"))
-            token-id-key (keyword (str name "-token-id"))
-            _ (get-ptokens-balance acc)]
-        [:div {:style {:margin-bottom "40px"}}
-         [:h4 "Account name: " name]
-         [:p (str "Balance " (get-in @state [:balances name]) " PRV")]
-         [qr-code payment]
-         [:div
-          [:label {:for "payment"} "Payment key:"]
-          [:input {:type "text" :id "payment" :value payment}]]
-         [:div
-          [:label {:for "private"} "Private key:"]
-          [:input {:type "text" :id "private" :value private}]]
-         [:div
-          [:label {:for "validator"} "Validator key:"]
-          [:input {:type "text" :id "validator" :value validator}]]
-         [:div
-          [:p "Followed pTokens"]
-          [:input {:type "text"
-                   :value (@state token-id-key)
-                   :placeholder "token id"
-                   :on-change #(swap! state assoc token-id-key (-> % .-target .-value))}]
-          [:button {:on-click #(follow-token wallet acc (@state token-id-key))} "Follow"]
-          [:button {:on-click #(unfollow-token wallet acc (@state token-id-key))} "Unfollow"]
-          (for [ptoken (get-following-tokens (-> acc .-privacyTokenIds))]
-            [:div
-             [:h6 (str (:PSymbol ptoken) ": ")
-              [:input {:type "text" :value (:TokenID ptoken)}]]])]
-         [:div
-          [:p "pTokens balance"]
-          (for [[k v] (@state :ptokens-balance)]
-            [:div
-             [:h6 (str (:symbol v) ": " (:balance v))]])]
-         [:div
-          [:p "Send PRV"]
-          [:input {:type "number"
-                   :value (@state send-amount-key)
-                   :placeholder "amount"
-                   :on-change #(swap! state assoc send-amount-key (js/parseInt (-> % .-target .-value)))}]
-          [:input {:type "text"
-                   :value (@state send-to-key)
-                   :placeholder "address"
-                   :on-change #(swap! state assoc send-to-key (-> % .-target .-value))}]
-          [:button {:on-click #(send-prv acc (@state send-amount-key) (@state send-to-key))} "Send"]]
-         [:button {:style {:margin-top "20px"} :on-click #(remove-account wallet (-> acc .-name))} "Remove this acc"]]))}))
-
-(defn wallet-ui [wallet]
-  (reagent/create-class
-   {:reagent-render
-    (fn []
-      [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column" :padding-bottom "60px" :padding-top "30px"}}
-       [:div
-        [:p "Create Account"]
-        [:input {:type "text"
-                 :value (@state :acc-name)
-                 :placeholder "name"
-                 :on-change #(swap! state assoc :acc-name (-> % .-target .-value))}]
-        [:button {:on-click #(add-account wallet (@state :acc-name))} "Create"]
-        [:button {:on-click #(get-accounts wallet)} "Get Account"]
-        [:button {:on-click #(reset! local {})} "Delete Wallet"]]
-       [:div
-        [:p "Import Account"]
-        [:input {:type "text"
-                 :value (@state :imp-name)
-                 :placeholder "name"
-                 :on-change #(swap! state assoc :imp-name (-> % .-target .-value))}]
-        [:input {:type "text"
-                 :value (@state :priv-key)
-                 :placeholder "private key"
-                 :on-change #(swap! state assoc :priv-key (-> % .-target .-value))}]
-        [:button {:on-click #(import-account wallet (@state :imp-name) (@state :priv-key))} "Import"]]
-       [:h3 (str (-> wallet .-name) " Wallet:")
-        (for [acc (get-accounts wallet)]
-          [account wallet acc])]])}))
-
-(defn generate-wallet [wallet name]
-  (.then
-   (.init wallet (str (.getTime (js/Date.))) name)
-   #(swap! local assoc :backupkey (.backup % (-> % .-mnemonic)) :pw (-> % .-mnemonic))))
-
-(defn create-wallet [wallet]
-  [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column"}}
-   [:p "Your wallet name:"
-    [:input {:type "text"
-             :value (@state :wall-name)
-             :on-change #(swap! state assoc :wall-name (-> % .-target .-value))}]
-    [:button {:on-click #(generate-wallet wallet (@state :wall-name))} "Create"]]])
-
-(defn app [wallet]
-  [:div {:style {:display "flex" :justify-content "center" :align-items "center" :flex-direction "column"}}
-   [:h4 (str "PRV price: $" (:prv-price @state))]
-   (if (:wasm-loaded @state)
-     [:div {:style {:width "100%"}}
-      (if (:backupkey @local)
-        [wallet-ui wallet]
-        [create-wallet wallet])]
-     [:h2 "Loading.."])])
+(defn app []
+  (create-class
+    {:component-did-mount
+      #(set! (.. js/document -body -className) (@state :theme))
+     :reagent-render
+      (fn []
+        (if (>= js/window.screen.width 1024)
+          (if (:wasm-loaded @state)
+            [:<>
+              [navbar true]
+              [accounts-container]
+              [main]
+              [back-layer]]
+            [:<>
+              [navbar false]
+              [loader]])
+          [mobile-view]))}))

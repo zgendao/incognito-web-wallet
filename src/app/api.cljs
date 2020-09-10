@@ -6,7 +6,8 @@
             [cljs-http.client :as http]
             ["incognito-js" :as incognito-js]
             [async-await.core :refer [async await]]
-            [app.state :refer [state local]]))
+            [app.storage :refer [state local accounts]]
+            [goog.object :as g]))
 
 (defn price-request []
   (go (let [response (<! (http/get "https://api.incognito.org/ptoken/list" {:with-credentials? false :headers {"Content-Type" "application/json"}}))
@@ -19,4 +20,11 @@
   (async
    (let []
      (await (incognito-js/goServices.implementGoMethodUseWasm))
-     (swap! state assoc :wasm-loaded true))))
+     (swap! state assoc :wasm-loaded true))
+   (if (:backupkey @local)
+       (.then
+        (incognito-js/WalletInstance.restore (:backupkey @local) (:pw @local))
+        #(g/set js/window "wallet" %))
+       (.then
+         (.init (incognito-js/WalletInstance.) (str (.getTime (js/Date.))) "default-wallet")
+         #(do (g/set js/window "wallet" %) (swap! local assoc :backupkey (.backup % (-> % .-mnemonic)) :pw (-> % .-mnemonic)))))))

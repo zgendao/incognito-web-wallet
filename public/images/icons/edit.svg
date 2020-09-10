@@ -1,0 +1,4 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 91H29.6153L83.7304 36.8849C86.4642 34.1511 88 30.4433 88 26.5772C88 22.7111 86.4642 19.0033 83.7304 16.2696C80.9967 13.5358 77.2889 12 73.4228 12C69.5567 12 65.8489 13.5358 63.1151 16.2696L9 70.3847V91Z" stroke="var(--icon-color)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M58 21L79 42" stroke="var(--icon-color)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

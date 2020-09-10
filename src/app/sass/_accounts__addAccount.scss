@@ -1,0 +1,129 @@
+@mixin disableTransform () {
+  animation: {
+    name: disableTransform;
+    duration: 2s;
+    fill-mode: forwards;
+  }
+
+  @keyframes disableTransform {
+    to {transform: none;}
+  }
+}
+
+.add-account-wrapper {
+  //in default view (accounts collapsed) it isn't visible
+  opacity: 0;
+  visibility: hidden;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 20px;
+  border: 5px solid var(--color-background-secondary);
+  background-color: var(--color-background);
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color .4s, border 5s, opacity .3s 0s, visibility 0s .3s;
+}
+
+.add-account {
+  width: calc(200% + 40px);
+  flex-shrink: 0;
+  height: 0;
+  transform-origin: top left;
+  transition: padding .4s;
+
+  .add-account__title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 110px;
+    width: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-default-soft);
+    --icon-color: var(--color-text-default-soft);
+    font-variation-settings: "wght" 600;
+    margin: 0;
+    transition: top .4s;
+  }
+  
+  .tabs-wrapper {
+    padding: 20px 25px;
+    margin-top: 50%;
+    transition: margin .4s;
+
+    .tab {
+      animation: none;
+    }
+  }
+}
+
+.add-account-wrapper.opened {
+  grid-column-end: span 2;
+  grid-row-end: span 2;
+  cursor: default;
+  height: auto;
+  //border-width: 0px;
+  background-color: var(--color-background-secondary);
+  @include disableTransform();
+  
+  .add-account {
+    width: 100%;
+    padding-top: 0;
+    height: 100%;
+    @include disableTransform();
+  
+    .add-account__title {
+      top: -110px;
+    }
+    
+    &:hover {
+      opacity: unset;
+    }
+  }
+
+  .tabs-wrapper {
+    margin-top: 0;
+  }
+}
+
+.animate-height {
+  overflow: hidden;
+  animation: {
+    name: height-in;
+    direction: normal;
+    duration: 0.3s;
+    timing-function: ease-in-out;
+    iteration-count: 1;
+  }
+  
+  &.out {
+    animation: {
+      name: height-out;
+      fill-mode: forwards;
+    }
+  }
+}
+
+@keyframes height-in {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 150px;
+    opacity: 1;
+  }
+}
+@keyframes height-out {
+  from {
+    max-height: 150px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}

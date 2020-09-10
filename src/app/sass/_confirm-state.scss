@@ -1,0 +1,79 @@
+.account-selector.confirm-state {
+  grid-column-end: span 2;
+  grid-row-end: span 3;
+  border-radius: 20px;
+  overflow: hidden;
+
+  > div {
+    height: 100%;
+    width: 100%;
+  }
+  .account-selector__inner {
+    cursor: default;
+    height: 100%;
+    width: 100%;
+
+    &:hover {
+      opacity: unset;
+    }
+  }
+}
+
+.confirm-layer {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: var(--color-text-inverse);
+  padding: 25px;
+  z-index: 3;
+  animation: fadeIn .3s ease-in 0s 1 normal forwards;
+
+  p {
+    text-align: justify;
+  }
+}
+
+.confirm-background {
+  position: absolute;
+  height: 500px;
+  width: 500px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background-color: var(--color-secondary);
+  border-radius: 750px;
+  transition: transform .4s;
+
+  &.confirm-background--medium {
+    height: 1155px;
+    width: 1155px;
+  }
+  &.confirm-background--large {
+    height: 1500px;
+    width: 1500px;
+  }
+}
+.confirm-background--primary {
+  background-color: var(--color-primary);
+}
+
+.confirm-state {
+  .confirm-background {
+    z-index: 2;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+pre {
+  background-color: var(--color-background);
+  color: var(--color-text-default);
+  padding: 0.7em 1em;
+  border-radius: 20px;
+  font-family: inherit;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

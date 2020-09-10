@@ -1,0 +1,150 @@
+@use 'mixins' as *;
+@import url('../../node_modules/tippy.js/dist/tippy.css');
+@import url('../../node_modules/tippy.js/animations/shift-away.css');
+@import url('../../node_modules/tippy.js/dist/backdrop.css');
+
+.tippy-box {
+  background-color: #3A3B3C;
+  border-radius: 10px;
+  padding: 2px 3px;
+  font-family: 'SF Text';
+  font-variation-settings: 'wght' 400;
+}
+.tippy-box[data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: #3A3B3C;
+}
+.tippy-box[data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: #3A3B3C;
+}
+.tippy-box[data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: #3A3B3C;
+}
+.tippy-box[data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: #3A3B3C;
+}
+
+//moveTransition fix
+.tippy-box[data-state='visible']:not([data-animatefill]):not([data-animation='height']) {
+  transition-delay: .3s;
+}
+
+//top-start arrow center
+.tippy-box[data-placement='left-start'] > .tippy-arrow {
+  transform: translate(0px, 8px) !important;
+}
+
+//hide underlaying tooltips
+div[data-tippy-root]:nth-last-of-type(2) {
+  .tippy-content {
+    opacity: 0;
+  }
+  .tippy-box[data-state='hidden'] {
+    background-color: transparent;
+  }
+}
+
+.tippy-box[data-theme='skeleton'] {
+  background-color: transparent;
+}
+
+.tippy-box[data-animation='height'],
+.tippy-box[data-animation='height'] > .tippy-content,
+.tippy-box[data-animation='height'] > .tippy-content > div 
+.tippy-box[data-animation='height'] > .tippy-content .tippy-content-wrapper {
+  transform-origin: left top;
+  animation-fill-mode: both;
+  animation-duration: .2s;
+}
+
+.tippy-box[data-animation='height'] {
+  animation-name: vertical-collapse;
+  opacity: 0;
+  overflow: hidden;
+
+  > .tippy-content {
+    display: flex;
+    padding: 20px;
+    max-height: 400px;
+    animation-name: vertical-collapse-inverse;
+    transition-property: transform, visibility, opacity, max-height;
+
+    > div {
+      display: flex;
+      overflow: hidden;
+      animation-name: vertical-collapse;
+    }
+
+    .tippy-content-wrapper {
+      animation-name: vertical-collapse-inverse;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+  
+  p {
+    font-size: 18px;
+  }
+
+  .input-wrapper {
+    overflow-y: scroll;
+    background-color: var(--color-background);
+    margin-top: 20px;
+    @include lightScrollbar(rgba(53, 53, 53, 0.3), false);
+
+    pre {
+      margin: 0;
+      font-size: 16px;
+      border-radius: 0;
+      min-height: 200px;
+    }
+  }
+
+  .btn-wrapper {
+    position: absolute;
+    bottom: 35px;
+    right: 30px;
+    border-radius: 20px;
+    background-color: var(--color-background);
+  }
+  .btn {
+    box-shadow: 0px 5px 6px 2px #0000002b;
+
+    &::after {
+      content: "✓ Copied";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: inherit;
+      border-radius: inherit;
+      background-color: inherit;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s, visibility 0s .2s;
+    }
+
+    &[data-copied]::after {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .2s, visibility 0s 0s;
+    }
+  }
+}
+.tippy-box[data-animation='height'][data-state='visible'] {
+  animation-name: vertical-expand;
+  opacity: 1;
+  
+  > .tippy-content {
+    animation-name: vertical-expand-inverse;
+
+    > div {
+      animation-name: vertical-expand;
+    }
+
+    .tippy-content-wrapper {
+      animation-name: vertical-expand-inverse;
+    }
+  }
+}

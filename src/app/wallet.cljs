@@ -1,31 +1,55 @@
 (ns app.wallet
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [reagent.core :as reagent :refer [atom]]
-            [app.storage :refer [state accounts coins local]]
+            [app.storage :refer [state accounts coins local ptokens]]
             [goog.object :as g]
-            [async-await.core :refer [async await]]))
+            [async-await.core :refer [async await]]
+            [cljs.core.async :refer [<!]]
+            [cljs-http.client :as http]))
 
 (defn wallet [] (g/get js/window "wallet"))
 
+(defn get-prv [account]
+  (.then
+   (-> account .-nativeToken (.getAvaiableBalance))
+   #(swap! local assoc-in [:saved-balances :prv (-> account .-name)] (/ % 1000000000))))
+
+(defn follow-token [account]
+  (async
+    (await (-> account (.followTokenById "teszt")))
+    (swap! local assoc :backupkey (.backup (wallet) (-> (wallet) .-mnemonic)))))
+
+(defn getprivacytokenslist [acc]
+  (go (let [ptoken-list (<! (http/post "https://fullnode.incognito.org" {:json-params {:jsonrpc "1.0" :method "getlistprivacycustomtokenbalance" :params [(-> acc .-key .-keySet .-privateKeySerialized)] :id 1} :with-credentials? false :headers {"Content-Type" "application/json"}}))]
+           (swap! local assoc-in [:saved-balances (-> acc .-name)] (get-in ptoken-list [:body :Result :ListCustomTokenBalance]))
+           (print ptoken-list))))
+
+
 (defn init-wallet []
-  (swap! state assoc :accounts (.getAccounts (.-masterAccount (wallet))))
-  (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
-    (swap! accounts conj {:name (.-name acc)
-                          :keys {:incognito (.-paymentAddressKeySerialized (.-keySet (.-key acc)))
-                                 :public (.-publicKeySerialized (.-keySet (.-key acc)))
-                                 :private (.-privateKeySerialized (.-keySet (.-key acc)))
-                                 :readonly (.-viewingKeySerialized (.-keySet (.-key acc)))
-                                 :validator (.-validatorKey (.-keySet (.-key acc)))}
-                          :coins [{:id 0
-                                   :amount 0}
-                                  {:id 1
-                                   :amount 1}
-                                  {:id 2
-                                   :amount 2}
-                                  {:id 3
-                                   :amount 40}
-                                  {:id 4
-                                   :amount 0}]})))
-    ;(js/console.log (.-privacyTokenIds acc))))
+  (async
+    (swap! state assoc :accounts (.getAccounts (.-masterAccount (wallet))))
+    (reset! accounts [])
+    (print @local)
+    (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
+        (if (get-in @local [:saved-balances :prv (-> acc .-name)])
+          (get-prv acc)
+          (await (get-prv acc)))
+  ;      (if (get-in @local [:saved-balances (-> acc .-name)])
+        (await (getprivacytokenslist acc))
+  ;        (await (getprivacytokenslist acc)))
+        (swap! local assoc-in [:balances (-> acc .-name)] [{:id 0 :amount (get-in @local [:saved-balances :prv (-> acc .-name)])}])
+        (doseq [ptoken (get-in @local [:saved-balances (-> acc .-name)])]
+             (swap! local assoc-in [:balances (-> acc .-name)] (conj (get-in @local [:balances (-> acc .-name)]) {:id (@ptokens (:TokenID ptoken)) :amount (/ (:Amount ptoken) 1000000000)})))
+  ;        (print (conj (get-in @local [:balances (-> acc .-name)]) {:id (@ptokens (:TokenID ptoken)) :amount (:Amount ptoken)})))
+
+  ;      (print (get-in @state [:balances]))
+        (swap! accounts conj {:name (.-name acc)
+                              :keys {:incognito (.-paymentAddressKeySerialized (.-keySet (.-key acc)))
+                                     :public (.-publicKeySerialized (.-keySet (.-key acc)))
+                                     :private (.-privateKeySerialized (.-keySet (.-key acc)))
+                                     :readonly (.-viewingKeySerialized (.-keySet (.-key acc)))
+                                     :validator (.-validatorKey (.-keySet (.-key acc)))}
+                              :coins (get-in @local [:balances (-> acc .-name)])}))))
 
 (defn create-backup []
   (swap! local assoc :backupkey (.backup (wallet) (-> (wallet) .-mnemonic)))

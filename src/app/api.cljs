@@ -6,14 +6,38 @@
             [cljs-http.client :as http]
             ["incognito-js" :as incognito-js]
             [async-await.core :refer [async await]]
-            [app.storage :refer [state local accounts]]
-            [goog.object :as g]))
+            [app.storage :refer [state local accounts coins ptokens]]
+            [goog.object :as g]
+            [goog.string :as gstring :refer [format]]))
+
+
+(defn get-ptokens-array [vector]
+  (reset! ptokens {})
+  (let [id (atom 1)]
+    (doseq [currency vector]
+      (swap! ptokens assoc (:TokenID currency) @id)
+      (swap! id inc))))
+;  (println "Ptokens array: " @ptokens))
 
 (defn price-request []
-  (go (let [response (<! (http/get "https://api.incognito.org/ptoken/list" {:with-credentials? false :headers {"Content-Type" "application/json"}}))
-            last-trade (first (:Result (:body response)))
-            price (/ (:PriceUsd last-trade) (:PricePrv last-trade))]
-        (swap! state assoc :prv-price price))))
+    (go (let [response (<! (http/get "https://api.incognito.org/ptoken/list" {:with-credentials? false :headers {"Content-Type" "application/json"}}))
+              coins-value (:Result (:body response))
+              last-trade (first (:Result (:body response)))
+              price (/ (:PriceUsd last-trade) (:PricePrv last-trade))]
+          (swap! state assoc :prv-price price)
+          (get-ptokens-array coins-value)
+          (reset! coins (into [] (reverse coins-value)))
+          (swap! coins conj {:ID 0
+                             :TokenID "ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f"
+                             :Symbol "PRV"
+                             :Name "Privacy"
+                             :Default true
+                             :PriceUsd (format "%.2f" price)
+                             :Verified true
+                             :PricePrv 1
+                             :volume24 12})
+          (reset! coins (into [] (reverse @coins))))))
+;        (println @coins))))
 
 (defn init-incognito []
   (async

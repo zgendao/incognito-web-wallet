@@ -7,7 +7,9 @@
             [clojure.string :as str]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
-            ["@tippyjs/react" :default Tippy]))
+            ["@tippyjs/react" :default Tippy]
+            [async-await.core :refer [async await]]))
+
 
 (defn reset-send-data []
   (swap! state assoc :send-data {:reciepent-address nil
@@ -25,40 +27,41 @@
     :amount))
 
 (defn send-prv [account]
-  (.then
-    (-> account .-nativeToken (.transfer #js [{:paymentAddressStr (get-in @state [:send-data :reciepent-address])
-                                               :amount (get-in @state [:send-data :amount])
-                                               :message (get-in @state [:send-data :note])}]
-                                400))
-    (fn [his] (js/console.log his))))
+  (let [to (get-in @state [:send-data :reciepent-address])
+        amount (int (* 1000000000 (get-in @state [:send-data :amount])))
+        message (get-in @state [:send-data :note])]
+    (.then
+     (-> account .-nativeToken (.transfer (clj->js [{:paymentAddressStr to :amount amount :message message}]) 400))
+     (fn [his] (js/console.log his)))))
 
 (defn send []
-  (let [reciepent-address (get-in @state [:send-data :reciepent-address])
-        amount (get-in @state [:send-data :amount])]
-    (if-not (in-confirm-state? :send-data)
-      (do
-        (swap! state assoc-in [:send-data :errors] {})
-        
-        (when (clojure.string/blank? reciepent-address)
-          (show-error :send-data :reciepent-address "Please enter the address you want to send to"))
-        (if (clojure.string/blank? amount)
-          (show-error :send-data :amount "Please set the amount")
-          (if (= (double amount) 0)
-            (show-error :send-data :amount "The amount must be more than 0")
-            (when (> 0.0000001 (get-amount 0))
-              (show-error :send-data :amount "Insufficient PRV balance to cover transaction fee (0.0000001 PRV)"))))
-          
-        (when (no-errors? :send-data) 
-          (to-confirm-state :send-data)))
-      (if-not (= true (get-in @state [:send-data :sent]))
-        (do
-          (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
-            (if (= (get-in @accounts [(@state :selected-account) :name]) (.-name acc))
-              (send-prv acc)))
-          (swap! state assoc-in [:send-data :sent] true))
-        (do
-          (close-confirm-state :send-data)
-          (reset-send-data))))))
+  (async
+      (let [reciepent-address (get-in @state [:send-data :reciepent-address])
+            amount (get-in @state [:send-data :amount])]
+        (if-not (in-confirm-state? :send-data)
+          (do
+            (swap! state assoc-in [:send-data :errors] {})
+
+            (when (clojure.string/blank? reciepent-address)
+              (show-error :send-data :reciepent-address "Please enter the address you want to send to"))
+            (if (clojure.string/blank? amount)
+              (show-error :send-data :amount "Please set the amount")
+              (if (= (double amount) 0)
+                (show-error :send-data :amount "The amount must be more than 0")
+                (when (> 0.0000001 (get-amount 0))
+                  (show-error :send-data :amount "Insufficient PRV balance to cover transaction fee (0.0000001 PRV)"))))
+
+            (when (no-errors? :send-data)
+              (to-confirm-state :send-data)))
+          (if-not (= true (get-in @state [:send-data :sent]))
+            (do
+              (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
+                (if (= (get-in @accounts [(@state :selected-account) :name]) (.-name acc))
+                  (await (send-prv acc))))
+              (swap! state assoc-in [:send-data :sent] true))
+            (do
+              (close-confirm-state :send-data)
+              (reset-send-data)))))))
 
 (defn incognito-address? [address]
   (if (and address (not= address "?"))

@@ -1,7 +1,6 @@
 (ns app.views
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.storage :refer [state accounts coins local]]
-            ;[app.api :refer [wallet]]
             [app.wallet :refer [wallet init-wallet]]
             [app.accounts :refer [accounts-container reciepent-address? switch-reciepent-account]]
             [app.header :refer [header]]
@@ -12,14 +11,21 @@
             [goog.string.format]
             ["@tippyjs/react" :default Tippy :refer (useSingleton)]
             ["tippy.js" :refer (animateFill)]))
+;            [async-await.core :refer [async await]]))
+
 
 (defn theme-switcher [theme desc]
   [:button.theme-selector
-    {:class (when (= theme (@state :theme)) "theme-selector--active")
-     :on-click #(do (swap! state assoc :theme theme)
-                    (set! (.. js/document -body -className) theme))}
+    {:class (when (= theme (@local :theme)) "theme-selector--active")
+     :on-click #(do
+                    (set! (.. js/document -body -className) theme)
+                    (swap! local assoc :theme theme))}
     [:img {:src (str "/public/images/themes/" theme ".png") :width "180px"}]
     [:p desc]])
+
+(defn load-theme []
+  (when (not (:theme @local))
+    (swap! local assoc :theme "auto")))
 
 (defn themes []
   [:div#themes.tooltip--padding
@@ -38,7 +44,7 @@
 (defn navbar-tooltip [title content icon instance-to-hide target]
   (let [singleton-instance (@state :navbar-tippy-instance)]
     [:> Tippy {:content title :singleton target}
-      [:> Tippy {:content (reagent/as-element [content]) :allowHTML true :interactive true :interactiveBorder 50 
+      [:> Tippy {:content (reagent/as-element [content]) :allowHTML true :interactive true :interactiveBorder 50
                  :maxWidth 700 :trigger "click" :animateFill true :plugins #js [animateFill]
                  :onCreate (fn [instance] (swap! state assoc (str "navbar-tippy-" title) instance))
                  :onShow (fn [instance] (.setProps instance #js {:trigger "mouseenter"})
@@ -73,20 +79,20 @@
       [:> navbar-content])]])
 
 (defn main []
-  (create-class
-    {:component-did-mount
-      (fn []
-        (init-wallet)
-        (js/console.log (wallet)))
-     :reagent-render
-      (fn []
-        (let [account (first (js->clj (:accounts @state)))]
-          (when account
-            [:div#main
-              [:div.container
-                [header]
-                [coins-container]
-                [actions-container]]])))}))
+      (create-class
+        {:component-did-mount
+          (fn []
+            (init-wallet)
+            (js/console.log (wallet)))
+         :reagent-render
+          (fn []
+            (let [account (first (js->clj (:accounts @state)))]
+              (when account
+                [:div#main
+                  [:div.container
+                    [header]
+                    [coins-container]
+                    [actions-container]]])))}))
 
 (defn back-layer []
   [:div#backLayer.clickCatcher
@@ -98,7 +104,7 @@
 (defn download-from [store link]
   [:a {:href link}
     [:img {:src (str "./public/images/appStoreLogos/" store ".png")}]])
-    
+
 (defn mobile-view []
   [:<>
     [navbar false]
@@ -114,17 +120,18 @@
 (defn app []
   (create-class
     {:component-did-mount
-      #(set! (.. js/document -body -className) (@state :theme))
+     (do (load-theme)
+         #(set! (.. js/document -body -className) (@local :theme)))
      :reagent-render
-      (fn []
-        (if (>= js/window.screen.width 1024)
-          (if (:wasm-loaded @state)
-            [:<>
-              [navbar true]
-              [accounts-container]
-              [main]
-              [back-layer]]
-            [:<>
-              [navbar false]
-              [loader]])
-          [mobile-view]))}))
+     (fn []
+       (if (>= js/window.screen.width 1024)
+         (if (:wasm-loaded @state)
+           [:<>
+             [navbar true]
+             [accounts-container]
+             [main]
+             [back-layer]]
+           [:<>
+             [navbar false]
+             [loader]])
+         [mobile-view]))}))

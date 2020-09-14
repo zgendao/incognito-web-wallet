@@ -12,9 +12,9 @@
   (swap! state assoc-in [:send-data :in-confirm-state] false))
 
 (defn coin [id amount]
-  (let [name (get-in @coins [id "Name"])
-        symbol (get-in @coins [id "Symbol"])
-        priceInUSD (get-in @coins [id "PriceUsd"])]
+  (let [name (get-in @coins [id :Name])
+        symbol (get-in @coins [id :Symbol])
+        priceInUSD (get-in @coins [id :PriceUsd])]
     [:div.coin-wrapper {:class [(when (= (@state :selected-coin) id) "selected")]}
       [:> Tippy {:content "Select to send" :animation "shift-away" :delay #js [500 0]}
         [:div.coin {:on-click #(switch-coin id)}

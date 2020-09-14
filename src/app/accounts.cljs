@@ -30,11 +30,11 @@
   (= (get-in @state [:send-data :reciepent-address]) address))
 
 (defn get-balance [account]
-  (reduce +
-    (map
-      (fn [{:keys [id amount]}]
-        (* amount (get-in @coins [id "PriceUsd"])))
-      (account :coins))))
+      (reduce +
+        (map
+          (fn [{:keys [id amount]}]
+            (* amount (get-in @coins [id "PriceUsd"])))
+          (account :coins))))
 
 (defn close-add-account-panel []
   (swap! state assoc :add-account-opened false)
@@ -42,6 +42,7 @@
                                         :private-key nil
                                         :errors {}
                                         :in-confirm-state false}))
+
 
 (defn scroll-to-account [account-index]
   (js/setTimeout
@@ -74,11 +75,11 @@
       (swap! state assoc-in [:send-data :reciepent-address] (get-address account-index))
       (swap! state assoc-in [:send-data :errors :reciepent-address] nil)
       (scroll-to-account (@state :selected-account)))))
-    
+
 (defn remove-account [account-index]
   (swap! state assoc :delete-account-opened false)
-  (swap! accounts #(vec (concat (subvec @accounts 0 account-index) (subvec @accounts (inc account-index)))))
   (-> (wallet) .-masterAccount (.removeAccount (get-in @accounts [account-index :name])))
+  (swap! accounts #(vec (concat (subvec @accounts 0 account-index) (subvec @accounts (inc account-index)))))
   (create-backup))
 
 ;temporary
@@ -90,7 +91,7 @@
     (if-not (in-confirm-state? :add-account-data)
       (do
         (swap! state assoc-in [:add-account-data :errors] {})
-        
+
         (when (clojure.string/blank? new-account-name)
           (show-error :add-account-data :name "Please enter a name for your account"))
         (when (contains? (set (map :name @accounts)) new-account-name)
@@ -102,8 +103,8 @@
             (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
               (when (= (.-privateKeySerialized (.-keySet (.-key acc))) (get-in @state [:add-account-data :private-key]))
                 (show-error :add-account-data :private-key "This account has been already added")))))
-    
-        (when (no-errors? :add-account-data) 
+
+        (when (no-errors? :add-account-data)
           (do
             (if import? (import-account) (create-account))
             (to-confirm-state :add-account-data))))
@@ -120,7 +121,7 @@
         [copy-to-clipboard-component (.-children key) target
           [:button {:type "button"} [copy-icon]]]
         [show-qr-code-component (.-children key) target]])))
-  
+
 (defn save-private-key-confirm-layer [title desc key submit-text submit-fn cancel-btn? cancel-fn]
   [:div.confirm-layer
     [:h3.marginTop-0 title]
@@ -156,7 +157,7 @@
         (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))
         "I'm safe"
         #(init-wallet)])])
-        
+
 (defn add-account-panel []
   [:div.add-account-wrapper {:style {:order 100}
                              :on-click (when-not (@state :add-account-opened)
@@ -275,7 +276,7 @@
                  :onShow (fn [] (.setProps hover-instance #js {:trigger "click"}))
                  :onHide (fn [] (.hide hover-instance)
                                 (.setProps hover-instance #js {:trigger "mouseenter"})
-                                (.removeAttribute (.getElementById js/document "backup-copy") "data-copied"))}      
+                                (.removeAttribute (.getElementById js/document "backup-copy") "data-copied"))}
         [:button.display-icon [save-icon]]]]))
 
 (defn accounts-container []

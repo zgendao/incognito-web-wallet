@@ -1,6 +1,6 @@
 (ns app.coins
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            [app.storage :refer [state accounts coins]]
+            [app.storage :refer [state accounts coins local]]
             [app.icons :refer [arrow-right-icon plus-icon]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
@@ -12,9 +12,9 @@
   (swap! state assoc-in [:send-data :in-confirm-state] false))
 
 (defn coin [id amount]
-  (let [name (get-in @coins [id :Name])
-        symbol (get-in @coins [id :Symbol])
-        priceInUSD (get-in @coins [id :PriceUsd])]
+  (let [name (get-in @local [:coins id :Name])
+        symbol (get-in @local [:coins id :Symbol])
+        priceInUSD (get-in @local [:coins id :PriceUsd])]
     [:div.coin-wrapper {:class [(when (= (@state :selected-coin) id) "selected")]}
       [:> Tippy {:content "Select to send" :animation "shift-away" :delay #js [500 0]}
         [:div.coin {:on-click #(switch-coin id)}
@@ -34,7 +34,7 @@
   (into [:div.coins-container {:class [(when (= (@state :selected-coin) "?") "highlighted")]}]
     [(map (fn [{:keys [id amount]}]
             ^{:key id} [coin id amount])
-        (get-in @accounts [(@state :selected-account) :coins] []))
+        (get-in @local [:accounts (@local :selected-account) :coins] []))
      [:> Tippy {:content "Not available yet" :interactive true :placement "top-start" :animation "shift-away"}
       [:div.coin-wrapper.disabled {:style {:width "auto" :align-self "flex-start"}}
         [:div.coin

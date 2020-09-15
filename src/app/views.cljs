@@ -84,15 +84,15 @@
           (fn []
             (init-wallet)
             (js/console.log (wallet)))
+            ;(println @accounts))
          :reagent-render
           (fn []
-            (let [account (first (js->clj (:accounts @state)))]
-              (when account
-                [:div#main
-                  [:div.container
-                    [header]
-                    [coins-container]
-                    [actions-container]]])))}))
+            (js/setInterval #(init-wallet) 60000)
+            [:div#main
+              [:div.container
+               [header]
+               [coins-container]
+               [actions-container]]])}))
 
 (defn back-layer []
   [:div#backLayer.clickCatcher

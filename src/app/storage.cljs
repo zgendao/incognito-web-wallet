@@ -9,7 +9,6 @@
                       :navbar-tippy-instance nil
                       :backup-tippy-instance nil
                       :theme "auto"
-                      :balances {}
                       :keys-opened false
                       :selected-account nil
                       :selected-coin nil
@@ -29,51 +28,56 @@
                                   :in-confirm-state false
                                   :sent false}}))
 
+(defonce accounts-temp (atom []))
 (defonce accounts (atom []))
 
-                         ; {:name "Account 1"
-                         ;  :keys {:incognito "asuidgfhO=ZUATZS(=D/87asdHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
-                         ;          :public "jh,ngasdbf i7/A%VS)=/D%V78g9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
-                         ;          :private "mnbvds 987vA/%Fö87 6v98a7dfCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
-                         ;          :readonly "sdfghsretz SD fa8sédzgön 98w798QGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
-                         ;          :validator "168597654AHKSFDKUZGTGUZAHk6DckBPEL9dn91jX4qLw1jzu8jp"}
-                         ;  :coins [{:id 0
-                         ;            :amount 18}
-                         ;          {:id 1
-                         ;            :amount 0.0034}
-                         ;          {:id 3
-                         ;            :amount 14}
-                         ;          {:id 4
-                         ;            :amount 0}]}]))
-                         ; {:name "Account 2"
-                         ;  :keys {:incognito "12RxhL3XsfgjfghkqL9pc3Z3sCn2E9y6Sg9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
-                         ;          :public "12RxhL3XRDLkqL9pc3Z3sCn2E9y6Sg9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
-                         ;          :private "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
-                         ;          :readonly "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
-                         ;          :validator "12NsWr27MnVm6Na6yxBhmNqHk6DckBPEL9dn91jX4qLw1jzu8jp"}
-                         ;  :coins [{:id 0
-                         ;            :amount 20}
-                         ;          {:id 2
-                         ;            :amount 2}
-                         ;          {:id 4
-                         ;            :amount 0}]}]))
-                         ; {:name "Account 3"
-                         ;  :keys {:incognito "asuidgfhO=Zadlhzifhiu/87asdHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
-                         ;          :public "jh,ngasdbf i7/A%VS)=/D%V78g9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
-                         ;          :private "mnbvds 987vA/%Fö87 6v98a7dfCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
-                         ;          :readonly "sdfghsretz SD fa8sédzgön 98w798QGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
-                         ;          :validator "168597654AHKSFDKUZGTGUZAHk6DckBPEL9dn91jX4qLw1jzu8jp"}
-                         ;  :coins [{:id 0
-                         ;            :amount 18}
-                         ;          {:id 1
-                         ;            :amount 0.0034}
-                         ;          {:id 4
-                         ;            :amount 0}]}]))
 
-(defonce ptokens (local-storage (atom []) :local))
+
+                              ; {:name "Account 1"
+                              ;  :keys {:incognito "asuidgfhO=ZUATZS(=D/87asdHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
+                              ;          :public "jh,ngasdbf i7/A%VS)=/D%V78g9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
+                              ;          :private "mnbvds 987vA/%Fö87 6v98a7dfCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
+                              ;          :readonly "sdfghsretz SD fa8sédzgön 98w798QGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
+                              ;          :validator "168597654AHKSFDKUZGTGUZAHk6DckBPEL9dn91jX4qLw1jzu8jp"}
+                              ;  :coins [{:id 0
+                              ;            :amount 18}
+                              ;          {:id 1
+                              ;            :amount 0.0034}
+                              ;          {:id 3
+                              ;            :amount 14}
+                              ;          {:id 4
+                              ;            :amount 0}]}
+                              ; {:name "Account 2"
+                              ;  :keys {:incognito "12RxhL3XsfgjfghkqL9pc3Z3sCn2E9y6Sg9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
+                              ;          :public "12RxhL3XRDLkqL9pc3Z3sCn2E9y6Sg9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
+                              ;          :private "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
+                              ;          :readonly "112t8rnXDhcqHHE9nU6wfcSFvYMtCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
+                              ;          :validator "12NsWr27MnVm6Na6yxBhmNqHk6DckBPEL9dn91jX4qLw1jzu8jp"}
+                              ;  :coins [{:id 0
+                              ;            :amount 20}
+                              ;          {:id 2
+                              ;            :amount 2}
+                              ;          {:id 4
+                              ;            :amount 0}]}
+                              ; {:name "Account 3"
+                              ;  :keys {:incognito "asuidgfhO=Zadlhzifhiu/87asdHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
+                              ;          :public "jh,ngasdbf i7/A%VS)=/D%V78g9dYHZL7W24geukJA9n34G4MeoSmVmBak1CYBx5d3evZNSLvUYh7KWPq3Jwx7c4g8831SGEqdi"
+                              ;          :private "mnbvds 987vA/%Fö87 6v98a7dfCcQGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
+                              ;          :readonly "sdfghsretz SD fa8sédzgön 98w798QGh6bJRp9BMpY9PBNSHZnwee3Po4XF9yFTwQaa9c6gA9sky8DfPzSRjhr23jWjDsEkzxHuiFFaWWuC"
+                              ;          :validator "168597654AHKSFDKUZGTGUZAHk6DckBPEL9dn91jX4qLw1jzu8jp"}
+                              ;  :coins [{:id 0
+                              ;            :amount 18}
+                              ;          {:id 1
+                              ;            :amount 0.0034}
+                              ;          {:id 4
+                              ;            :amount 0}]}]))
+
+(defonce ptokens (atom []))
+(defonce ptokens-temp (atom []))
 ;(def saved-balances (local-storage (atom []) :local))
 ;apiról fetchelve és frissen tartva
 (defonce coins (atom ()))
+(defonce coins-temp (atom ()))
                       ; {"ID" 0
                       ;   "TokenID" "ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f"
                       ;   "Symbol" "PRV"

@@ -1,6 +1,6 @@
 (ns app.header
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
-            [app.storage :refer [state accounts coins]]
+            [app.storage :refer [state accounts coins local]]
             [app.accounts :refer [get-balance]]
             [app.icons :refer [plus-icon qr-code-icon arrow-down-icon]]
             [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
@@ -9,7 +9,7 @@
             ["@tippyjs/react" :default Tippy :refer [useSingleton]]))
 
 (defn key-elem [name key tooltip target]
-  (let [address (get-in @accounts [(@state :selected-account) :keys key] "")]
+  (let [address (get-in @local [:accounts (@local :selected-account) :keys key] "")]
     [:div.key-elem
       [:> Tippy {:content tooltip :singleton target}
         [:p name]]
@@ -51,10 +51,10 @@
     [:div.header__amount
       [:div
         [:p "Total shielded balance"]
-        [:h1 "$ " (format "%.2f" (get-balance (get @accounts (@state :selected-account) {})))]]
+        [:h1 "$ " (format "%.2f" (get-balance (get-in @local [:accounts (@local :selected-account)] {})))]]
       [:> Tippy {:content "Not available yet" :animation "shift-away"}
         [:div.disabled
           [:button.btn.inline-icon {:disabled true}
             [plus-icon "white"] "Shield crypto"]]]]
-    [:div.header__keys {:class [(when (@state :keys-opened) "opened")]}
-      [:> header__keys-react]]])
+    [:div.header__keys {:class [(when (@state :keys-opened) "opened")]}]])
+  ;    [:> header__keys-react]]])

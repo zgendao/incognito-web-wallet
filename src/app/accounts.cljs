@@ -24,24 +24,25 @@
     (create-backup)))
 
 (defn get-address [account-index]
-  (get-in @accounts [account-index :keys :incognito]))
+  (get-in @local [:accounts account-index :keys :incognito]))
 
 (defn reciepent-address? [address]
   (= (get-in @state [:send-data :reciepent-address]) address))
 
 (defn get-balance [account]
-      (reduce +
-        (map
-          (fn [{:keys [id amount]}]
-            (* amount (get-in @coins [id "PriceUsd"])))
-          (account :coins))))
+  (reduce +
+    (map
+      (fn [{:keys [id amount]}]
+        (* amount (get-in @local [:coins id :PriceUsd])))
+      (account :coins))))
 
 (defn close-add-account-panel []
   (swap! state assoc :add-account-opened false)
   (swap! state assoc :add-account-data {:name nil
                                         :private-key nil
                                         :errors {}
-                                        :in-confirm-state false}))
+                                        :in-confirm-state false})
+  (init-wallet))
 
 
 (defn scroll-to-account [account-index]
@@ -53,10 +54,10 @@
     50))
 
 (defn switch-account [account-index]
-  (when-not (= account-index (@state :selected-account))
+  (when-not (= account-index (@local :selected-account))
     (when (@state :add-account-opened) (close-add-account-panel))
     (when (@state :delete-account-opened) (swap! state assoc :delete-account-opened false))
-    (swap! state assoc :selected-account account-index)
+    (swap! local assoc :selected-account account-index)
     (swap! state assoc :selected-coin nil)
     (reset-send-data)
     (def el (.getElementById js/document "accounts-grid"))
@@ -70,17 +71,19 @@
         400))))
 
 (defn switch-reciepent-account [account-index]
-  (when-not (= account-index (@state :selected-account))
+  (when-not (= account-index (@local :selected-account))
     (do
       (swap! state assoc-in [:send-data :reciepent-address] (get-address account-index))
       (swap! state assoc-in [:send-data :errors :reciepent-address] nil)
-      (scroll-to-account (@state :selected-account)))))
+      (scroll-to-account (@local :selected-account)))))
 
 (defn remove-account [account-index]
-  (swap! state assoc :delete-account-opened false)
-  (-> (wallet) .-masterAccount (.removeAccount (get-in @accounts [account-index :name])))
-  (swap! accounts #(vec (concat (subvec @accounts 0 account-index) (subvec @accounts (inc account-index)))))
-  (create-backup))
+  (let [accounts (:accounts @local)]
+    (swap! state assoc :delete-account-opened false)
+    (-> (wallet) .-masterAccount (.removeAccount (get-in @local [:accounts account-index :name])))
+  ;  (init-wallet)
+    (swap! local assoc :accounts (vec (concat (subvec accounts 0 account-index) (subvec accounts (inc account-index)))))
+    (create-backup)))
 
 ;temporary
 (defn rand-str [len]
@@ -93,9 +96,9 @@
         (swap! state assoc-in [:add-account-data :errors] {})
 
         (when (clojure.string/blank? new-account-name)
-          (show-error :add-account-data :name "Please enter a name for your account"))
-        (when (contains? (set (map :name @accounts)) new-account-name)
-          (show-error :add-account-data :name "You already have an account with this name. Please choose another one!"))
+          (show-error :add-account-data :name "Please enter a name for your account")
+         (when (contains? (set (map :name (:accounts @local))) new-account-name)
+           (show-error :add-account-data :name "You already have an account with this name. Please choose another one!")))
         (when import?
           (do
             (when (clojure.string/blank? (get-in @state [:add-account-data :private-key]))
@@ -155,8 +158,8 @@
         [:p "Accounts are only saved locally in your browser, so if anyhow the site data gets deleted, they vanish.
              The only way you can restore them is by their private key, so always save them in a safe place."]
         (.-privateKeySerialized (.-keySet (.-key (.pop (.slice (.getAccounts (.-masterAccount (wallet))) -1)))))
-        "I'm safe"
-        #(init-wallet)])])
+        "I'm safe"])])
+    ;    #(init-wallet)])])
 
 (defn add-account-panel []
   [:div.add-account-wrapper {:style {:order 100}
@@ -172,10 +175,10 @@
          ;"Bulk import" ""}]]])
 
 (defn account-selector [account]
-  (let [index (.indexOf @accounts account)
+  (let [index (.indexOf (:accounts @local) account)
         name (get account :name)
         balance (get-balance account)
-        selected-account-index (@state :selected-account)
+        selected-account-index (@local :selected-account)
         reciepent? (reciepent-address? (get-address index))
         delete-opened? (= (@state :delete-account-opened) index)]
     [:div.account-selector
@@ -223,7 +226,7 @@
   (def container (.getElementById js/document "accounts-wrapper-inner"))
   (.addEventListener container "wheel"
     (fn [e]
-      (when (and (@state :selected-account) (not= "?" (get-in @state [:send-data :reciepent-address])) (not= (.-deltaY e) 0))
+      (when (and (@local :selected-account) (not= "?" (get-in @state [:send-data :reciepent-address])) (not= (.-deltaY e) 0))
         (.preventDefault e)
         (def containerScrollPosition (.-scrollLeft container))
         (def newScrollPosition (+ containerScrollPosition (if (neg? (.-deltaY e)) -100 100)))
@@ -249,12 +252,12 @@
         ;js-selectReciepent class is only used to trigger animate-css-grid (could add any class)
         [:div#accounts-grid.accounts-grid {:class (when (reciepent-address? "?") "js-selectReciepent")}
           (into [:<>]
-            (for [account @accounts]
+            (for [account (:accounts @local)]
               ^{:key (get account :name)} [account-selector account]))
           [add-account-panel]])}))
 
 (defn backup-all-accounts []
-  (let [content (reduce str (for [account @accounts]
+  (let [content (reduce str (for [account (:accounts @local)]
                               (str "AccountName: " (get account :name) "\nPrivateKey: " (get-in account [:keys :private]) "\n\n")))]
     [:div.tippy-content-wrapper
       [:p "You can restore all saved accounts by the data below. Make sure to store it in a safe place!"]
@@ -280,7 +283,7 @@
         [:button.display-icon [save-icon]]]]))
 
 (defn accounts-container []
-  [:div#accounts.container {:class [(when-not (@state :selected-account) "opened opened--full")
+  [:div#accounts.container {:class [(when-not (@local :selected-account) "opened opened--full")
                                     (when (reciepent-address? "?") "opened opened--half highlighted")]
                             :data-scrolled false}
     [:div.accounts-header.accounts-header--manage

@@ -16,7 +16,7 @@
     "cheshire": "https://github.com/dakrone/cheshire.git",
     "create-react-class": "15.6.3",
     "cryptocurrency-icons": "^0.16.1",
-    "incognito-js": "https://github.com/incognitochain/sdk-v2",
+    "incognito-js": "https://github.com/Brunya/sdk-v2",
     "qrcode": "^1.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",

@@ -20,4 +20,4 @@
 
         :devtools
         {:http-root   "./"
-         :http-port   5000}}}}
+         :http-port   3000}}}}

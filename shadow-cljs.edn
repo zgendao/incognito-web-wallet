@@ -14,9 +14,16 @@
         :output-dir "public/js"
         :asset-path "/js"
 
+        :compiler-options
+        {
+         :pseudo-names true
+         :pretty-print true
+         }
+
         :modules
         {:main
-         {:entries [app.core]}}
+         {:entries [app.core]
+          :init-fn app.core/main}}
 
         :devtools
         {:http-root   "./"

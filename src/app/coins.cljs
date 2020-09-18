@@ -25,7 +25,7 @@
               [:h6 name]
               [:p amount]]
             [:div.coin__content__prv
-              [:p "$" priceInUSD]
+              [:p "$" (format "%.2f" priceInUSD)]
               [:p "$" (format "%.2f" (* amount priceInUSD))]]]]]
       [:button.circle-btn {:on-click #(switch-coin nil)}
         [arrow-right-icon]]]))

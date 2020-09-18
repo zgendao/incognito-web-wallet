@@ -20,7 +20,7 @@
      :on-click #(do
                     (set! (.. js/document -body -className) theme)
                     (swap! local assoc :theme theme))}
-    [:img {:src (str "/public/images/themes/" theme ".png") :width "180px"}]
+    [:img {:src (str "/images/themes/" theme ".png") :width "180px"}]
     [:p desc]])
 
 (defn load-theme []
@@ -35,7 +35,7 @@
 
 (defn about []
   [:div#about.tooltip--padding
-    [:img {:src "/public/images/zgen-logo.svg" :width "80px"}]
+    [:img {:src "/images/zgen-logo.svg" :width "80px"}]
     [:div
       [:p "Made by " [:a {:href "https://zgen.hu" :target "_blank"} "ZGEN DAO"] ", the bureaucracy-free online guild."]
       [:p "Send your feature requests to: " [:a {:href "mailto:contact@zgen.hu" :target "_blank"} "crypto@zgen.hu"]]
@@ -73,7 +73,7 @@
   [:nav
    [:div.container
     [:div.navbar__brand
-      [:img {:src "./public/images/logo.png" :width "30px" :height "30px"}]
+      [:img {:src "./images/logo.png" :width "30px" :height "30px"}]
       [:p "Incognito Web Wallet"]]
     (when show-content?
       [:> navbar-content])]])
@@ -103,7 +103,7 @@
 
 (defn download-from [store link]
   [:a {:href link}
-    [:img {:src (str "./public/images/appStoreLogos/" store ".png")}]])
+    [:img {:src (str "./images/appStoreLogos/" store ".png")}]])
 
 (defn mobile-view []
   [:<>

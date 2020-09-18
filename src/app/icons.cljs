@@ -3,49 +3,49 @@
             ["react-inlinesvg" :default SVG]))
 
 (defn plus-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/plus.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/plus.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn copy-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/copy.svg" :style {"--icon-color" "#C4C4C4"}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/copy.svg" :style {"--icon-color" "#C4C4C4"}}])
 
 (defn qr-code-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/qr-code.svg" :style {"--icon-color" "#C4C4C4"}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/qr-code.svg" :style {"--icon-color" "#C4C4C4"}}])
 
 (defn account-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/account.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/account.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn arrow-down-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/arrow-down.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/arrow-down.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn arrow-right-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/arrow-right.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/arrow-right.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn arrow-narrow-right-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/arrow-narrow-right.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/arrow-narrow-right.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn edit-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/edit.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/edit.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn delete-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/delete.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/delete.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn infinity-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/infinity.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/infinity.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn check-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/check.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/check.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn save-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/save.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/save.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn info-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/info.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/info.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn bulb-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/bulb.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/bulb.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn alert-icon [color]
-  [:> SVG {:uniquifyIDs true :src "/public/images/icons/alert.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+  [:> SVG {:uniquifyIDs true :src "/images/icons/alert.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
 (defn loader []
   [:span.loadingScreen

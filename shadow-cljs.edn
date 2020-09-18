@@ -1,4 +1,5 @@
 {:source-paths ["src"]
+ :js-options {:js-package-dirs ["node_modules" "./public/node_modules"]}
 
  :dependencies [[binaryage/devtools "0.9.10"]
                 [proto-repl "0.3.1"]
@@ -17,8 +18,7 @@
         :compiler-options
         {
          :pseudo-names true
-         :pretty-print true
-         }
+         :pretty-print true}
 
         :modules
         {:main
@@ -26,5 +26,5 @@
           :init-fn app.core/main}}
 
         :devtools
-        {:http-root   "./"
+        {:http-root   "./public"
          :http-port   3000}}}}

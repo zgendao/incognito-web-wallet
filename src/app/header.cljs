@@ -56,5 +56,5 @@
         [:div.disabled
           [:button.btn.inline-icon {:disabled true}
             [plus-icon "white"] "Shield crypto"]]]]
-    [:div.header__keys {:class [(when (@state :keys-opened) "opened")]}]])
-  ;    [:> header__keys-react]]])
+    [:div.header__keys {:class [(when (@state :keys-opened) "opened")]}
+      [:> header__keys-react]]])

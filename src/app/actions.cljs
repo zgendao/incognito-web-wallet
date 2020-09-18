@@ -124,7 +124,7 @@
                 (@state :selected-coin) [[:> Tippy {:content "Set maximum amount" :animation "shift-away"}
                                           [:button {:type "button" :style {:margin-right "15px"}
                                                     :on-click #(set-max-amount)} [infinity-icon]]]
-                                         (get-in @local [:coins (@state :selected-coin) "Symbol"])]
+                                         (get-in @local [:coins (@state :selected-coin) :Symbol])]
                 :else [[:div {:on-click #(swap! state assoc :selected-coin "?") :style {:height "100%" :width "500px"}}]])
               "" (get-amount (@state :selected-coin))]
       [input :send-data :note "Memo" "text" "Add note (optional)" "" (if (or (not incognito?) confirm-state?) "animate-height out" "animate-height in")]

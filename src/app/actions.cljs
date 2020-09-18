@@ -49,9 +49,9 @@
                 {:jsonrpc "1.0"
                  :method "createandsendprivacycustomtokentransaction"
                  :params [(-> account .-key .-keySet .-privateKeySerialized) {} -1 1 {:Privacy true :TokenID (:TokenID selected-coin) :TokenName (:Name selected-coin) :TokenSymbol (:Symbol selected-coin) :TokenTxType 1 :TokenAmount 0  :TokenReceivers {to amount} :TokenFee 0 } "" 1] :id 1}
-               :with-credentials? false :headers {"Content-Type" "application/json"}})))
-      (print selected-coin)
-      (print (:selected-coin @state)))))
+               :with-credentials? false :headers {"Content-Type" "application/json"}}))))))
+      ;(print selected-coin)
+      ;(print (:selected-coin @state)))))
     ; (.then
     ;  (-> account .-nativeToken (.transfer (clj->js [{:paymentAddressStr to :amount amount :message message}]) 400))
     ;  (fn [his] (js/console.log his)))))

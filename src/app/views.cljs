@@ -82,8 +82,8 @@
       (create-class
         {:component-did-mount
           (fn []
-            (init-wallet)
-            (js/console.log (wallet)))
+            (init-wallet))
+            ;(js/console.log (wallet)))
             ;(println @accounts))
          :reagent-render
           (fn []

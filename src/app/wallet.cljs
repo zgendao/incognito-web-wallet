@@ -22,7 +22,7 @@
 (defn getprivacytokenslist [acc]
   (go (let [ptoken-list (<! (http/post "https://fullnode.incognito.org" {:json-params {:jsonrpc "1.0" :method "getlistprivacycustomtokenbalance" :params [(-> acc .-key .-keySet .-privateKeySerialized)] :id 1} :with-credentials? false :headers {"Content-Type" "application/json"}}))]
            (swap! local assoc-in [:saved-balances (-> acc .-name)] (get-in ptoken-list [:body :Result :ListCustomTokenBalance]))
-           (print ptoken-list)
+           ;(print ptoken-list)
            10)))
 
 
@@ -30,7 +30,7 @@
   (async
     ;(swap! state assoc :accounts (.getAccounts (.-masterAccount (wallet))))
     (reset! accounts-temp [])
-    (print @local)
+    ;(print @local)
     (doseq [acc (.getAccounts (.-masterAccount (wallet)))]
         (if (get-in @local [:saved-balances :prv (-> acc .-name)])
           (get-prv acc)
@@ -46,8 +46,8 @@
                                           :readonly (.-viewingKeySerialized (.-keySet (.-key acc)))
                                           :validator (.-validatorKey (.-keySet (.-key acc)))}
                                    :coins (get-in @local [:balances (-> acc .-name)])}))
-    (swap! local assoc :accounts @accounts-temp)
-    (print "most init")))
+    (swap! local assoc :accounts @accounts-temp)))
+    ;(print "most init")))
 
 (defn create-backup []
   (swap! local assoc :backupkey (.backup (wallet) (-> (wallet) .-mnemonic)))

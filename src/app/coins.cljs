@@ -19,7 +19,7 @@
       [:> Tippy {:content "Select to send" :animation "shift-away" :delay #js [500 0]}
         [:div.coin {:on-click #(switch-coin id)}
           [:div.coin__img
-            [:img {:src (str "./node_modules/cryptocurrency-icons/svg/color/" (clojure.string/lower-case symbol) ".svg")}]]
+            [:img {:src (str "./node_modules/cryptocurrency-icons/svg/color/" (clojure.string/lower-case symbol) ".svg") :onError #(set! (-> % .-target .-src)  "./node_modules/cryptocurrency-icons/svg/color/notfound.svg")}]]
           [:div.coin__content
             [:div.coin__content__main
               [:h6 name]

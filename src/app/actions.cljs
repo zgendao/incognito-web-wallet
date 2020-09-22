@@ -35,7 +35,7 @@
           amount (int (* 1000000000 (get-in @state [:send-data :amount])))
           message (get-in @state [:send-data :note])
           selected-coin (nth (get @local :coins) (:selected-coin @state))]
-        ;  send
+
       (if (= (:selected-coin @state) 0)
         (<! (http/post "https://fullnode.incognito.org"
               {:json-params
@@ -50,11 +50,7 @@
                  :method "createandsendprivacycustomtokentransaction"
                  :params [(-> account .-key .-keySet .-privateKeySerialized) {} -1 1 {:Privacy true :TokenID (:TokenID selected-coin) :TokenName (:Name selected-coin) :TokenSymbol (:Symbol selected-coin) :TokenTxType 1 :TokenAmount 0  :TokenReceivers {to amount} :TokenFee 0 } "" 1] :id 1}
                :with-credentials? false :headers {"Content-Type" "application/json"}}))))))
-      ;(print selected-coin)
-      ;(print (:selected-coin @state)))))
-    ; (.then
-    ;  (-> account .-nativeToken (.transfer (clj->js [{:paymentAddressStr to :amount amount :message message}]) 400))
-    ;  (fn [his] (js/console.log his)))))
+
 
 (defn send []
   (async

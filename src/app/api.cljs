@@ -17,7 +17,6 @@
       (swap! ptokens-temp assoc (:TokenID currency) @id)
       (swap! id inc)))
   (swap! local assoc :ptokens @ptokens-temp))
-;  (println "Ptokens array: " @ptokens))
 
 (defn price-request []
     (go (let [response (<! (http/get "https://api.incognito.org/ptoken/list" {:with-credentials? false :headers {"Content-Type" "application/json"}}))
@@ -37,7 +36,6 @@
                                   :PricePrv 1
                                   :volume24 12})
           (swap! local assoc :coins (into [] (reverse @coins-temp))))))
-;        (println @coins))))
 
 (defn init-incognito []
   (async

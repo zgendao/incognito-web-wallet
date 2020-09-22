@@ -83,8 +83,6 @@
         {:component-did-mount
           (fn []
             (init-wallet))
-            ;(js/console.log (wallet)))
-            ;(println @accounts))
          :reagent-render
           (fn []
             (js/setInterval #(init-wallet) 60000)

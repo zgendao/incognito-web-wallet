@@ -81,9 +81,9 @@
   (let [accounts (:accounts @local)]
     (swap! state assoc :delete-account-opened false)
     (-> (wallet) .-masterAccount (.removeAccount (get-in @local [:accounts account-index :name])))
-  ;  (init-wallet)
     (swap! local assoc :accounts (vec (concat (subvec accounts 0 account-index) (subvec accounts (inc account-index)))))
-    (create-backup)))
+    (create-backup)
+    (init-wallet)))
 
 ;temporary
 (defn rand-str [len]
@@ -101,6 +101,8 @@
            (show-error :add-account-data :name "You already have an account with this name. Please choose another one!")))
         (when import?
           (do
+            (when (not (= 108 (count (get-in @state [:add-account-data :private-key]))))
+              (show-error :add-account-data :private-key "Please enter a valid private key!"))
             (when (clojure.string/blank? (get-in @state [:add-account-data :private-key]))
               (show-error :add-account-data :private-key "Please enter the private key of the account you want to import"))
             (doseq [acc (.getAccounts (.-masterAccount (wallet)))]

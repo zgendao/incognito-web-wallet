@@ -7,8 +7,11 @@
             [async-await.core :refer [async await]]
             [app.storage :refer [state local accounts coins ptokens-temp coins-temp]]
             [goog.object :as g]
-            [goog.string :as gstring :refer [format]]))
+            [goog.string :as gstring :refer [format]]
+            [crypto-js :as CryptoJS]))
 
+(defn encrypt [string pin]
+  (.toString (.encrypt (.-AES CryptoJS) string pin)))
 
 (defn get-ptokens-array [vector]
   (reset! ptokens-temp {})
@@ -37,14 +40,17 @@
                                   :volume24 12})
           (swap! local assoc :coins (into [] (reverse @coins-temp))))))
 
+(defn login-init []
+  (if (:backupkey @local)
+    (.then
+      (incognito-js/WalletInstance.restore (:backupkey @local) (:pw @state))
+      #(g/set js/window "wallet" %))
+    (.then
+      (.init (incognito-js/WalletInstance.) (str (.getTime (js/Date.))) "default-wallet")
+      #(do (g/set js/window "wallet" %) (swap! state assoc :pw (-> % .-mnemonic)) (swap! local assoc :backupkey (.backup % (-> % .-mnemonic)) :pw (encrypt (-> % .-mnemonic) (get-in @state [:login :pin])))))))
+
+
 (defn init-incognito []
   (async
       (await (incognito-js/goServices.implementGoMethodUseWasm))
-      (swap! state assoc :wasm-loaded true)
-    (if (:backupkey @local)
-      (.then
-        (incognito-js/WalletInstance.restore (:backupkey @local) (:pw @local))
-        #(g/set js/window "wallet" %))
-      (.then
-        (.init (incognito-js/WalletInstance.) (str (.getTime (js/Date.))) "default-wallet")
-        #(do (g/set js/window "wallet" %) (swap! local assoc :backupkey (.backup % (-> % .-mnemonic)) :pw (-> % .-mnemonic)))))))
+      (swap! state assoc :wasm-loaded true)))

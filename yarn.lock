@@ -976,9 +976,9 @@ imurmurhash@^0.1.4:
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz#9218b9b2b928a238b13dc4fb6b6d576f231453ea"
   integrity sha1-khi5srkoojixPcT7a21XbyMUU+o=
 
-"incognito-js@https://github.com/Brunya/sdk-v2":
-  version "0.0.1"
-  resolved "https://github.com/Brunya/sdk-v2#2bfc6abcbb958b7ca2b0f44f8ce07e08ecfc87a7"
+"incognito-js@https://github.com/incognitochain/sdk-v2":
+  version "1.0.0"
+  resolved "https://github.com/incognitochain/sdk-v2#9788d7fda6a48f70337329259df12f0abe5f22ea"
   dependencies:
     "@types/base64-js" "^1.2.5"
     "@types/circular-json" "^0.4.0"

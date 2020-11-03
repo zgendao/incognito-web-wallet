@@ -6,6 +6,7 @@
 
 (defonce state (atom {:prv-price 0
                       :wasm-loaded false
+                      :decrypted false
                       :navbar-tippy-instance nil
                       :backup-tippy-instance nil
                       :theme "auto"
@@ -26,7 +27,10 @@
                                   :note ""
                                   :errors {}
                                   :in-confirm-state false
-                                  :sent false}}))
+                                  :sent false}
+                      :login {:pin nil}
+                      :pw nil
+                      :badlogin false}))
 
 (defonce accounts-temp (atom []))
 (defonce accounts (atom []))

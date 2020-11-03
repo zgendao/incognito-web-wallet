@@ -1,11 +1,13 @@
 {:source-paths ["src"]
- :js-options {:js-package-dirs ["node_modules" "./public/node_modules"]}
+ :js-options {:js-package-dirs ["node_modules" "./node_modules"]}
 
  :dependencies [[binaryage/devtools "0.9.10"]
                 [proto-repl "0.3.1"]
                 [reagent "0.8.1"]
                 [cljs-http "0.1.46"]
-                [alandipert/storage-atom "2.0.1"]]
+                [alandipert/storage-atom "2.0.1"]
+                [io.github.theasp/simple-encryption "0.1.0"]
+                [cljsjs/crypto-js "3.1.9-1-0"]]
 
  :nrepl
  {:port 3333}

@@ -10,8 +10,8 @@
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
             ["@tippyjs/react" :default Tippy :refer (useSingleton)]
-            ["tippy.js" :refer (animateFill)]))
-;            [async-await.core :refer [async await]]))
+            ["tippy.js" :refer (animateFill)]
+            [app.pin :refer [login-screen]]))
 
 
 (defn theme-switcher [theme desc]
@@ -86,6 +86,7 @@
          :reagent-render
           (fn []
             (js/setInterval #(init-wallet) 60000)
+            (js/console.log (wallet))
             [:div#main
               [:div.container
                [header]
@@ -123,7 +124,7 @@
      :reagent-render
      (fn []
        (if (>= js/window.screen.width 1024)
-         (if (:wasm-loaded @state)
+         (if (and (:pw @state) (:wasm-loaded @state))
            [:<>
              [navbar true]
              [accounts-container]
@@ -131,5 +132,5 @@
              [back-layer]]
            [:<>
              [navbar false]
-             [loader]])
+             [login-screen]])
          [mobile-view]))}))

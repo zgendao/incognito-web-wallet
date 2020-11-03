@@ -18,7 +18,15 @@
 (defn get-prv [account]
   (.then
    (-> account .-nativeToken (.getAvaiableBalance))
-   #(swap! local assoc-in [:saved-balances :prv (-> account .-name)] (/ % 1000000000))))
+   ;#(print (js->clj (.toNumber %)))
+   #(swap! local assoc-in [:saved-balances :prv (-> account .-name)] (/ (js->clj (.toNumber %)) 1000000000))))
+
+(defn sdk2 [account]
+  (.then
+    (-> account (.getFollowingPrivacyToken))
+       ;#(.-words %)
+    #(js/console.log %)))
+
 
 (defn follow-token [account]
   (async
@@ -39,6 +47,8 @@
           (get-prv acc)
           (await (get-prv acc)))
         (await (getprivacytokenslist acc))
+        ;(follow-token acc)
+        ;(sdk2 acc)
         (swap! local assoc-in [:balances (-> acc .-name)] [{:id 0 :amount (get-in @local [:saved-balances :prv (-> acc .-name)])}])
         (doseq [ptoken (get-in @local [:saved-balances (-> acc .-name)])]
              (swap! local assoc-in [:balances (-> acc .-name)] (conj (get-in @local [:balances (-> acc .-name)]) {:id (get-in @local [:ptokens (:TokenID ptoken)]) :amount (/ (:Amount ptoken) (power 10 (:PDecimals (nth (:coins @local) (get-in @local [:ptokens (:TokenID ptoken)])))))})))

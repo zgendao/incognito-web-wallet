@@ -9,14 +9,14 @@
 
 (defn decrypt []
   (try
-    (.then
       (let [decoded (.toString (.decrypt (.-AES CryptoJS) (:pw @local) (get-in @state [:login :pin])) (.. CryptoJS -enc -Utf8))]
-        ;(.catch (fn [error] (js/alert (.-message error))))
-        (swap! state assoc :pw decoded)
-        (login-init)))
+        (if (= 12 (count (clojure.string/split decoded #" ")))
+          (do
+            (swap! state assoc :pw decoded)
+            (login-init))
+          (throw (js/Error. "Pw blank"))))
     (catch :default e
-      (swap! state assoc :badlogin true)
-      (js/console.log e))))
+      (swap! state assoc :badlogin true))))
 
 
 (defn login-screen []

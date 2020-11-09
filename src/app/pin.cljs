@@ -32,6 +32,7 @@
               [:input {:id (str "pin_" x) :name (str "pin_" x) :key (str "pin_" x)
                         :type "password" :class "pin-input"
                         :autoFocus (when (= x 0) true)
+                        :autoComplete "false"
                         :pattern "[0-9]*" :inputMode "numeric"
                         :value (get @pin x) :maxLength 1
                         :on-change

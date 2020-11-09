@@ -47,7 +47,11 @@
       #(g/set js/window "wallet" %))
     (.then
       (.init (incognito-js/WalletInstance.) (str (.getTime (js/Date.))) "default-wallet")
-      #(do (g/set js/window "wallet" %) (swap! state assoc :pw (-> % .-mnemonic)) (swap! local assoc :backupkey (.backup % (-> % .-mnemonic)) :pw (encrypt (-> % .-mnemonic) (get-in @state [:login :pin])))))))
+      #(do
+        (g/set js/window "wallet" %)
+        (swap! state assoc :pw (-> % .-mnemonic))
+        (swap! local assoc :backupkey (.backup % (-> % .-mnemonic))
+                           :pw (encrypt (-> % .-mnemonic) (get-in @state [:login :pin])))))))
 
 
 (defn init-incognito []

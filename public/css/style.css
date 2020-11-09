@@ -483,7 +483,7 @@
   min-height: 100vh;
 }
 
-.loadingScreen {
+.fullscreen-center {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -495,11 +495,49 @@
   left: 0;
   right: 0;
 }
-.loadingScreen svg {
+
+.welcome-screen {
+  margin-top: -100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.welcome-screen .btn {
+  margin-left: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0s 0.2s;
+}
+.welcome-screen .btn.show {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s, visibility 0s 0s;
+}
+
+.welcome-title {
+  margin-bottom: 80px;
+}
+
+.pin-wrapper {
+  width: fit-content;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+input.pin-input {
+  background-color: var(--color-background-secondary);
+  font-size: 22px;
+  height: 3.5em;
+  width: 3em;
+  text-align: center;
+}
+
+.loader svg {
   animation: 2s linear infinite svg-animation;
   width: 50px;
 }
-.loadingScreen circle {
+.loader circle {
   animation: 1.4s ease-in-out infinite both circle-animation;
   display: block;
   fill: transparent;
@@ -625,12 +663,12 @@ form {
   gap: 25px 30px;
 }
 
-form .btn-wrapper, .confirm-layer .btn-wrapper {
+.btn-wrapper {
   display: flex;
   padding-top: 30px;
   margin-top: auto;
 }
-form .btn-wrapper > *:last-child, .confirm-layer .btn-wrapper > *:last-child {
+.btn-wrapper > *:last-child {
   position: relative;
   margin-left: auto;
 }

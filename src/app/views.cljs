@@ -6,12 +6,12 @@
             [app.header :refer [header]]
             [app.coins :refer [coins-container]]
             [app.actions :refer [actions-container]]
-            [app.icons :refer [loader bulb-icon info-icon]]
+            [app.icons :refer [bulb-icon info-icon]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
             ["@tippyjs/react" :default Tippy :refer (useSingleton)]
             ["tippy.js" :refer (animateFill)]
-            [app.pin :refer [login-screen]]))
+            [app.pin :refer [welcome-screen]]))
 
 
 (defn theme-switcher [theme desc]
@@ -132,5 +132,5 @@
              [back-layer]]
            [:<>
              [navbar false]
-             [login-screen]])
+             [welcome-screen]])
          [mobile-view]))}))

@@ -57,7 +57,7 @@
   (swap! state assoc-in [form :errors name] error-message))
 
 (defn no-errors? [form]
-  (if (empty? (get-in @state [form :errors])) true false))
+  (empty? (get-in @state [form :errors])))
 
 (defn in-confirm-state? [form]
   (get-in @state [form :in-confirm-state]))

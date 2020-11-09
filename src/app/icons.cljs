@@ -47,8 +47,11 @@
 (defn alert-icon [color]
   [:> SVG {:uniquifyIDs true :src "/images/icons/alert.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
 
+(defn refresh-icon [color]
+  [:> SVG {:uniquifyIDs true :src "/images/icons/refresh.svg" :style {"--icon-color" (if color color "var(--color-text-default)")}}])
+
 (defn loader []
-  [:span.loadingScreen
+  [:span.loader
     [:svg {:viewBox "0 0 100 100" :xmlns "http://www.w3.org/2000/svg" :stroke "var(--color-text-default)"}
       [:circle {:cx "50" :cy "50" :r "45"}]]
     [:h6 "Entering Incognito mode for your crypto"]])

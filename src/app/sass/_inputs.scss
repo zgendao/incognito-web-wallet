@@ -2,16 +2,15 @@ form {
   display: grid;
   gap: 25px 30px;
 }
-form, .confirm-layer {
-  .btn-wrapper {
-    display: flex;
-    padding-top: 30px;
-    margin-top: auto;
 
-    > *:last-child {
-      position: relative;
-      margin-left: auto;
-    }
+.btn-wrapper {
+  display: flex;
+  padding-top: 30px;
+  margin-top: auto;
+
+  > *:last-child {
+    position: relative;
+    margin-left: auto;
   }
 }
 

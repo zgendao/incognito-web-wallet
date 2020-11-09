@@ -28,7 +28,8 @@
                                   :errors {}
                                   :in-confirm-state false
                                   :sent false}
-                      :login {:pin nil}
+                      :login {:pin nil
+                              :error nil}
                       :pw nil
                       :badlogin false}))
 

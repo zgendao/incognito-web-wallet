@@ -18,7 +18,6 @@
           (login-init))
         (throw (js/Error. "Pw blank"))))
     (catch :default e
-      (print e)
       (swap! state assoc-in [:login :error] "Wrong passcode. Try again!"))))
 
 (defn pin-input [label submit-fn]

@@ -978,7 +978,7 @@ imurmurhash@^0.1.4:
 
 "incognito-js@https://github.com/incognitochain/sdk-v2":
   version "1.0.0"
-  resolved "https://github.com/incognitochain/sdk-v2#9788d7fda6a48f70337329259df12f0abe5f22ea"
+  resolved "https://github.com/incognitochain/sdk-v2#6872003265760e9e287a0a272c96accf5f2bb99a"
   dependencies:
     "@types/base64-js" "^1.2.5"
     "@types/circular-json" "^0.4.0"

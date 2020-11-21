@@ -1,6 +1,16 @@
 # incognito-web-wallet
 
-develop: yarn && yarn start
+## Project setup
+```bash
+yarn # npm won't work
+```
 
-build: yarn && yarn build
-(then open public/index.html in your favorite browser)
+### Compiles and hot-reloads for development
+```bash
+yarn start
+```
+
+### Compiles and minifies for production
+```
+yarn build
+```

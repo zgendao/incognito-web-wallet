@@ -593,7 +593,7 @@ crypto-random-string@^2.0.0:
 
 "cryptocurrency-icons@https://github.com/Brunya/cryptocurrency-icons":
   version "0.16.1"
-  resolved "https://github.com/Brunya/cryptocurrency-icons#ad493dd36a84d3a43bef21954d7db23f08fded4b"
+  resolved "https://github.com/Brunya/cryptocurrency-icons#1af19480987ba1c3e5962206fba783a3a7613d56"
 
 debug@=3.1.0:
   version "3.1.0"
@@ -977,7 +977,7 @@ imurmurhash@^0.1.4:
   integrity sha1-khi5srkoojixPcT7a21XbyMUU+o=
 
 "incognito-js@https://github.com/incognitochain/sdk-v2":
-  version "1.0.0"
+  version "0.0.1"
   resolved "https://github.com/incognitochain/sdk-v2#6872003265760e9e287a0a272c96accf5f2bb99a"
   dependencies:
     "@types/base64-js" "^1.2.5"

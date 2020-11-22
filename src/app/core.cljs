@@ -6,6 +6,7 @@
 
 
 (defn ^:dev/after-load start []
+  (incognito-js/setConfig #js {:chainURL "https://fullnode.incognito.best/"})
   (incognito-js/storageService.implement (clj->js {:setMethod #(println "") :getMethod #(println "") :removeMethod #(println "")}))
   (r/render-component [views/app]
                       (.getElementById js/document "app")))

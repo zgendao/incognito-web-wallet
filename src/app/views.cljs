@@ -86,7 +86,6 @@
          :reagent-render
           (fn []
             (js/setInterval #(init-wallet) 60000)
-            (js/console.log (wallet))
             [:div#main
               [:div.container
                [header]

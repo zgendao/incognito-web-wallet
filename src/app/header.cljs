@@ -3,7 +3,7 @@
             [app.storage :refer [state accounts coins local]]
             [app.accounts :refer [get-balance]]
             [app.icons :refer [plus-icon qr-code-icon arrow-down-icon]]
-            [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component]]
+            [app.addressutils :refer [show-qr-code-component copy-to-clipboard-component]]
             [goog.string :as gstring :refer [format]]
             [goog.string.format]
             ["@tippyjs/react" :default Tippy :refer [useSingleton]]))

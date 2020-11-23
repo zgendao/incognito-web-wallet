@@ -1,10 +1,10 @@
-(ns app.address_utils
+(ns app.addressutils
   (:require [reagent.core :as reagent :refer [atom create-class dom-node]]
             [app.icons :refer [qr-code-icon]]
             ["qrcode" :as qrcode]
             ["@tippyjs/react" :default Tippy :refer (useSingleton)]
             ["tippy.js" :refer (animateFill)]))
-      
+
 (defn copy-to-clipboard [val]
   (let [temp (js/document.createElement "textarea")]
     (set! (.-value temp) val)

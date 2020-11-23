@@ -3,7 +3,7 @@
             [app.storage :refer [state accounts coins local]]
             [app.wallet :refer [wallet init-wallet create-backup]]
             [app.icons :refer [plus-icon copy-icon qr-code-icon edit-icon delete-icon arrow-narrow-right-icon save-icon]]
-            [app.address_utils :refer [show-qr-code-component copy-to-clipboard-component copy-to-clipboard]]
+            [app.addressutils :refer [show-qr-code-component copy-to-clipboard-component copy-to-clipboard]]
             [app.tabs :refer [tabs-component input show-error no-errors? in-confirm-state? to-confirm-state]]
             [app.actions :refer [reset-send-data]]
             [goog.object :as g]
